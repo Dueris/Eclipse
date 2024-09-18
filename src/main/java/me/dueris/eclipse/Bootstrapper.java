@@ -55,53 +55,16 @@ public class Bootstrapper implements PluginBootstrap {
 
 		ProcessBuilder processBuilder = new ProcessBuilder("java", "-jar", extractedJar.getAbsolutePath());
 		processBuilder.redirectErrorStream(true); // Merge error stream with output stream
+		processBuilder.inheritIO();
 
 		Process process = processBuilder.start();
 		logger.info("ignite/eclipse execution started, waiting for completion...");
 
-		StreamGobbler outputGobbler = new StreamGobbler(process.getInputStream(), "OUTPUT");
-		StreamGobbler errorGobbler = new StreamGobbler(process.getErrorStream(), "ERROR");
-		outputGobbler.start();
-		errorGobbler.start();
-
-		Thread inputHandlerThread = getInputHandlerThread(process);
-
 		int exitCode = process.waitFor();
 		logger.info("ignite/eclipse execution completed with exit code: " + exitCode);
 
-		outputGobbler.join();
-		errorGobbler.join();
-		try {
-			inputHandlerThread.interrupt();
-		} catch (UnsupportedOperationException ignored) {
-			// well the thread stopped now so...
-		}
-		process.getInputStream().close();
-		process.getErrorStream().close();
-		process.getOutputStream().close();
-
 		// Exit the server
 		System.exit(0);
-	}
-
-	private static @NotNull Thread getInputHandlerThread(Process process) {
-		Thread inputHandlerThread = new Thread(() -> {
-			try (BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
-				 OutputStream processOutput = process.getOutputStream()) {
-				String inputLine;
-				while ((inputLine = consoleReader.readLine()) != null) {
-					if (!process.isAlive()) {
-						break;
-					}
-					processOutput.write((inputLine + System.lineSeparator()).getBytes());
-					processOutput.flush();
-				}
-			} catch (IOException e) {
-				logger.error("Error reading input: " + e.getMessage());
-			}
-		});
-		inputHandlerThread.start();
-		return inputHandlerThread;
 	}
 
 	private static void extractFileFromZip(@NotNull ZipInputStream zipInputStream, File destinationFile) throws IOException {
@@ -138,29 +101,4 @@ public class Bootstrapper implements PluginBootstrap {
 		return new EclipsePlugin();
 	}
 
-	private static class StreamGobbler extends Thread {
-		private final InputStream inputStream;
-		private final String type;
-
-		StreamGobbler(InputStream inputStream, String type) {
-			this.inputStream = inputStream;
-			this.type = type;
-		}
-
-		@Override
-		public void run() {
-			try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
-				String line;
-				while ((line = reader.readLine()) != null) {
-					if ("ERROR".equals(type)) {
-						System.err.println(line);
-					} else {
-						System.out.println(line); // Corrected to print to standard output
-					}
-				}
-			} catch (IOException e) {
-				logger.error("Error reading " + type + " stream: " + e.getMessage());
-			}
-		}
-	}
 }
