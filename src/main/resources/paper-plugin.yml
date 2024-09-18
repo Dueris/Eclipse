@@ -1,0 +1,10 @@
+name: Eclipse
+version: '1.0.0-SNAPSHOT'
+main: me.dueris.eclipse.EclipsePlugin
+api-version: '1.21'
+prefix: EclipseMixin
+load: STARTUP
+authors: [ Dueris ]
+description: Mixin Launcher for Paper servers
+
+bootstrapper: me.dueris.eclipse.Bootstrapper

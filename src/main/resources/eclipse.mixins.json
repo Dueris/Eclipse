@@ -1,0 +1,7 @@
+{
+  "mixins": [
+    "JavaPluginMixin",
+    "PaperPluginClassLoaderMixin"
+  ],
+  "package": "me.dueris.eclipse.mixins"
+}

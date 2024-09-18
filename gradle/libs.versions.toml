@@ -1,0 +1,33 @@
+metadata.format.version = "1.1"
+
+[versions]
+accessWidener = "2.1.0"
+asm = "9.7"
+gson = "2.11.0"
+jetbrains = "24.1.0"
+mixin = "0.15.2+mixin.0.8.7"
+mixinExtras = "0.4.1"
+nexus = "2.0.0"
+shadow = "8.3.1"
+tinylog = "2.7.0"
+
+[libraries]
+jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref = "jetbrains" }
+
+# logger
+tinylog-api = { module = "org.tinylog:tinylog-api", version.ref = "tinylog" }
+tinylog-impl = { module = "org.tinylog:tinylog-impl", version.ref = "tinylog" }
+
+# loader
+accessWidener = { module = "net.fabricmc:access-widener", version.ref = "accessWidener" }
+asm = { module = "org.ow2.asm:asm", version.ref = "asm" }
+asm-analysis = { module = "org.ow2.asm:asm-analysis", version.ref = "asm" }
+asm-commons = { module = "org.ow2.asm:asm-commons", version.ref = "asm" }
+asm-tree = { module = "org.ow2.asm:asm-tree", version.ref = "asm" }
+asm-util = { module = "org.ow2.asm:asm-util", version.ref = "asm" }
+mixin = { module = "net.fabricmc:sponge-mixin", version.ref = "mixin" }
+mixinExtras = { module = "io.github.llamalad7:mixinextras-common", version.ref = "mixinExtras" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+
+build-nexus = { module = "io.github.gradle-nexus:publish-plugin", version.ref = "nexus" }
+build-shadow = { module = "com.gradleup.shadow:shadow-gradle-plugin", version.ref = "shadow" }
