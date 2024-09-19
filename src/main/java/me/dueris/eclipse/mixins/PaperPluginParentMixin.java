@@ -13,7 +13,9 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(PaperPluginParent.class)
 public class PaperPluginParentMixin {
 
-	@Shadow @Final private PaperPluginClassLoader classLoader;
+	@Shadow
+	@Final
+	private PaperPluginClassLoader classLoader;
 
 	@WrapMethod(method = "createPluginProvider")
 	public PaperPluginParent.PaperServerPluginProvider setPluginClassloader(PaperPluginParent.PaperBootstrapProvider provider, @NotNull Operation<PaperPluginParent.PaperServerPluginProvider> original) {

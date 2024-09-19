@@ -1,6 +1,5 @@
 package space.vectrix.ignite.mod;
 
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.UnmodifiableView;
 import org.spongepowered.asm.mixin.FabricUtil;

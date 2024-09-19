@@ -1,15 +1,12 @@
 package me.dueris.eclipse.mixins;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import io.papermc.paper.plugin.entrypoint.classloader.PaperPluginClassLoader;
 import io.papermc.paper.plugin.entrypoint.classloader.PaperSimplePluginClassLoader;
 import io.papermc.paper.plugin.provider.classloader.ConfiguredPluginClassLoader;
-import io.papermc.paper.plugin.provider.configuration.PaperPluginMeta;
 import io.papermc.paper.plugin.provider.type.paper.PaperPluginParent;
 import me.dueris.eclipse.EclipsePlugin;
 import me.dueris.eclipse.plugin.PluginClassloaderHolder;
 import me.dueris.eclipse.plugin.PluginProcessAccessors;
-import net.minecraft.world.entity.EntityType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

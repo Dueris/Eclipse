@@ -18,12 +18,11 @@ import java.util.function.Supplier;
  */
 public final class Blackboard {
 	private static final BlackboardMap BLACKBOARD = BlackboardMap.create();
-
-	public static BlackboardMap.Key<Path> GAME_JAR;
 	public static final BlackboardMap.@NotNull Key<Boolean> DEBUG = key("ignite.debug", Boolean.class, false);
 	public static final BlackboardMap.@NotNull Key<String> GAME_TARGET = key("ignite.target", String.class, "org.bukkit.craftbukkit.Main");
 	public static final BlackboardMap.@NotNull Key<Path> GAME_LIBRARIES = key("ignite.libraries", Path.class, Paths.get("./libraries"));
 	public static final BlackboardMap.@NotNull Key<Path> MODS_DIRECTORY = key("ignite.mods", Path.class, Paths.get("./plugins"));
+	public static BlackboardMap.Key<Path> GAME_JAR;
 
 	private Blackboard() {
 	}

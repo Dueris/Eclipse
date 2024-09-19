@@ -356,6 +356,11 @@ public final class EmberClassLoader extends ClassLoader {
 		return input -> null;
 	}
 
+	@Override
+	public String getName() {
+		return "ember";
+	}
+
 	private static final class DynamicClassLoader extends URLClassLoader {
 		static {
 			ClassLoader.registerAsParallelCapable();
@@ -369,11 +374,6 @@ public final class EmberClassLoader extends ClassLoader {
 		public void addURL(final @NotNull URL url) {
 			super.addURL(url);
 		}
-	}
-
-	@Override
-	public String getName() {
-		return "ember";
 	}
 
 	//</editor-fold>

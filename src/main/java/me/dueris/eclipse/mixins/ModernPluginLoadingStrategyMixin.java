@@ -28,9 +28,13 @@ import java.util.Map;
 @Mixin(ModernPluginLoadingStrategy.class)
 public class ModernPluginLoadingStrategyMixin<T> {
 
-	@Shadow @Final private static Logger LOGGER;
+	@Shadow
+	@Final
+	private static Logger LOGGER;
 
-	@Shadow @Final private ProviderConfiguration<T> configuration;
+	@Shadow
+	@Final
+	private ProviderConfiguration<T> configuration;
 
 	/**
 	 * @author Dueris

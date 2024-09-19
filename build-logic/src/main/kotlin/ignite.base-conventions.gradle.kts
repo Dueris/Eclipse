@@ -1,5 +1,3 @@
-import gradle.kotlin.dsl.accessors._3e6842eee89a2e478a99b3b158d80698.shadowJar
-
 plugins {
     `java-library`
 }
