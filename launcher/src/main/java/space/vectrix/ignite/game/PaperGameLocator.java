@@ -11,12 +11,14 @@ import space.vectrix.ignite.util.BlackboardMap;
 import space.vectrix.ignite.util.IgniteConstants;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -175,6 +177,15 @@ public final class PaperGameLocator implements GameLocatorService {
 			}
 		}
 
+		libraries.clear();
+		try (Stream<Path> paths = Files.walk(Paths.get("libraries"))) {
+			libraries.addAll(paths
+				.filter(Files::isRegularFile)
+				.map(Path::toString)
+				.filter(string -> string.endsWith(".jar"))
+				.toList());
+		}
+
 		return new PaperGameProvider(game, libraries);
 	}
 
@@ -189,8 +200,7 @@ public final class PaperGameLocator implements GameLocatorService {
 
 		@Override
 		public @NotNull Stream<Path> gameLibraries() {
-			final Path libraryPath = Blackboard.raw(Blackboard.GAME_LIBRARIES);
-			return this.libraries.stream().map(libraryPath::resolve);
+			return this.libraries.stream().map(Paths::get);
 		}
 
 		@Override

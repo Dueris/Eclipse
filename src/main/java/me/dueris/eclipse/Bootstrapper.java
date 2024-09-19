@@ -3,6 +3,8 @@ package me.dueris.eclipse;
 import io.papermc.paper.plugin.bootstrap.BootstrapContext;
 import io.papermc.paper.plugin.bootstrap.PluginBootstrap;
 import io.papermc.paper.plugin.bootstrap.PluginProviderContext;
+import io.papermc.paper.plugin.provider.type.paper.PaperPluginParent;
+import io.papermc.paper.plugin.provider.util.ProviderUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -10,12 +12,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class Bootstrapper implements PluginBootstrap {
-
-	private static Logger logger = LogManager.getLogger("EclipseBootstrap");
+	private static final Logger logger = LogManager.getLogger("EclipseBootstrap");
 
 	public static void executePlugin(@NotNull Map<String, String> jsonData, File zipFile, File cacheDir) throws Exception {
 		File jsonFile = new File("eclipse.mixin.bootstrap.json");
@@ -37,7 +39,6 @@ public class Bootstrapper implements PluginBootstrap {
 		try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(zipFile))) {
 			ZipEntry entry;
 			boolean jarFound = false;
-			boolean log4jFound = false;
 			while ((entry = zipInputStream.getNextEntry()) != null) {
 				if (entry.getName().equals("ignite.jar")) {
 					jarFound = true;
@@ -94,11 +95,6 @@ public class Bootstrapper implements PluginBootstrap {
 				throw new RuntimeException(ea);
 			}
 		}
-	}
-
-	@Override
-	public @NotNull JavaPlugin createPlugin(@NotNull PluginProviderContext context) {
-		return new EclipsePlugin();
 	}
 
 }

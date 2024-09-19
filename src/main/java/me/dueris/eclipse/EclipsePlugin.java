@@ -13,9 +13,6 @@ public final class EclipsePlugin extends JavaPlugin {
 
 	public static List<PaperSimplePluginClassLoader> CLASSLOADERS = new ArrayList<>();
 
-	public EclipsePlugin() {
-	}
-
 	@Override
 	public void onEnable() {
 	}

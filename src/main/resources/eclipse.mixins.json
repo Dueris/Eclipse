@@ -1,7 +1,10 @@
 {
   "mixins": [
     "JavaPluginMixin",
-    "PaperPluginClassLoaderMixin"
+    "ModernPluginLoadingStrategyMixin",
+    "PaperPluginClassLoaderMixin",
+    "PaperPluginParentMixin",
+    "PaperServerPluginProviderMixin"
   ],
   "package": "me.dueris.eclipse.mixins"
 }
