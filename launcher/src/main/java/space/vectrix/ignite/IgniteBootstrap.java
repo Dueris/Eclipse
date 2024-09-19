@@ -1,5 +1,7 @@
 package space.vectrix.ignite;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.util.JavaVersion;
 import org.spongepowered.asm.util.asm.ASM;
@@ -12,7 +14,9 @@ import space.vectrix.ignite.launch.ember.Ember;
 import space.vectrix.ignite.mod.ModsImpl;
 import space.vectrix.ignite.util.IgniteConstants;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -29,6 +33,8 @@ import java.util.Optional;
 public final class IgniteBootstrap {
 	private static IgniteBootstrap INSTANCE;
 	private final ModsImpl engine;
+	public String softwareName;
+	public String minecraftVersion;
 
 	/* package */ IgniteBootstrap() {
 		IgniteBootstrap.INSTANCE = this;
@@ -68,20 +74,46 @@ public final class IgniteBootstrap {
 			IgniteConstants.API_VERSION,
 			ASM.getVersionString(),
 			JavaVersion.current());
-		new IgniteBootstrap().run(arguments);
+
+		JsonObject bootstrapInfo = new Gson().fromJson(((Getter<String>) () -> {
+			File bootstrapFile = Paths.get("eclipse.mixin.bootstrap.json").toFile();
+			if (!bootstrapFile.exists()) {
+				throw new IllegalStateException("Unable to find bootstrap json! Did Eclipse start correctly?");
+			}
+
+			try {
+				return Files.readString(bootstrapFile.toPath());
+			} catch (IOException e) {
+				throw new RuntimeException("Unable to build String contents of Bootstrap!", e);
+			}
+		}).get(), JsonObject.class);
+
+
+		String serverPath = bootstrapInfo.get("ServerPath").getAsString();
+		if (serverPath.startsWith("/")) {
+			serverPath = serverPath.substring(1);
+		}
+		Path jarPath = Path.of(serverPath);
+
+		Blackboard.GAME_JAR = Blackboard.key("ignite.jar", Path.class, jarPath);
+		Blackboard.compute(Blackboard.GAME_JAR, () -> jarPath);
+		Blackboard.compute(Blackboard.DEBUG, () -> Boolean.parseBoolean(System.getProperty(Blackboard.DEBUG.name())));
+		Blackboard.compute(Blackboard.GAME_TARGET, () -> System.getProperty(Blackboard.GAME_TARGET.name()));
+		Blackboard.compute(Blackboard.GAME_LIBRARIES, () -> Paths.get(System.getProperty(Blackboard.GAME_LIBRARIES.name())));
+		Blackboard.compute(Blackboard.MODS_DIRECTORY, () -> Paths.get(System.getProperty(Blackboard.MODS_DIRECTORY.name())));
+
+		IgniteBootstrap ignite = new IgniteBootstrap();
+		ignite.minecraftVersion = bootstrapInfo.get("ServerVersion").getAsString();
+		ignite.softwareName = bootstrapInfo.get("SoftwareName").getAsString();
+
+		ignite.run(arguments);
 	}
 
 	private void run(final String @NotNull [] args) {
 		final List<String> arguments = Arrays.asList(args);
 		final List<String> launchArguments = new ArrayList<>(arguments);
 
-		// Initialize the blackboard and populate it with the startup
-		// flags.
-		Blackboard.compute(Blackboard.DEBUG, () -> Boolean.parseBoolean(System.getProperty(Blackboard.DEBUG.name())));
-		Blackboard.compute(Blackboard.GAME_JAR, () -> Paths.get(System.getProperty(Blackboard.GAME_JAR.name())));
-		Blackboard.compute(Blackboard.GAME_TARGET, () -> System.getProperty(Blackboard.GAME_TARGET.name()));
-		Blackboard.compute(Blackboard.GAME_LIBRARIES, () -> Paths.get(System.getProperty(Blackboard.GAME_LIBRARIES.name())));
-		Blackboard.compute(Blackboard.MODS_DIRECTORY, () -> Paths.get(System.getProperty(Blackboard.MODS_DIRECTORY.name())));
+		// move Blackboard building to main()
 
 		// Get a suitable game locator and game provider.
 		final GameLocatorService gameLocator;
@@ -148,5 +180,9 @@ public final class IgniteBootstrap {
 	 */
 	public @NotNull ModsImpl engine() {
 		return this.engine;
+	}
+
+	private static interface Getter<T> {
+		T get();
 	}
 }

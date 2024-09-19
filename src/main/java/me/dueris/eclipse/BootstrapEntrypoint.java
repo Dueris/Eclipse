@@ -1,32 +1,46 @@
 package me.dueris.eclipse;
 
+import com.google.gson.JsonObject;
+import io.papermc.paper.ServerBuildInfo;
 import io.papermc.paper.plugin.bootstrap.BootstrapContext;
 import io.papermc.paper.plugin.bootstrap.PluginBootstrap;
-import io.papermc.paper.plugin.bootstrap.PluginProviderContext;
-import io.papermc.paper.plugin.provider.type.paper.PaperPluginParent;
-import io.papermc.paper.plugin.provider.util.ProviderUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.craftbukkit.Main;
 import org.jetbrains.annotations.NotNull;
+import org.json.simple.JSONObject;
 
 import java.io.*;
+import java.lang.management.ManagementFactory;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.CodeSource;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-public class Bootstrapper implements PluginBootstrap {
+public class BootstrapEntrypoint implements PluginBootstrap {
 	private static final Logger logger = LogManager.getLogger("EclipseBootstrap");
 
-	public static void executePlugin(@NotNull Map<String, String> jsonData, File zipFile, File cacheDir) throws Exception {
+	@SuppressWarnings("unchecked")
+	public static void executePlugin(File zipFile, File cacheDir) throws Exception {
 		File jsonFile = new File("eclipse.mixin.bootstrap.json");
 		try (FileWriter writer = new FileWriter(jsonFile)) {
-			writer.write("{\n");
-			for (Map.Entry<String, String> entry : jsonData.entrySet()) {
-				writer.write("\"" + entry.getKey() + "\": \"" + entry.getValue() + "\",\n");
+			// GSON objects automatically map to a valid Json output with toString(), so we use that for writing.
+
+			JSONObject jsonObject = new JSONObject(Map.of(
+				"ServerVersion", ServerBuildInfo.buildInfo().minecraftVersionName(),
+				"ServerPath", Paths.get(ManagementFactory.getRuntimeMXBean().getClassPath()).toString(),
+				"SoftwareName", ServerBuildInfo.buildInfo().brandName()
+			));
+			JsonObject gsonObject = new JsonObject();
+
+			for (String key : (Iterable<String>) jsonObject.keySet()) {
+				String value = jsonObject.get(key).toString();
+				gsonObject.addProperty(key, value);
 			}
-			writer.write("}");
+
+			writer.write(gsonObject.toString());
 		} catch (IOException e) {
 			logger.error("Failed to create JSON file: " + e.getMessage());
 			throw e;
@@ -86,8 +100,6 @@ public class Bootstrapper implements PluginBootstrap {
 			logger.info("Starting Eclipse/Ignite bootstrap...");
 			try {
 				executePlugin(
-					Map.of("debug", "true",
-						"server_jar", "paper.jar"),
 					bootstrapContext.getPluginSource().toFile(),
 					bootstrapContext.getPluginSource().toAbsolutePath().getParent().getParent().resolve("cache").toFile()
 				);

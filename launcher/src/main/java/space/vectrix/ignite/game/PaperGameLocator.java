@@ -28,9 +28,9 @@ import java.util.stream.Stream;
  * @since 1.0.0
  */
 public final class PaperGameLocator implements GameLocatorService {
-	private static final BlackboardMap.@NotNull Key<Path> PAPER_JAR = Blackboard.key("ignite.paper.jar", Path.class, Paths.get("./paper.jar"));
+	private static final BlackboardMap.@NotNull Key<Path> PAPER_JAR = Blackboard.GAME_JAR; // Use game jar, no need to implement a new method for paper locating
 	private static final BlackboardMap.@NotNull Key<String> PAPER_TARGET = Blackboard.key("ignite.paper.target", String.class, "io.papermc.paperclip.Paperclip");
-	private static final BlackboardMap.@NotNull Key<String> PAPER_VERSION = Blackboard.key("ignite.paper.version", String.class, "1.20.4");
+	private static final BlackboardMap.@NotNull Key<String> PAPER_VERSION = Blackboard.key("ignite.paper.version", String.class, "1.21.1");
 
 	private PaperGameProvider provider;
 
@@ -41,7 +41,7 @@ public final class PaperGameLocator implements GameLocatorService {
 
 	@Override
 	public @NotNull String name() {
-		return "Paper";
+		return IgniteBootstrap.instance().softwareName;
 	}
 
 	@Override
