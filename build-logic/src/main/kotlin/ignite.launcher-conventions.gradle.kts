@@ -33,7 +33,7 @@ tasks.getByName<Jar>("jar") {
 
         attributes(
             "org/objectweb/asm/",
-            "Implementation-Version" to libs.versions.asm
+            "Implementation-Version" to "9.7.1"
         )
     }
 }

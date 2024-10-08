@@ -1,19 +1,18 @@
-import java.nio.file.Files
-import java.nio.file.StandardCopyOption
-
 plugins {
     `java-library`
     `maven-publish`
     id("io.papermc.paperweight.userdev") version "1.7.1" apply true
     id("xyz.jpenilla.run-paper") version "2.2.3"
     id("ignite.parent-conventions")
+    id("ignite.launcher-conventions")
+    id("ignite.publish-conventions")
 }
 
 val paperweightVersion: String = "1.21-R0.1-SNAPSHOT"
 
 extra["mcMajorVer"] = "21"
 extra["mcMinorVer"] = "1"
-extra["pluginVer"] = "v1.1.0"
+extra["pluginVer"] = "v1.2.0"
 
 val mcMajorVer = extra["mcMajorVer"] as String
 val mcMinorVer = extra["mcMinorVer"] as String
@@ -55,6 +54,7 @@ allprojects {
         maven("https://repo.codemc.org/repository/maven-releases/")
         maven("https://maven.quiltmc.org/repository/release/")
         maven("https://libraries.minecraft.net/")
+        maven("https://jitpack.io")
     }
 
     tasks {
@@ -78,14 +78,27 @@ allprojects {
 }
 
 dependencies {
+    implementation(libs.tinylog.impl)
+
     implementation(libs.mixin) {
         exclude(group = "com.google.guava")
         exclude(group = "com.google.code.gson")
         exclude(group = "org.ow2.asm")
     }
+
     implementation(libs.mixinExtras) {
         exclude(group = "org.apache.commons")
     }
+
+    implementation(libs.accessWidener)
+    implementation(libs.asm)
+    implementation(libs.asm.analysis)
+    implementation(libs.asm.commons)
+    implementation(libs.asm.tree)
+    implementation(libs.asm.util)
+
+    implementation(libs.gson)
+    implementation("com.github.Carleslc.Simple-YAML:Simple-Yaml:1.8.4")
 
     implementation("jline:jline:2.12.1")
 }
@@ -94,39 +107,7 @@ tasks {
     runServer {
         minecraftVersion(mcVer)
     }
-}
-
-tasks.all {
-    dependsOn(":ignite-launcher:shadowJar")
-
-    doLast {
-        moveIgniteJar()
+    shadowJar {
+        mergeServiceFiles()
     }
-}
-
-fun moveIgniteJar() {
-    val sourceDir = "build/libs"
-    val targetDir = "src/main/resources"
-    val fileName = "ignite.jar"
-
-    File(sourceDir).takeIf { it.exists() && it.isDirectory }?.let { srcDir ->
-        File(targetDir).takeIf { it.exists() && it.isDirectory }?.let { tgtDir ->
-            for (listFile in srcDir.listFiles()) {
-                if (listFile.name.equals(fileName)) {
-                    val sourceFile = listFile
-                    val targetFile = File(tgtDir, fileName)
-
-                    if (sourceFile.exists() && sourceFile.isFile) {
-                        Files.copy(
-                            rootDir.resolve(sourceFile.toPath().toString()).toPath(),
-                            rootDir.resolve(targetFile.toPath().toString()).toPath(),
-                            StandardCopyOption.REPLACE_EXISTING
-                        )
-                    } else {
-                        println("Source file does not exist: '${sourceFile.path}'")
-                    }
-                }
-            }
-        } ?: println("Target directory does not exist or is not a directory: '$targetDir'")
-    } ?: println("Source directory does not exist or is not a directory: '$sourceDir'")
 }

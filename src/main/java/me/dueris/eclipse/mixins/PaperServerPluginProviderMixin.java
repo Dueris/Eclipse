@@ -2,7 +2,7 @@ package me.dueris.eclipse.mixins;
 
 import io.papermc.paper.plugin.entrypoint.classloader.PaperPluginClassLoader;
 import io.papermc.paper.plugin.provider.type.paper.PaperPluginParent;
-import me.dueris.eclipse.plugin.PluginClassloaderHolder;
+import me.dueris.eclipse.access.PluginClassloaderHolder;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 

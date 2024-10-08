@@ -8,3 +8,10 @@ authors: [ Dueris ]
 description: Mixin Launcher for Paper servers
 
 bootstrapper: me.dueris.eclipse.BootstrapEntrypoint
+
+mixins: [
+  "eclipse.mixins.json"
+]
+wideners: [
+  "eclipse.accesswidener"
+]
