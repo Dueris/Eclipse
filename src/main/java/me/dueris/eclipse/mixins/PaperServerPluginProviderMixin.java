@@ -6,6 +6,9 @@ import me.dueris.eclipse.access.PluginClassloaderHolder;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
+/**
+ * PaperServerPluginProvider Mixin for caching/getting the plugin classloader
+ */
 @Mixin(PaperPluginParent.PaperServerPluginProvider.class)
 public class PaperServerPluginProviderMixin implements PluginClassloaderHolder {
 

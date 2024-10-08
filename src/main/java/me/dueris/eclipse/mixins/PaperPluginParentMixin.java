@@ -10,6 +10,9 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
+/**
+ * PaperPluginParent Mixin for saving the {@link PaperPluginClassLoader} in the {@link io.papermc.paper.plugin.provider.type.paper.PaperPluginParent.PaperServerPluginProvider} to help fix plugin loading errors
+ */
 @Mixin(PaperPluginParent.class)
 public class PaperPluginParentMixin {
 

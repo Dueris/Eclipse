@@ -17,6 +17,9 @@ import org.spongepowered.asm.mixin.injection.At;
 
 import java.util.Map;
 
+/**
+ * ModernPluginLoadingStrategy Mixin to help resolve the issues with plugin loading /w mixin plugins
+ */
 @Mixin(ModernPluginLoadingStrategy.class)
 public class ModernPluginLoadingStrategyMixin<T> {
 

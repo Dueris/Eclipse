@@ -17,6 +17,9 @@ import java.nio.file.Path;
 import java.util.jar.JarFile;
 import java.util.logging.Logger;
 
+/**
+ * PaperPluginClassLoader Mixin for caching the classloader impl, since we need to retrieve this later for plugin loading
+ */
 @Mixin(PaperPluginClassLoader.class)
 public abstract class PaperPluginClassLoaderMixin extends PaperSimplePluginClassLoader implements ConfiguredPluginClassLoader {
 	public PaperPluginClassLoaderMixin(Path source, JarFile file, PluginMeta configuration, ClassLoader parentLoader) throws IOException {

@@ -10,6 +10,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
+/**
+ * JavaPlugin Mixin to ensure the correct classloader is being used when invoking the constructor
+ */
 @Mixin(JavaPlugin.class)
 public class JavaPluginMixin {
 
