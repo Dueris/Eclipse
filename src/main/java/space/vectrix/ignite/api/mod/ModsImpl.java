@@ -111,7 +111,7 @@ public final class ModsImpl implements Mods {
 		for (final ModContainer container : this.containers()) {
 			final ModResource resource = container.resource();
 
-			final List<String> wideners = ((ModContainerImpl) container).config().wideners();
+			final List<String> wideners = container.config().wideners();
 			if (wideners != null && !wideners.isEmpty()) {
 				for (final String widener : wideners) {
 					//noinspection resource
@@ -145,7 +145,7 @@ public final class ModsImpl implements Mods {
 
 			handle.addResource(resource.path().getFileName().toString(), resource.path());
 
-			final List<String> mixins = ((ModContainerImpl) container).config().mixins();
+			final List<String> mixins = container.config().mixins();
 			if (mixins != null && !mixins.isEmpty()) {
 				for (final String config : mixins) {
 					final ModContainer previous = this.containersByConfig.putIfAbsent(config, container);

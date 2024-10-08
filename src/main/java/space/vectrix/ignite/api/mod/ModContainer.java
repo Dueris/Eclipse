@@ -43,4 +43,12 @@ public interface ModContainer {
 	 * @since 1.0.0
 	 */
 	@NotNull ModResource resource();
+
+	/**
+	 * Returns the mod config.
+	 *
+	 * @return the config
+	 * @since 1.0.0
+	 */
+	@NotNull ModConfig config();
 }

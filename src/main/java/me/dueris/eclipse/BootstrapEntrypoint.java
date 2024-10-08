@@ -51,7 +51,7 @@ public class BootstrapEntrypoint implements PluginBootstrap {
 			logger.info("Located args from JVM ManagementFactory: {}", jvmArgs);
 		}
 
-		ProcessBuilder processBuilder = new ProcessBuilder(buildExecutionArgs(jvmArgs, List.of(), eclipseInstance.getAbsolutePath()));
+		ProcessBuilder processBuilder = new ProcessBuilder(buildExecutionArgs(jvmArgs, List.of(), eclipseInstance.getAbsolutePath())); // TODO - optionset parser - paper PR?
 		processBuilder.redirectErrorStream(true); // Merge error stream with output stream
 		processBuilder.inheritIO();
 
@@ -65,7 +65,7 @@ public class BootstrapEntrypoint implements PluginBootstrap {
 		System.exit(0);
 	}
 
-	private static List<String> buildExecutionArgs(List<String> jvmArgs, List<String> optionsetArgs, String jarPath) {
+	private static @NotNull List<String> buildExecutionArgs(List<String> jvmArgs, List<String> optionsetArgs, String jarPath) {
 		List<String> executionArgs = new ArrayList<>();
 		executionArgs.add("java");
 		executionArgs.addAll(jvmArgs);

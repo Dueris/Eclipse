@@ -45,12 +45,7 @@ public final class ModContainerImpl implements ModContainer {
 		return this.resource;
 	}
 
-	/**
-	 * Returns the mod config.
-	 *
-	 * @return the config
-	 * @since 1.0.0
-	 */
+	@Override
 	public @NotNull ModConfig config() {
 		return this.config;
 	}

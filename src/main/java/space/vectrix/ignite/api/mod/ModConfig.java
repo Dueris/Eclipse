@@ -1,7 +1,9 @@
 package space.vectrix.ignite.api.mod;
 
+import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
 import org.simpleyaml.configuration.file.YamlConfiguration;
 
 import java.util.Arrays;
@@ -13,7 +15,7 @@ import java.util.Objects;
  *
  * @since 1.0.0
  */
-public record ModConfig(String id, String version, List<String> mixins, List<String> wideners) {
+public record ModConfig(String id, String version, @NotNull List<String> mixins, @NotNull List<String> wideners) {
 
 	public static @NotNull ModConfig init(@NotNull YamlConfiguration yaml) {
 		String id = yaml.getString("name").toLowerCase();
@@ -34,6 +36,16 @@ public record ModConfig(String id, String version, List<String> mixins, List<Str
 			&& Objects.equals(this.version, that.version)
 			&& Objects.equals(this.mixins, that.mixins)
 			&& Objects.equals(this.wideners, that.wideners);
+	}
+
+	@Override
+	public @Unmodifiable @NotNull List<String> mixins() {
+		return ImmutableList.copyOf(mixins);
+	}
+
+	@Override
+	public @Unmodifiable @NotNull List<String> wideners() {
+		return ImmutableList.copyOf(wideners);
 	}
 
 	@Override
