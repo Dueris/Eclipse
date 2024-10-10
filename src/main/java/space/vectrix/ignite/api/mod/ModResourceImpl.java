@@ -75,7 +75,7 @@ public final class ModResourceImpl implements ModResource {
 	}
 
 	@Override
-	public String toString() {
+	public @NotNull String toString() {
 		return "ModResourceImpl{locator='" + this.locator + ", path=" + this.path + ", manifest=" + this.manifest + "}";
 	}
 }

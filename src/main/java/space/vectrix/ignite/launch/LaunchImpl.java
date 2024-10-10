@@ -1,5 +1,6 @@
 package space.vectrix.ignite.launch;
 
+import me.dueris.eclipse.launch.EclipseGameLocator;
 import org.jetbrains.annotations.NotNull;
 import org.tinylog.Logger;
 import space.vectrix.ignite.IgniteBootstrap;
@@ -93,7 +94,7 @@ public final class LaunchImpl implements LaunchService {
 	public @NotNull Callable<Void> launch(final @NotNull String @NotNull [] arguments, final @NotNull EmberClassLoader loader) {
 		return () -> {
 			final Path gameJar = Blackboard.raw(Blackboard.GAME_JAR);
-			final String gameTarget = Blackboard.raw(Blackboard.GAME_TARGET);
+			final String gameTarget = EclipseGameLocator.targetClass();
 			if (gameJar != null && Files.exists(gameJar)) {
 				// Invoke the main method.
 				Class.forName(gameTarget, true, loader)

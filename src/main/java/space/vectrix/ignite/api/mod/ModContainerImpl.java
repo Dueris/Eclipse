@@ -12,22 +12,13 @@ import java.util.Objects;
  * @author vectrix
  * @since 1.0.0
  */
-public final class ModContainerImpl implements ModContainer {
-	private final TaggedLogger logger;
-	private final ModResource resource;
-	private final ModConfig config;
-
-	/* package */ ModContainerImpl(final @NotNull TaggedLogger logger,
-								   final @NotNull ModResource resource,
-								   final @NotNull ModConfig config) {
+public record ModContainerImpl(TaggedLogger logger, ModResource resource, ModConfig config) implements ModContainer {
+	public ModContainerImpl(final @NotNull TaggedLogger logger,
+							final @NotNull ModResource resource,
+							final @NotNull ModConfig config) {
 		this.logger = logger;
 		this.resource = resource;
 		this.config = config;
-	}
-
-	@Override
-	public @NotNull TaggedLogger logger() {
-		return this.logger;
 	}
 
 	@Override
@@ -38,11 +29,6 @@ public final class ModContainerImpl implements ModContainer {
 	@Override
 	public @NotNull String version() {
 		return this.config.version();
-	}
-
-	@Override
-	public @NotNull ModResource resource() {
-		return this.resource;
 	}
 
 	@Override
@@ -64,7 +50,7 @@ public final class ModContainerImpl implements ModContainer {
 	}
 
 	@Override
-	public String toString() {
+	public @NotNull String toString() {
 		return "ModContainerImpl(id=" + this.id() + ", version=" + this.version() + ", resource=" + this.resource() + ", config=" + this.config() + ")";
 	}
 }

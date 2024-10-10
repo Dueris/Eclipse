@@ -2,6 +2,7 @@ package space.vectrix.ignite.agent;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.tinylog.Logger;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -20,6 +21,7 @@ import java.util.jar.JarFile;
  */
 public final class IgniteAgent {
 	private static Instrumentation INSTRUMENTATION = null;
+	public static boolean log = true;
 
 	private IgniteAgent() {
 	}
@@ -57,6 +59,9 @@ public final class IgniteAgent {
 	 */
 	public static void addJar(final @NotNull JarFile jar) {
 		if (IgniteAgent.INSTRUMENTATION != null) {
+			if (log) {
+				Logger.info("Loading '{}' to ignite classpath...", jar.getName());
+			}
 			IgniteAgent.INSTRUMENTATION.appendToSystemClassLoaderSearch(jar);
 			return;
 		}

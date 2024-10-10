@@ -2,6 +2,7 @@
   "mixins": [
     "JavaPluginMixin",
     "ModernPluginLoadingStrategyMixin",
+    "PaperClasspathBuilderMixin",
     "PaperPluginClassLoaderMixin",
     "PaperPluginParentMixin",
     "PaperServerPluginProviderMixin"

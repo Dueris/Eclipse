@@ -2,6 +2,7 @@ package space.vectrix.ignite;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import me.dueris.eclipse.launch.EclipseGameLocator;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.util.JavaVersion;
 import org.spongepowered.asm.util.asm.ASM;
@@ -14,7 +15,6 @@ import space.vectrix.ignite.api.mod.ModsImpl;
 import space.vectrix.ignite.api.util.IgniteConstants;
 import space.vectrix.ignite.game.GameLocatorService;
 import space.vectrix.ignite.game.GameProvider;
-import space.vectrix.ignite.game.PaperGameLocator;
 import space.vectrix.ignite.launch.ember.Ember;
 
 import java.io.File;
@@ -40,7 +40,6 @@ public final class IgniteBootstrap {
 	private static Platform PLATFORM;
 	private final ModsImpl engine;
 	public String softwareName;
-	public String minecraftVersion;
 
 	IgniteBootstrap() {
 		IgniteBootstrap.INSTANCE = this;
@@ -104,12 +103,10 @@ public final class IgniteBootstrap {
 		Blackboard.GAME_JAR = Blackboard.key("ignite.jar", Path.class, jarPath);
 		Blackboard.compute(Blackboard.GAME_JAR, () -> jarPath);
 		Blackboard.compute(Blackboard.DEBUG, () -> Boolean.parseBoolean(System.getProperty(Blackboard.DEBUG.name())));
-		Blackboard.compute(Blackboard.GAME_TARGET, () -> System.getProperty(Blackboard.GAME_TARGET.name()));
 		Blackboard.compute(Blackboard.GAME_LIBRARIES, () -> Paths.get(System.getProperty(Blackboard.GAME_LIBRARIES.name())));
 		Blackboard.compute(Blackboard.MODS_DIRECTORY, () -> Paths.get(System.getProperty(Blackboard.MODS_DIRECTORY.name())));
 
 		IgniteBootstrap ignite = new IgniteBootstrap();
-		ignite.minecraftVersion = bootstrapInfo.get("ServerVersion").getAsString();
 		ignite.softwareName = bootstrapInfo.get("SoftwareName").getAsString();
 		BOOTED.set(true);
 
@@ -141,7 +138,7 @@ public final class IgniteBootstrap {
 		final GameLocatorService gameLocator;
 		final GameProvider gameProvider;
 		{
-			final Optional<GameLocatorService> gameLocatorProvider = Optional.of(new PaperGameLocator());
+			final Optional<EclipseGameLocator> gameLocatorProvider = Optional.of(new EclipseGameLocator());
 
 			gameLocator = gameLocatorProvider.get();
 
@@ -173,6 +170,7 @@ public final class IgniteBootstrap {
 		}
 
 		// Add the game libraries.
+		IgniteAgent.log = false;
 		gameProvider.gameLibraries().forEach(path -> {
 			if (!path.toString().endsWith(".jar")) return;
 
@@ -184,6 +182,8 @@ public final class IgniteBootstrap {
 				Logger.error(exception, "Failed to resolve game library jar: {}", path);
 			}
 		});
+		Logger.info("Loaded {} game libraries into the ignite classpath", gameProvider.gameLibraries().count());
+		IgniteAgent.log = true;
 
 		// Initialize the API.
 		IgniteBootstrap.initialize(new PlatformImpl());

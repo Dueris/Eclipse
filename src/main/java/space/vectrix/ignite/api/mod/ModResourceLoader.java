@@ -27,12 +27,6 @@ public final class ModResourceLoader {
 
 		for (final ModResource resource : engine.resources()) {
 			if (resource.locator().equals(ModResourceLocator.LAUNCHER_LOCATOR) || resource.locator().equals(ModResourceLocator.GAME_LOCATOR)) {
-				final ModConfig config = new ModConfig(
-					IgniteConstants.API_TITLE,
-					IgniteConstants.API_VERSION, List.of(), List.of()
-				);
-
-				containers.add(new ModContainerImpl(Logger.tag(config.id()), resource, config));
 				continue;
 			}
 
