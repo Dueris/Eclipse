@@ -32,6 +32,7 @@ public abstract class PaperPluginsCommandMixin<T> extends BukkitCommand {
 	@Shadow
 	@Final
 	private static Component BUKKIT_HEADER;
+
 	protected PaperPluginsCommandMixin(@NotNull String name) {
 		super(name);
 	}

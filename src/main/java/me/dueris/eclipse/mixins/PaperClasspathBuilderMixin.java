@@ -1,12 +1,16 @@
 package me.dueris.eclipse.mixins;
 
 import io.papermc.paper.plugin.PluginInitializerManager;
+import io.papermc.paper.plugin.bootstrap.PluginProviderContext;
 import io.papermc.paper.plugin.loader.PaperClasspathBuilder;
 import io.papermc.paper.plugin.loader.PluginClasspathBuilder;
 import io.papermc.paper.plugin.loader.library.ClassPathLibrary;
 import io.papermc.paper.plugin.loader.library.PaperLibraryStore;
+import me.dueris.eclipse.access.MixinPluginMeta;
 import org.jetbrains.annotations.NotNull;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -19,15 +23,21 @@ import java.util.List;
 @Mixin(PaperClasspathBuilder.class)
 public class PaperClasspathBuilderMixin {
 
+	@Shadow
+	@Final
+	private PluginProviderContext context;
+
 	@Inject(method = "addLibrary", at = @At("HEAD"))
 	public void loadToIgniteAgent(ClassPathLibrary classPathLibrary, CallbackInfoReturnable<PluginClasspathBuilder> cir) {
-		eclipse$buildLibraryPaths(true, classPathLibrary).forEach((path) -> {
-			try {
-				IgniteAgent.addJar(path);
-			} catch (Throwable throwable) {
-				throw new RuntimeException("Unable to append classpath library to ignite classpath!", throwable);
-			}
-		});
+		if (context.getConfiguration() instanceof MixinPluginMeta mixinPluginMeta && mixinPluginMeta.eclipse$isMixinPlugin()) {
+			eclipse$buildLibraryPaths(true, classPathLibrary).forEach((path) -> {
+				try {
+					IgniteAgent.addJar(path);
+				} catch (Throwable throwable) {
+					throw new RuntimeException("Unable to append classpath library to ignite classpath!", throwable);
+				}
+			});
+		}
 	}
 
 	@Unique
