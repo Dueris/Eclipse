@@ -43,6 +43,9 @@ public final class ModResourceLoader {
 
 				final InputStream inputStream = jarFile.getInputStream(jarEntry);
 				final ModConfig config = ModConfig.init(YamlConfiguration.loadConfiguration(new InputStreamReader(inputStream)));
+				if (config.mixins().isEmpty() && config.wideners().isEmpty()) {
+					continue;
+				}
 
 				containers.add(new ModContainerImpl(Logger.tag(config.id()), resource, config));
 			} catch (final IOException exception) {

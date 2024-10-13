@@ -20,8 +20,8 @@ import java.util.jar.JarFile;
  * @since 1.0.0
  */
 public final class IgniteAgent {
-	private static Instrumentation INSTRUMENTATION = null;
 	public static boolean log = true;
+	private static Instrumentation INSTRUMENTATION = null;
 
 	private IgniteAgent() {
 	}

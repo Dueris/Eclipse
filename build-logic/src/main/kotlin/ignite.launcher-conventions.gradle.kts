@@ -43,28 +43,3 @@ tasks.getByName<ShadowJar>("shadowJar") {
 
     relocate("com.google.gson", "space.vectrix.ignite.libs.gson")
 }
-
-tasks.register("dist") {
-    dependsOn("shadowJar")
-
-    doLast {
-        val sourceDir = project.layout.buildDirectory.asFile.map { it.resolve("libs") }.get()
-        val targetDir = rootProject.layout.buildDirectory.asFile.map { it.resolve("libs") }.get()
-
-        targetDir.mkdirs()
-
-        rootProject.copy {
-            from(sourceDir) {
-                include("*-all.jar")
-            }
-
-            into(targetDir)
-
-            rename { "ignite.jar" }
-        }
-    }
-}
-
-tasks.getByName("build") {
-    dependsOn("dist")
-}

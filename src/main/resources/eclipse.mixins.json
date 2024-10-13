@@ -4,7 +4,9 @@
     "ModernPluginLoadingStrategyMixin",
     "PaperClasspathBuilderMixin",
     "PaperPluginClassLoaderMixin",
+    "PaperPluginMetaMixin",
     "PaperPluginParentMixin",
+    "PaperPluginsCommandMixin",
     "PaperServerPluginProviderMixin"
   ],
   "package": "me.dueris.eclipse.mixins"
