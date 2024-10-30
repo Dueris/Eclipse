@@ -1,7 +1,11 @@
 {
   "mixins": [
+    "FolderRepositorySourceMixin",
     "JavaPluginMixin",
+    "MainMixin",
+    "MinecraftServerMixin",
     "ModernPluginLoadingStrategyMixin",
+    "PackDetectorMixin",
     "PaperClasspathBuilderMixin",
     "PaperPluginClassLoaderMixin",
     "PaperPluginMetaMixin",
@@ -9,5 +13,6 @@
     "PaperPluginsCommandMixin",
     "PaperServerPluginProviderMixin"
   ],
-  "package": "me.dueris.eclipse.mixins"
+  "package": "me.dueris.eclipse.mixin",
+  "compatibilityLevel": "JAVA_21"
 }

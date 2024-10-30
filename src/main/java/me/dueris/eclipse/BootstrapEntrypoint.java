@@ -7,6 +7,7 @@ import io.papermc.paper.plugin.bootstrap.PluginBootstrap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.json.simple.JSONObject;
 import space.vectrix.ignite.IgniteBootstrap;
 
@@ -14,6 +15,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadInfo;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -22,6 +24,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+@SuppressWarnings({"UnstableApiUsage", "ResultOfMethodCallIgnored"})
 public class BootstrapEntrypoint implements PluginBootstrap {
 	private static final Logger logger = LogManager.getLogger("EclipseBootstrap");
 	/**
@@ -42,6 +45,18 @@ public class BootstrapEntrypoint implements PluginBootstrap {
 		executionArgs.add(jarPath);
 		executionArgs.addAll(optionsetArgs);
 		return executionArgs;
+	}
+
+	public static @Nullable Thread getThreadById(long threadId) {
+		Map<Thread, StackTraceElement[]> allThreads = Thread.getAllStackTraces();
+
+		for (Thread thread : allThreads.keySet()) {
+			if (thread.threadId() == threadId) {
+				return thread;
+			}
+		}
+
+		return null;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -78,6 +93,7 @@ public class BootstrapEntrypoint implements PluginBootstrap {
 		processRef.set(process);
 
 		try {
+			// Block current server process from doing anything, as we are currently in control now.
 			exit(process.waitFor());
 		} catch (InterruptedException interruptedException) {
 			logger.error("Current thread, 'Eclipse-Watcher-Thread', was interrupted by another process! Exiting eclipse runtime...");
@@ -87,6 +103,13 @@ public class BootstrapEntrypoint implements PluginBootstrap {
 	}
 
 	private void prepLaunch() {
+		for (long id : ManagementFactory.getThreadMXBean().getAllThreadIds()) {
+			ThreadInfo info = ManagementFactory.getThreadMXBean().getThreadInfo(id);
+			if (info.getThreadName().startsWith("Paper Plugin Remapper")) {
+				Thread thread = getThreadById(id);
+				if (thread != null) thread.interrupt();
+			}
+		}
 		shutdownHook(() -> {
 			try {
 				Process process = processRef.get();

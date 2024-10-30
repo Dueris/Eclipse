@@ -1,14 +1,16 @@
 package space.vectrix.ignite.launch.ember;
 
 import com.llamalad7.mixinextras.MixinExtrasBootstrap;
+import me.dueris.eclipse.launch.EclipseGameLocator;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.launch.MixinBootstrap;
 import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.tinylog.Logger;
-import space.vectrix.ignite.api.util.IgniteCollections;
+import space.vectrix.ignite.IgniteBootstrap;
+import space.vectrix.ignite.api.util.IgniteConstants;
+import space.vectrix.ignite.launch.LaunchService;
 
 import java.lang.reflect.Method;
-import java.util.ServiceLoader;
 
 /**
  * Represents the transformation launcher.
@@ -25,8 +27,7 @@ public final class Ember {
 	private Ember() {
 		Ember.INSTANCE = this;
 
-		final ServiceLoader<LaunchService> serviceLoader = ServiceLoader.load(LaunchService.class, Ember.class.getClassLoader());
-		this.service = IgniteCollections.firstOrNull(serviceLoader.iterator());
+		this.service = new LaunchService();
 	}
 
 	/**
@@ -56,8 +57,6 @@ public final class Ember {
 	}
 
 	private void run(final String @NotNull [] arguments) {
-		if (this.service == null) throw new IllegalStateException("Failed to find launch service!");
-
 		// Initialize the launch.
 		this.service.initialize();
 
@@ -85,6 +84,7 @@ public final class Ember {
 
 		// Execute the launch.
 		try {
+			Logger.info("Loading Minecraft {} with Eclipse version {}", ((EclipseGameLocator.EclipseGameProvider) IgniteBootstrap.instance().gameLocator.locate()).version().split("/")[0], IgniteConstants.IMPLEMENTATION_VERSION);
 			this.service.launch(arguments, this.loader).call();
 		} catch (final Exception exception) {
 			Logger.error(exception, "Failed to launch the game!");

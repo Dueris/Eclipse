@@ -40,7 +40,7 @@ public final class EmberMixinService implements IMixinService, IClassProvider, I
 
 	//<editor-fold desc="IMixinService">
 	@Override
-	public String getName() {
+	public @NotNull String getName() {
 		return "Ember/Ignite";
 	}
 

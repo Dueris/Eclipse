@@ -1,4 +1,4 @@
-package me.dueris.eclipse.mixins;
+package me.dueris.eclipse.mixin;
 
 import io.papermc.paper.command.PaperPluginsCommand;
 import io.papermc.paper.plugin.configuration.PluginMeta;

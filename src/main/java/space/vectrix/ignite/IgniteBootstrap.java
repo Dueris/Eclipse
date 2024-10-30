@@ -25,7 +25,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -40,6 +39,7 @@ public final class IgniteBootstrap {
 	private static Platform PLATFORM;
 	private final ModsImpl engine;
 	public String softwareName;
+	public GameLocatorService gameLocator;
 
 	IgniteBootstrap() {
 		IgniteBootstrap.INSTANCE = this;
@@ -63,17 +63,7 @@ public final class IgniteBootstrap {
 	 * @since 1.0.0
 	 */
 	public static void main(final String @NotNull [] arguments) {
-		String asciiArt = """
-			--------------------------------------------------------------------------
-			 _____ ____ _     ___ ____  ____  _____      __  __ _____  _____ _   _\s
-			| ____/ ___| |   |_ _|  _ \\/ ___|| ____|    |  \\/  |_ _\\ \\/ /_ _| \\ | |
-			|  _|| |   | |    | || |_) \\___ \\|  _| _____| |\\/| || | \\  / | ||  \\| |
-			| |__| |___| |___ | ||  __/ ___) | |__|_____| |  | || | /  \\ | || |\\  |
-			|_____\\____|_____|___|_|   |____/|_____|    |_|  |_|___/_/\\_\\___|_| \\_|
-			--------------------------------------------------------------------------
-			""";
-
-		Logger.info("\n{}" + "Running {} v{} (API: {}, ASM: {}, Java: {})", asciiArt,
+		Logger.info("Running {} v{} (API: {}, ASM: {}, Java: {})",
 			IgniteConstants.API_TITLE,
 			IgniteConstants.IMPLEMENTATION_VERSION,
 			IgniteConstants.API_VERSION,
@@ -135,12 +125,9 @@ public final class IgniteBootstrap {
 		// move Blackboard building to main()
 
 		// Get a suitable game locator and game provider.
-		final GameLocatorService gameLocator;
 		final GameProvider gameProvider;
 		{
-			final Optional<EclipseGameLocator> gameLocatorProvider = Optional.of(new EclipseGameLocator());
-
-			gameLocator = gameLocatorProvider.get();
+			gameLocator = new EclipseGameLocator();
 
 			Logger.info("Detected game locator: {}", gameLocator.name());
 
@@ -170,7 +157,6 @@ public final class IgniteBootstrap {
 		}
 
 		// Add the game libraries.
-		IgniteAgent.log = false;
 		gameProvider.gameLibraries().forEach(path -> {
 			if (!path.toString().endsWith(".jar")) return;
 
@@ -183,7 +169,6 @@ public final class IgniteBootstrap {
 			}
 		});
 		Logger.info("Loaded {} game libraries into the ignite classpath", gameProvider.gameLibraries().count());
-		IgniteAgent.log = true;
 
 		// Initialize the API.
 		IgniteBootstrap.initialize(new PlatformImpl());

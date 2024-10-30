@@ -27,9 +27,9 @@ import java.util.*;
 public final class ModsImpl implements Mods {
 	private final ModResourceLocator resourceLocator = new ModResourceLocator();
 	private final ModResourceLoader resourceLoader = new ModResourceLoader();
-	private final Map<String, ModContainer> containersByConfig = new HashMap<>();
-	private final Map<String, ModContainer> containers = new HashMap<>();
-	private final List<ModResource> resources = new ArrayList<>();
+	private final Map<String, ModContainer> containersByConfig = new LinkedHashMap<>();
+	private final Map<String, ModContainer> containers = new LinkedHashMap<>();
+	private final List<ModResource> resources = new LinkedList<>();
 
 	/**
 	 * Creates a new mod loading engine.
@@ -77,7 +77,7 @@ public final class ModsImpl implements Mods {
 	 * @since 1.0.0
 	 */
 	public @NotNull List<Map.Entry<String, Path>> resolveResources() {
-		final List<Map.Entry<String, Path>> targetResources = new ArrayList<>();
+		final List<Map.Entry<String, Path>> targetResources = new LinkedList<>();
 		for (final ModContainerImpl container : this.resourceLoader.loadResources(this)) {
 			final ModResource resource = container.resource();
 

@@ -4,7 +4,6 @@ import me.dueris.eclipse.Util;
 import org.jetbrains.annotations.NotNull;
 import space.vectrix.ignite.IgniteBootstrap;
 import space.vectrix.ignite.agent.IgniteAgent;
-import space.vectrix.ignite.agent.transformer.PaperclipTransformer;
 import space.vectrix.ignite.api.Blackboard;
 import space.vectrix.ignite.game.GameLocatorService;
 import space.vectrix.ignite.game.GameProvider;
@@ -54,15 +53,16 @@ public class EclipseGameLocator implements GameLocatorService {
 	@Override
 	public void apply(@NotNull IgniteBootstrap bootstrap) {
 		// Hypothetically, paperclip doesn't even need to run, since we already have the jar executed beforehand(and is executing the eclipse jar...)
-		IgniteAgent.addTransformer(new PaperclipTransformer("io/papermc/paperclip/Paperclip"));
+		Path gameJarPath = Blackboard.raw(Blackboard.GAME_JAR);
 		try {
-			IgniteAgent.addJar(Blackboard.raw(Blackboard.GAME_JAR));
+			IgniteAgent.addJar(gameJarPath);
 		} catch (final IOException exception) {
 			throw new IllegalStateException("Unable to add paperclip jar to classpath!", exception);
 		}
 
 		if (this.provider == null) {
 			AtomicReference<String> game = new AtomicReference<>(""); // - Game path
+			final AtomicReference<String> version = new AtomicReference<>();
 			List<String> libraries = new LinkedList<>() {
 				@Override
 				public boolean add(String s) {
@@ -71,9 +71,9 @@ public class EclipseGameLocator implements GameLocatorService {
 			}; // - Game libraries
 			try {
 				// We need this to be version-dynamic and agnostic. Do NOT preload version
-				File gameJar = Blackboard.raw(Blackboard.GAME_JAR).toFile();
+				File gameJar = gameJarPath.toFile();
 				if (!gameJar.exists()) {
-					throw new FileNotFoundException("Game-Jar, [" + Blackboard.raw(Blackboard.GAME_JAR).toAbsolutePath() + "] was not found!");
+					throw new FileNotFoundException("Game-Jar, [" + gameJarPath.toAbsolutePath() + "] was not found!");
 				}
 				if (gameJar.isDirectory() || !gameJar.getName().endsWith(".jar"))
 					throw new IOException("Provided path is not a jar file: " + gameJar.toPath());
@@ -85,7 +85,10 @@ public class EclipseGameLocator implements GameLocatorService {
 					}
 
 					final JarEntry versionListEntry = jarFile.getJarEntry("META-INF/versions.list");
-					Util.consumePaperClipList((v) -> game.set(String.format("./versions/%s", v)), versionListEntry, jarFile);
+					Util.consumePaperClipList((v) -> {
+						version.set(v);
+						game.set(String.format("./versions/%s", v));
+					}, versionListEntry, jarFile);
 
 					final JarEntry librariesEntry = jarFile.getJarEntry("META-INF/libraries.list");
 					Util.consumePaperClipList(libraries::add, librariesEntry, jarFile);
@@ -100,7 +103,7 @@ public class EclipseGameLocator implements GameLocatorService {
 				throw new RuntimeException("Unable to build Eclipse GameProvider!");
 			}
 
-			this.provider = new EclipseGameProvider(game.get(), libraries);
+			this.provider = new EclipseGameProvider(game.get(), libraries, version.get());
 		}
 
 		if (Blackboard.get(Blackboard.GAME_JAR).isEmpty()) {
@@ -114,11 +117,7 @@ public class EclipseGameLocator implements GameLocatorService {
 		return this.provider;
 	}
 
-	private record EclipseGameProvider(String game, List<String> libraries) implements GameProvider {
-		private EclipseGameProvider(final @NotNull String game, final @NotNull List<String> libraries) {
-			this.game = game;
-			this.libraries = libraries;
-		}
+	public record EclipseGameProvider(String game, List<String> libraries, String version) implements GameProvider {
 
 		@Override
 		public @NotNull Stream<Path> gameLibraries() {

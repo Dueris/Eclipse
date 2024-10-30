@@ -1,5 +1,6 @@
 package space.vectrix.ignite.launch.ember;
 
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.service.IMixinServiceBootstrap;
 
 /**
@@ -18,12 +19,12 @@ public final class EmberMixinBootstrap implements IMixinServiceBootstrap {
 	}
 
 	@Override
-	public String getName() {
+	public @NotNull String getName() {
 		return "Ember";
 	}
 
 	@Override
-	public String getServiceClassName() {
+	public @NotNull String getServiceClassName() {
 		return "space.vectrix.ignite.launch.ember.EmberMixinService";
 	}
 

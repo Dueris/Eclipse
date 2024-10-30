@@ -46,7 +46,7 @@ public final class EmberMixinContainer extends ContainerHandleVirtual {
 	}
 
 	@Override
-	public String toString() {
+	public @NotNull String toString() {
 		return "EmberMixinContainer{name=" + this.getName() + "}";
 	}
 

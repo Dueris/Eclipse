@@ -1,26 +1,83 @@
 package space.vectrix.ignite.api.mod;
 
 import com.google.common.collect.ImmutableList;
+import me.dueris.eclipse.api.entry.AbstractGameEntrypoint;
+import me.dueris.eclipse.api.entry.GameEntrypointManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 import org.simpleyaml.configuration.file.YamlConfiguration;
+import org.tinylog.Logger;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Represents a mod config.
  *
  * @since 1.0.0
  */
-public record ModConfig(String id, String version, @NotNull List<String> mixins, @NotNull List<String> wideners) {
+public record ModConfig(String id, String version, @NotNull List<String> mixins, @NotNull List<String> wideners,
+						boolean datapackEntry) {
 
+	@SuppressWarnings("unchecked")
 	public static @NotNull ModConfig init(@NotNull YamlConfiguration yaml) {
 		String id = yaml.getString("name").toLowerCase();
 		String version = yaml.getString("version");
-		return new ModConfig(id, version, yaml.contains("mixins") ? yaml.getStringList("mixins") : List.of(), yaml.contains("wideners") ? yaml.getStringList("wideners") : List.of());
+
+		List<Class<? extends AbstractGameEntrypoint<?>>> registryClasses = yaml.contains("entrypoint.registry")
+			? yaml.getStringList("entrypoint.registry").stream()
+			.map(className -> {
+				try {
+					return (Class<? extends AbstractGameEntrypoint<?>>) Class.forName(className);
+				} catch (ClassNotFoundException e) {
+					Logger.error("Class not found for registry entry: " + className);
+					e.printStackTrace();
+					return null;
+				}
+			})
+			.filter(Objects::nonNull)
+			.collect(Collectors.toList())
+			: List.of();
+		for (Class<? extends AbstractGameEntrypoint<?>> registryClass : registryClasses) {
+			if (registryClass == null) continue;
+			try {
+				GameEntrypointManager.registerEntrypoint(registryClass.getDeclaredConstructor().newInstance());
+			} catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
+					 InvocationTargetException e) {
+				throw new RuntimeException(e);
+			}
+		}
+
+		Map<String, String> containerMap = new HashMap<>();
+		if (yaml.contains("entrypoint.container")) {
+			yaml.getConfigurationSection("entrypoint.container").getKeys(false).forEach(key -> {
+				String value = yaml.getString("entrypoint.container." + key);
+				if (value != null) {
+					containerMap.put(key, value);
+				}
+			});
+		}
+		containerMap.forEach((entrypoint, className) -> {
+			if (!GameEntrypointManager.entrypointExists(entrypoint)) {
+				Logger.error("No such entrypoint, '{}' exists! Skipping entrypoint for mod {}...", entrypoint, id);
+				return;
+			}
+			try {
+				GameEntrypointManager.getById(entrypoint).registerImplementation(Class.forName(className));
+			} catch (ClassNotFoundException e) {
+				throw new RuntimeException("Unable to locate entrypoint class, '" + className + "'!", e);
+			}
+		});
+
+		return new ModConfig(
+			id,
+			version,
+			yaml.contains("mixins") ? yaml.getStringList("mixins") : List.of(),
+			yaml.contains("wideners") ? yaml.getStringList("wideners") : List.of(),
+			yaml.getBoolean("datapack-entry", false)
+		);
 	}
 
 	@Override

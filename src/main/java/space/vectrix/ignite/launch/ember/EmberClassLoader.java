@@ -357,7 +357,7 @@ public final class EmberClassLoader extends ClassLoader {
 	}
 
 	@Override
-	public String getName() {
+	public @NotNull String getName() {
 		return "ember";
 	}
 
