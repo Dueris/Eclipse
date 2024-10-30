@@ -1,8 +1,8 @@
 package space.vectrix.ignite.api.mod;
 
 import com.google.common.collect.ImmutableList;
-import me.dueris.eclipse.api.entry.AbstractGameEntrypoint;
-import me.dueris.eclipse.api.entry.GameEntrypointManager;
+import me.dueris.eclipse.api.AbstractGameEntrypoint;
+import me.dueris.eclipse.api.GameEntrypointManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;

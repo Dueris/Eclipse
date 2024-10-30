@@ -1,5 +1,6 @@
 {
   "mixins": [
+    "DirectoryProviderSourceMixin",
     "FolderRepositorySourceMixin",
     "JavaPluginMixin",
     "MainMixin",

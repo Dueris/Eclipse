@@ -101,6 +101,7 @@ dependencies {
     implementation("com.github.Carleslc.Simple-YAML:Simple-Yaml:1.8.4")
 
     implementation("jline:jline:2.12.1")
+    implementation(project("injection"))
 }
 
 tasks {

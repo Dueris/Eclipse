@@ -8,6 +8,7 @@ authors: [ Dueris ]
 description: Mixin Launcher for Paper servers
 
 bootstrapper: me.dueris.eclipse.BootstrapEntrypoint
+loader: me.dueris.eclipse.DependencyLoader
 
 mixins: [
   "eclipse.mixins.json"
@@ -19,5 +20,5 @@ wideners: [
 datapack-entry: false
 entrypoint:
   registry: [
-    "me.dueris.eclipse.api.entry.DedicatedServerInitEntrypoint"
+    "me.dueris.eclipse.api.DedicatedServerInitEntrypoint"
   ]

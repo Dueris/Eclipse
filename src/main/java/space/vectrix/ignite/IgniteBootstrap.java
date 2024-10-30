@@ -2,7 +2,10 @@ package space.vectrix.ignite;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import joptsimple.OptionParser;
+import joptsimple.OptionSet;
 import me.dueris.eclipse.launch.EclipseGameLocator;
+import me.dueris.eclipse.util.OptionSetStringSerializer;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.util.JavaVersion;
 import org.spongepowered.asm.util.asm.ASM;
@@ -19,6 +22,7 @@ import space.vectrix.ignite.launch.ember.Ember;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -35,11 +39,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public final class IgniteBootstrap {
 	public static AtomicBoolean BOOTED = new AtomicBoolean(false);
-	private static IgniteBootstrap INSTANCE;
+	public static OptionSet OPTIONSET;
+	public static IgniteBootstrap INSTANCE;
+	public static Path ROOT_ABSOLUTE;
 	private static Platform PLATFORM;
 	private final ModsImpl engine;
 	public String softwareName;
 	public GameLocatorService gameLocator;
+	public JsonObject bootstrapInfo;
 
 	IgniteBootstrap() {
 		IgniteBootstrap.INSTANCE = this;
@@ -70,7 +77,13 @@ public final class IgniteBootstrap {
 			ASM.getVersionString(),
 			JavaVersion.current());
 
-		JsonObject bootstrapInfo = new Gson().fromJson(((Getter<String>) () -> {
+		IgniteBootstrap ignite = new IgniteBootstrap();
+		try {
+			ROOT_ABSOLUTE = Path.of(IgniteBootstrap.class.getProtectionDomain().getCodeSource().getLocation().toURI()).toAbsolutePath();
+		} catch (URISyntaxException e) {
+			throw new RuntimeException("Invalid URI in CodeSource of IgniteBootstrap", e);
+		}
+		IgniteBootstrap.INSTANCE.bootstrapInfo = new Gson().fromJson(((Getter<String>) () -> {
 			File bootstrapFile = Paths.get("eclipse.mixin.bootstrap.json").toFile();
 			if (!bootstrapFile.exists()) {
 				throw new IllegalStateException("Unable to find bootstrap json! Did Eclipse start correctly?");
@@ -84,7 +97,7 @@ public final class IgniteBootstrap {
 		}).get(), JsonObject.class);
 
 
-		String serverPath = bootstrapInfo.get("ServerPath").getAsString();
+		String serverPath = IgniteBootstrap.INSTANCE.bootstrapInfo.get("ServerPath").getAsString();
 		if (serverPath.startsWith("/")) {
 			serverPath = serverPath.substring(1);
 		}
@@ -96,8 +109,7 @@ public final class IgniteBootstrap {
 		Blackboard.compute(Blackboard.GAME_LIBRARIES, () -> Paths.get(System.getProperty(Blackboard.GAME_LIBRARIES.name())));
 		Blackboard.compute(Blackboard.MODS_DIRECTORY, () -> Paths.get(System.getProperty(Blackboard.MODS_DIRECTORY.name())));
 
-		IgniteBootstrap ignite = new IgniteBootstrap();
-		ignite.softwareName = bootstrapInfo.get("SoftwareName").getAsString();
+		ignite.softwareName = IgniteBootstrap.INSTANCE.bootstrapInfo.get("SoftwareName").getAsString();
 		BOOTED.set(true);
 
 		ignite.run(arguments);

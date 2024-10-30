@@ -1,3 +1,5 @@
+import java.util.*
+
 "eclipse".also { rootProject.name = it }
 
 pluginManagement {
@@ -11,4 +13,10 @@ pluginManagement {
 
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
+}
+
+for (name in listOf("injection")) {
+    val projName = name.lowercase(Locale.ENGLISH)
+    include(projName)
+    findProject(":$projName")!!.projectDir = file(name)
 }

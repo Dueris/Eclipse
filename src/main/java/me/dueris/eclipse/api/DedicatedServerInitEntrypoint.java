@@ -1,4 +1,4 @@
-package me.dueris.eclipse.api.entry;
+package me.dueris.eclipse.api;
 
 public class DedicatedServerInitEntrypoint extends AbstractGameEntrypoint<ModServerInitializer> {
 	@Override

@@ -1,4 +1,4 @@
-package me.dueris.eclipse.api.entry;
+package me.dueris.eclipse.api;
 
 import org.tinylog.Logger;
 import space.vectrix.ignite.game.GameEntrypoint;
