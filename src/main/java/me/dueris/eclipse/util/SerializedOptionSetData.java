@@ -1,8 +1,5 @@
 package me.dueris.eclipse.util;
 
-import joptsimple.AbstractOptionSpec;
-import joptsimple.OptionSpec;
-
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;

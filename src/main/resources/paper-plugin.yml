@@ -7,7 +7,7 @@ load: POSTWORLD
 authors: [ Dueris ]
 description: Mixin Launcher for Paper servers
 
-bootstrapper: me.dueris.eclipse.BootstrapEntrypoint
+bootstrapper: me.dueris.eclipse.util.BootstrapEntrypoint
 loader: me.dueris.eclipse.DependencyLoader
 
 mixins: [

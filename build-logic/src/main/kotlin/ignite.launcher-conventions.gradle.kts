@@ -15,10 +15,10 @@ val apiVersion = regexPattern.find(implementationVersion)?.value
 tasks.getByName<Jar>("jar") {
     manifest {
         attributes(
-            "Premain-Class" to "space.vectrix.ignite.agent.IgniteAgent",
-            "Agent-Class" to "space.vectrix.ignite.agent.IgniteAgent",
-            "Launcher-Agent-Class" to "space.vectrix.ignite.agent.IgniteAgent",
-            "Main-Class" to "space.vectrix.ignite.IgniteBootstrap",
+            "Premain-Class" to "me.dueris.eclipse.ignite.agent.IgniteAgent",
+            "Agent-Class" to "me.dueris.eclipse.ignite.agent.IgniteAgent",
+            "Launcher-Agent-Class" to "me.dueris.eclipse.ignite.agent.IgniteAgent",
+            "Main-Class" to "me.dueris.eclipse.ignite.IgniteBootstrap",
             "Multi-Release" to true,
             "Automatic-Module-Name" to "net.minecrell.terminalconsole",
 
@@ -41,5 +41,5 @@ tasks.getByName<Jar>("jar") {
 tasks.getByName<ShadowJar>("shadowJar") {
     mergeServiceFiles()
 
-    relocate("com.google.gson", "space.vectrix.ignite.libs.gson")
+    relocate("com.google.gson", "me.dueris.eclipse.ignite.libs.gson")
 }

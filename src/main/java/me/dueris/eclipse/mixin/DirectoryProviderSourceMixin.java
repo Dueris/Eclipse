@@ -1,12 +1,12 @@
 package me.dueris.eclipse.mixin;
 
 import io.papermc.paper.plugin.provider.source.DirectoryProviderSource;
+import me.dueris.eclipse.ignite.IgniteBootstrap;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import space.vectrix.ignite.IgniteBootstrap;
 
 import java.nio.file.Path;
 import java.util.List;

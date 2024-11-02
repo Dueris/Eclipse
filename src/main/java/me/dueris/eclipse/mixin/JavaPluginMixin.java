@@ -8,15 +8,15 @@ import io.papermc.paper.plugin.provider.type.paper.PaperPluginParent;
 import me.dueris.eclipse.EclipsePlugin;
 import me.dueris.eclipse.access.MixinPlugin;
 import me.dueris.eclipse.access.PluginClassloaderHolder;
+import me.dueris.eclipse.ignite.IgniteBootstrap;
+import me.dueris.eclipse.ignite.api.mod.ModConfig;
+import me.dueris.eclipse.ignite.api.mod.ModContainer;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import space.vectrix.ignite.IgniteBootstrap;
-import space.vectrix.ignite.api.mod.ModConfig;
-import space.vectrix.ignite.api.mod.ModContainer;
 
 /**
  * JavaPlugin Mixin to ensure the correct classloader is being used when invoking the constructor

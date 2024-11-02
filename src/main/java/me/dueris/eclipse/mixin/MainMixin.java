@@ -7,6 +7,7 @@ import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import me.dueris.eclipse.api.DedicatedServerInitEntrypoint;
 import me.dueris.eclipse.api.GameEntrypointManager;
+import me.dueris.eclipse.ignite.IgniteBootstrap;
 import me.dueris.eclipse.util.SerializedOptionSetData;
 import org.bukkit.craftbukkit.Main;
 import org.spongepowered.asm.mixin.Mixin;
@@ -14,7 +15,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import space.vectrix.ignite.IgniteBootstrap;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

@@ -7,6 +7,7 @@ import io.papermc.paper.plugin.loader.PluginClasspathBuilder;
 import io.papermc.paper.plugin.loader.library.ClassPathLibrary;
 import io.papermc.paper.plugin.loader.library.PaperLibraryStore;
 import me.dueris.eclipse.access.MixinPluginMeta;
+import me.dueris.eclipse.ignite.agent.IgniteAgent;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,7 +16,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import space.vectrix.ignite.agent.IgniteAgent;
 
 import java.nio.file.Path;
 import java.util.List;

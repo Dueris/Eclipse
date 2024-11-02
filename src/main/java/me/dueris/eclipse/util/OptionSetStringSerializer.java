@@ -1,11 +1,12 @@
 package me.dueris.eclipse.util;
 
 import joptsimple.AbstractOptionSpec;
-import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.lang.reflect.Field;
 import java.util.Base64;
 import java.util.Collection;

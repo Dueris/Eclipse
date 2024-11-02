@@ -1,7 +1,7 @@
 package me.dueris.eclipse.api;
 
+import me.dueris.eclipse.ignite.game.GameEntrypoint;
 import org.tinylog.Logger;
-import space.vectrix.ignite.game.GameEntrypoint;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedHashMap;

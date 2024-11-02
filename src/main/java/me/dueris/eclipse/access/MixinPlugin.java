@@ -1,8 +1,8 @@
 package me.dueris.eclipse.access;
 
+import me.dueris.eclipse.ignite.api.mod.ModConfig;
+import me.dueris.eclipse.ignite.api.mod.ModContainer;
 import org.jetbrains.annotations.Nullable;
-import space.vectrix.ignite.api.mod.ModConfig;
-import space.vectrix.ignite.api.mod.ModContainer;
 
 /**
  * API for getting Ignite/Eclipse-related mod metadata
