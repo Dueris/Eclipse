@@ -18,7 +18,7 @@ import java.util.stream.Collector;
 public class Util {
 
 	public static final String ECLIPSE = "eclipse";
-	public static final String VANILLA = "vanilla";
+	public static final String VANILLA = "paper";
 	static final Set<Collector.Characteristics> CH_ID
 		= Collections.unmodifiableSet(EnumSet.of(Collector.Characteristics.IDENTITY_FINISH));
 
@@ -56,9 +56,10 @@ public class Util {
 	public static String insertBranding(final String brand) {
 		if (brand == null || brand.isEmpty()) {
 			Logger.warn("Null or empty branding found!", new IllegalStateException());
+			return ECLIPSE;
 		}
 
-		return ECLIPSE;
+		return VANILLA.equals(brand) ? ECLIPSE : brand + ',' + ECLIPSE;
 	}
 
 	record CollectorImpl<T, A, R>(Supplier<A> supplier,

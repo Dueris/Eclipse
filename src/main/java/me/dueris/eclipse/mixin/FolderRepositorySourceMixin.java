@@ -43,7 +43,7 @@ public abstract class FolderRepositorySourceMixin {
 	private static PackSelectionConfig DISCOVERED_PACK_SELECTION_CONFIG;
 	@Shadow
 	@Final
-	private static Logger LOGGER;
+	static Logger LOGGER;
 	@Shadow
 	@Final
 	private DirectoryValidator validator;
@@ -55,7 +55,7 @@ public abstract class FolderRepositorySourceMixin {
 	private PackType packType;
 
 	@Shadow
-	protected static String nameFromPath(Path path) {
+	private static String nameFromPath(Path path) {
 		return null;
 	}
 

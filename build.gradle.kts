@@ -8,11 +8,11 @@ plugins {
     id("ignite.publish-conventions")
 }
 
-val paperweightVersion: String = "1.21-R0.1-SNAPSHOT"
+val paperweightVersion: String = "1.21.3-R0.1-SNAPSHOT"
 
 extra["mcMajorVer"] = "21"
-extra["mcMinorVer"] = "1"
-extra["pluginVer"] = "v1.3.1"
+extra["mcMinorVer"] = "3"
+extra["pluginVer"] = "v1.3.2"
 
 val mcMajorVer = extra["mcMajorVer"] as String
 val mcMinorVer = extra["mcMinorVer"] as String
@@ -64,7 +64,7 @@ allprojects {
                 "pluginVer" to pluginVer,
                 "fullVer" to "mc$mcVer-$pluginVer",
                 "apiVer" to "1.$mcMajorVer",
-                "supported" to listOf("1.21", "1.21.1")
+                "supported" to listOf("1.21", "1.21.1", "1.21.3")
             )
             inputs.properties(props)
             filesMatching("paper-plugin.yml") {

@@ -33,13 +33,13 @@ public abstract class PaperPluginsCommandMixin<T> extends BukkitCommand {
 	@Final
 	private static Component BUKKIT_HEADER;
 
-	protected PaperPluginsCommandMixin(@NotNull String name) {
-		super(name);
+	@Shadow
+	private static <T> List<Component> formatProviders(TreeMap<String, PluginProvider<T>> plugins) {
+		return null;
 	}
 
-	@Shadow
-	protected static <T> @Nullable List<Component> formatProviders(TreeMap<String, PluginProvider<T>> plugins) {
-		return null;
+	protected PaperPluginsCommandMixin(@NotNull String name) {
+		super(name);
 	}
 
 	/**
