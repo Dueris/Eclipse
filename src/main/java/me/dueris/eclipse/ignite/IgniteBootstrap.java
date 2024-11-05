@@ -36,6 +36,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @since 1.0.0
  */
 public final class IgniteBootstrap {
+	public static boolean IS_PROVIDER_SOURCE = false;
 	public static AtomicBoolean BOOTED = new AtomicBoolean(false);
 	public static OptionSet OPTIONSET;
 	public static IgniteBootstrap INSTANCE;
@@ -95,6 +96,7 @@ public final class IgniteBootstrap {
 		}).get(), JsonObject.class);
 
 
+		IS_PROVIDER_SOURCE = IgniteBootstrap.INSTANCE.bootstrapInfo.get("IsProviderContext").getAsBoolean();
 		String serverPath = IgniteBootstrap.INSTANCE.bootstrapInfo.get("ServerPath").getAsString();
 		if (serverPath.startsWith("/")) {
 			serverPath = serverPath.substring(1);

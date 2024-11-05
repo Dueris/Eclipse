@@ -47,7 +47,11 @@ public final class ModResourceLocator {
 			}
 
 			//noinspection resource
-			for (final Path childDirectory : Files.walk(modDirectory).collect(Collectors.toList())) {
+			List<Path> toInspect = new ArrayList<>(Files.walk(modDirectory).toList());
+			if (IgniteBootstrap.IS_PROVIDER_SOURCE) {
+				toInspect.add(IgniteBootstrap.ROOT_ABSOLUTE);
+			}
+			for (final Path childDirectory : toInspect) {
 				if (!Files.isRegularFile(childDirectory) || !childDirectory.getFileName().toString().endsWith(".jar")) {
 					continue;
 				}

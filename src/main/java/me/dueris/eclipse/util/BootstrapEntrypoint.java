@@ -42,6 +42,7 @@ public class BootstrapEntrypoint implements PluginBootstrap {
 	private static final AtomicReference<Process> processRef = new AtomicReference<>();
 	private static final List<Runnable> shutdownHooks = new LinkedList<>();
 	protected static BootstrapContext CONTEXT;
+	private static boolean PROVIDER_CONTEXT = false;
 
 	public static void shutdownHook(Runnable runnable) {
 		shutdownHooks.add(new Thread(runnable));
@@ -76,7 +77,8 @@ public class BootstrapEntrypoint implements PluginBootstrap {
 			JSONObject jsonObject = new JSONObject(Map.of(
 				"ServerPath", Paths.get(ManagementFactory.getRuntimeMXBean().getClassPath()).toString(),
 				"SoftwareName", ServerBuildInfo.buildInfo().brandName(),
-				"OptionSet", OptionSetStringSerializer.serializeOptionSetFields(optionSet)
+				"OptionSet", OptionSetStringSerializer.serializeOptionSetFields(optionSet),
+				"IsProviderContext", PROVIDER_CONTEXT
 			));
 			JsonObject gsonObject = new JsonObject();
 
@@ -114,6 +116,10 @@ public class BootstrapEntrypoint implements PluginBootstrap {
 	}
 
 	protected void prepLaunch() {
+		if (Boolean.getBoolean("eclipse.isprovidercontext")) {
+			System.getProperties().remove("eclipse.isprovidercontext");
+			PROVIDER_CONTEXT = true;
+		}
 		for (long id : ManagementFactory.getThreadMXBean().getAllThreadIds()) {
 			ThreadInfo info = ManagementFactory.getThreadMXBean().getThreadInfo(id);
 			if (info.getThreadName().startsWith("Paper Plugin Remapper")) {
