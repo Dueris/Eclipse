@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  * @since 1.0.0
  */
 public record ModConfig(String id, String version, @NotNull List<String> mixins, @NotNull List<String> wideners,
-						boolean datapackEntry) {
+						boolean datapackEntry, YamlConfiguration backend) {
 
 	@SuppressWarnings("unchecked")
 	public static @NotNull ModConfig init(@NotNull YamlConfiguration yaml) {
@@ -50,33 +50,12 @@ public record ModConfig(String id, String version, @NotNull List<String> mixins,
 			}
 		}
 
-		Map<String, String> containerMap = new HashMap<>();
-		if (yaml.contains("entrypoint.container")) {
-			yaml.getConfigurationSection("entrypoint.container").getKeys(false).forEach(key -> {
-				String value = yaml.getString("entrypoint.container." + key);
-				if (value != null) {
-					containerMap.put(key, value);
-				}
-			});
-		}
-		containerMap.forEach((entrypoint, className) -> {
-			if (!GameEntrypointManager.entrypointExists(entrypoint)) {
-				Logger.error("No such entrypoint, '{}' exists! Skipping entrypoint for mod {}...", entrypoint, id);
-				return;
-			}
-			try {
-				GameEntrypointManager.getById(entrypoint).registerImplementation(Class.forName(className));
-			} catch (ClassNotFoundException e) {
-				throw new RuntimeException("Unable to locate entrypoint class, '" + className + "'!", e);
-			}
-		});
-
 		return new ModConfig(
 			id,
 			version,
 			yaml.contains("mixins") ? yaml.getStringList("mixins") : List.of(),
 			yaml.contains("wideners") ? yaml.getStringList("wideners") : List.of(),
-			yaml.getBoolean("datapack-entry", false)
+			yaml.getBoolean("datapack-entry", false), yaml
 		);
 	}
 

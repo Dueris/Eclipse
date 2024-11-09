@@ -8,27 +8,56 @@ import joptsimple.OptionSpec;
 import me.dueris.eclipse.api.DedicatedServerInitEntrypoint;
 import me.dueris.eclipse.api.GameEntrypointManager;
 import me.dueris.eclipse.ignite.IgniteBootstrap;
+import me.dueris.eclipse.ignite.api.mod.ModContainer;
 import me.dueris.eclipse.util.SerializedOptionSetData;
 import org.bukkit.craftbukkit.Main;
+import org.simpleyaml.configuration.file.YamlConfiguration;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.tinylog.Logger;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.lang.reflect.Field;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Mixin(Main.class)
+@Mixin(value = Main.class, priority = 1)
 public class MainMixin {
 
 	@Inject(method = "main", at = @At("HEAD"))
 	private static void executeInitEntrypoint(String[] args, CallbackInfo ci) {
+		// Register entrypoints
+		for (ModContainer container : IgniteBootstrap.mods().containers()) {
+			YamlConfiguration yaml = container.config().backend();
+			Map<String, String> containerMap = new HashMap<>();
+			if (yaml.contains("entrypoint.container")) {
+				yaml.getConfigurationSection("entrypoint.container").getKeys(false).forEach(key -> {
+					String value = yaml.getString("entrypoint.container." + key);
+					if (value != null) {
+						containerMap.put(key, value);
+					}
+				});
+			}
+			containerMap.forEach((entrypoint, className) -> {
+				if (!GameEntrypointManager.entrypointExists(entrypoint)) {
+					Logger.error("No such entrypoint, '{}' exists! Skipping entrypoint for mod {}...", entrypoint, container.config().id());
+					return;
+				}
+				try {
+					GameEntrypointManager.getById(entrypoint).registerImplementation(Class.forName(className));
+				} catch (ClassNotFoundException e) {
+					throw new RuntimeException("Unable to locate entrypoint class, '" + className + "'!", e);
+				}
+			});
+		}
+		// Execute dedicated server entrypoint
 		GameEntrypointManager.executeEntrypoint(DedicatedServerInitEntrypoint.class);
 	}
 
