@@ -9,6 +9,7 @@ description: Mixin Launcher for Paper servers
 
 bootstrapper: me.dueris.eclipse.util.BootstrapEntrypoint
 loader: me.dueris.eclipse.DependencyLoader
+has-open-classloader: true
 
 mixins: [
   "eclipse.mixins.json"
