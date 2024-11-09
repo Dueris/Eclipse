@@ -31,7 +31,6 @@ import java.util.stream.Stream;
 public class IShellCodeLoadClassFromPCL extends ShellCode {
 
 	private final String name;
-	private boolean isLast = false;
 
 	public IShellCodeLoadClassFromPCL(@NotNull String className) {
 		this.name = className.replace("/", ".");
@@ -46,18 +45,18 @@ public class IShellCodeLoadClassFromPCL extends ShellCode {
 	public InsnList generate(MethodNode methodNode, LocalVarManager varManager) {
 		InsnList out = new InsnList();
 		List<? extends PluginProvider<?>> list = (List<? extends PluginProvider<?>>) LaunchEntryPointHandler.INSTANCE.getStorage().values().stream().toList().getFirst().getRegisteredProviders();
-		int i = 0;
-		for (PluginProvider<?> pluginProvider : list) {
+		int i;
+		for (i = 0; i < list.size(); i++) {
+			PluginProvider<?> pluginProvider = list.get(i);
 			if (pluginProvider.getMeta().getName().toLowerCase().equalsIgnoreCase("eclipse")) {
 				break;
 			}
-			i++;
 		}
 		out.add(new LdcInsnNode(name));
 		out.add(new IShellCodePushInt(1).generate()); // true
 
 		try {
-			isLast = ((ArrayList) ((SimpleProviderStorage) LaunchEntryPointHandler.INSTANCE.getStorage().values().stream().toList().getLast()).getRegisteredProviders()).getLast() instanceof PaperPluginParent.PaperBootstrapProvider;
+			boolean isLast = ((ArrayList) ((SimpleProviderStorage) LaunchEntryPointHandler.INSTANCE.getStorage().values().stream().toList().getLast()).getRegisteredProviders()).getLast() instanceof PaperPluginParent.PaperBootstrapProvider;
 			out.add(new IShellCodeFieldAccess(LaunchEntryPointHandler.class.getField("INSTANCE"), false).generate());
 			out.add(new IShellCodeMethodInvoke(LaunchEntryPointHandler.class.getMethod("getStorage")).generate());
 			out.add(new IShellCodeMethodInvoke(Map.class.getMethod("values")).generate());
