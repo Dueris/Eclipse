@@ -33,7 +33,7 @@ public class MixBukkit {
 	public static MixBukkit INSTANCE;
 	public static boolean DEBUG = true;
 	public static boolean WRITE_TRANSFORMED_CLASS = true;
-	public static boolean SAFE_MODE = true;
+	public static boolean SAFE_MODE = false;
 	public static Instrumentation INSTRUMENTATION = null;
 	public static boolean PREPARED = false;
 	public static BukkitErrorOutputStream ERROR_OUTPUT_STREAM = new BukkitErrorOutputStream();

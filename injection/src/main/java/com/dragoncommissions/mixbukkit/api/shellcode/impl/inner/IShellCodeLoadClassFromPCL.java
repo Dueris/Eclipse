@@ -7,6 +7,7 @@ import com.dragoncommissions.mixbukkit.utils.ASMUtils;
 import io.papermc.paper.plugin.entrypoint.LaunchEntryPointHandler;
 import io.papermc.paper.plugin.provider.PluginProvider;
 import io.papermc.paper.plugin.provider.type.paper.PaperPluginParent;
+import io.papermc.paper.plugin.storage.ProviderStorage;
 import io.papermc.paper.plugin.storage.SimpleProviderStorage;
 import lombok.SneakyThrows;
 import org.jetbrains.annotations.NotNull;
@@ -44,12 +45,19 @@ public class IShellCodeLoadClassFromPCL extends ShellCode {
 	@SneakyThrows
 	public InsnList generate(MethodNode methodNode, LocalVarManager varManager) {
 		InsnList out = new InsnList();
+		List<? extends PluginProvider<?>> list = (List<? extends PluginProvider<?>>) LaunchEntryPointHandler.INSTANCE.getStorage().values().stream().toList().getFirst().getRegisteredProviders();
+		int i = 0;
+		for (PluginProvider<?> pluginProvider : list) {
+			if (pluginProvider.getMeta().getName().toLowerCase().equalsIgnoreCase("eclipse")) {
+				break;
+			}
+			i++;
+		}
 		out.add(new LdcInsnNode(name));
 		out.add(new IShellCodePushInt(1).generate()); // true
 
 		try {
 			isLast = ((ArrayList) ((SimpleProviderStorage) LaunchEntryPointHandler.INSTANCE.getStorage().values().stream().toList().getLast()).getRegisteredProviders()).getLast() instanceof PaperPluginParent.PaperBootstrapProvider;
-			// ((PluginProvider)((ArrayList)LaunchEntryPointHandler.INSTANCE.getStorage().values().stream().toList().getFirst().getRegisteredProviders()).getFirst()).createInstance();
 			out.add(new IShellCodeFieldAccess(LaunchEntryPointHandler.class.getField("INSTANCE"), false).generate());
 			out.add(new IShellCodeMethodInvoke(LaunchEntryPointHandler.class.getMethod("getStorage")).generate());
 			out.add(new IShellCodeMethodInvoke(Map.class.getMethod("values")).generate());
@@ -61,7 +69,15 @@ public class IShellCodeLoadClassFromPCL extends ShellCode {
 			out.add(new TypeInsnNode(Opcodes.CHECKCAST, "io/papermc/paper/plugin/storage/SimpleProviderStorage"));
 			out.add(new IShellCodeMethodInvoke(SimpleProviderStorage.class.getMethod("getRegisteredProviders")).generate());
 			out.add(new TypeInsnNode(Opcodes.CHECKCAST, "java/util/ArrayList"));
-			out.add(new IShellCodeMethodInvoke(ArrayList.class.getMethod("getLast")).generate());
+			out.add(new IShellCodePushInt(i).generate(methodNode, varManager));
+
+			out.add(new MethodInsnNode(
+				Opcodes.INVOKEVIRTUAL,
+				"java/util/ArrayList",
+				"get",
+				"(I)Ljava/lang/Object;",
+				false
+			));
 			out.add(new IShellCodeMethodInvoke(PluginProvider.class.getMethod("createInstance")).generate());
 			out.add(new IShellCodeMethodInvoke(
 				Object.class.getDeclaredMethod("getClass")

@@ -1,8 +1,6 @@
 package me.dueris.eclipse.ignite.api.mod;
 
 import com.google.common.collect.ImmutableList;
-import me.dueris.eclipse.api.AbstractGameEntrypoint;
-import me.dueris.eclipse.api.GameEntrypointManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
@@ -21,35 +19,9 @@ import java.util.stream.Collectors;
 public record ModConfig(String id, String version, @NotNull List<String> mixins, @NotNull List<String> wideners,
 						boolean datapackEntry, YamlConfiguration backend) {
 
-	@SuppressWarnings("unchecked")
 	public static @NotNull ModConfig init(@NotNull YamlConfiguration yaml) {
 		String id = yaml.getString("name").toLowerCase();
 		String version = yaml.getString("version");
-
-		List<Class<? extends AbstractGameEntrypoint<?>>> registryClasses = yaml.contains("entrypoint.registry")
-			? yaml.getStringList("entrypoint.registry").stream()
-			.map(className -> {
-				try {
-					return (Class<? extends AbstractGameEntrypoint<?>>) Class.forName(className);
-				} catch (ClassNotFoundException e) {
-					Logger.error("Class not found for registry entry: " + className);
-					e.printStackTrace();
-					return null;
-				}
-			})
-			.filter(Objects::nonNull)
-			.collect(Collectors.toList())
-			: List.of();
-		for (Class<? extends AbstractGameEntrypoint<?>> registryClass : registryClasses) {
-			if (registryClass == null) continue;
-			try {
-				GameEntrypointManager.registerEntrypoint(registryClass.getDeclaredConstructor().newInstance());
-			} catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
-					 InvocationTargetException e) {
-				throw new RuntimeException(e);
-			}
-		}
-
 		return new ModConfig(
 			id,
 			version,

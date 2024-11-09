@@ -90,7 +90,7 @@ public abstract class FolderRepositorySourceMixin {
 		Mods mods = IgniteBootstrap.mods();
 		AtomicBoolean isValid = new AtomicBoolean(false);
 		mods.containers().stream()
-			.filter(p -> p.resource().path().toString().equalsIgnoreCase(".\\" + path.toString()))
+			.filter(p -> p.resource().path().toAbsolutePath().normalize().toString().equals(path.toAbsolutePath().normalize().toString()))
 			.findFirst().ifPresentOrElse(resource -> {
 				ModConfig config = resource.config();
 				if (config.datapackEntry()) {
