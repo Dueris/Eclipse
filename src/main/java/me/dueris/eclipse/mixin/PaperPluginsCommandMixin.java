@@ -1,22 +1,25 @@
 package me.dueris.eclipse.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Share;
+import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import io.papermc.paper.command.PaperPluginsCommand;
-import io.papermc.paper.plugin.configuration.PluginMeta;
-import io.papermc.paper.plugin.entrypoint.Entrypoint;
-import io.papermc.paper.plugin.entrypoint.LaunchEntryPointHandler;
 import io.papermc.paper.plugin.provider.PluginProvider;
-import io.papermc.paper.plugin.provider.type.paper.PaperPluginParent;
-import io.papermc.paper.plugin.provider.type.spigot.SpigotPluginProvider;
 import me.dueris.eclipse.access.MixinPluginMeta;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
 import java.util.TreeMap;
@@ -26,76 +29,56 @@ public abstract class PaperPluginsCommandMixin<T> extends BukkitCommand {
 
 	@Unique
 	private static final Component ECLIPSE_HEADER = Component.text("Eclipse Plugins:", TextColor.color(235, 186, 16));
-	@Shadow
-	@Final
-	private static Component PAPER_HEADER;
-	@Shadow
-	@Final
-	private static Component BUKKIT_HEADER;
+
+	protected PaperPluginsCommandMixin(@NotNull String name) {
+		super(name);
+	}
 
 	@Shadow
 	private static <T> List<Component> formatProviders(TreeMap<String, PluginProvider<T>> plugins) {
 		return null;
 	}
 
-	protected PaperPluginsCommandMixin(@NotNull String name) {
-		super(name);
+	@Inject(method = "execute", at = @At("HEAD"))
+	public void eclipse$newTreeMap(CommandSender sender, String currentAlias, String[] args, CallbackInfoReturnable<Boolean> cir, @Share("eclipsePlugins") @NotNull LocalRef<TreeMap<String, PluginProvider<JavaPlugin>>> eclipsePlugins) {
+		eclipsePlugins.set(new TreeMap<>(String.CASE_INSENSITIVE_ORDER));
 	}
 
-	/**
-	 * @author Dueris
-	 * @reason Cleanup this method and add Eclipse plugins :)
-	 */
-	@Overwrite
-	public boolean execute(@NotNull CommandSender sender, @NotNull String currentAlias, @NotNull String[] args) {
-		if (!this.testPermission(sender)) return true;
+	@SuppressWarnings("unchecked")
+	@WrapOperation(method = "execute", at = @At(value = "INVOKE", target = "Ljava/util/TreeMap;put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", ordinal = 1))
+	public <V, K> V eclipse$provideEclipseTreeMap(TreeMap instance, K key, V value, Operation<V> original, @Share("eclipsePlugins") @NotNull LocalRef<TreeMap<String, PluginProvider<JavaPlugin>>> eclipsePlugins) {
+		TreeMap eclipseTreeMap = eclipsePlugins.get();
 
-		TreeMap<String, PluginProvider<JavaPlugin>> eclipsePlugins = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-		TreeMap<String, PluginProvider<JavaPlugin>> paperPlugins = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-		TreeMap<String, PluginProvider<JavaPlugin>> spigotPlugins = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+		String k = (String) key;
+		PluginProvider<JavaPlugin> v = (PluginProvider<JavaPlugin>) value;
 
-
-		for (PluginProvider<JavaPlugin> provider : LaunchEntryPointHandler.INSTANCE.get(Entrypoint.PLUGIN).getRegisteredProviders()) {
-			PluginMeta configuration = provider.getMeta();
-
-			if (configuration instanceof MixinPluginMeta mixinPluginMeta && mixinPluginMeta.eclipse$isMixinPlugin()) {
-				eclipsePlugins.put(configuration.getDisplayName(), provider);
-			} else if (provider instanceof SpigotPluginProvider) {
-				spigotPlugins.put(configuration.getDisplayName(), provider);
-			} else if (provider instanceof PaperPluginParent.PaperServerPluginProvider) {
-				paperPlugins.put(configuration.getDisplayName(), provider);
-			}
+		// Ensure that eclipse isnt included in the plugins command, given its technically the server now...
+		if (v.getMeta().getName().toLowerCase().equalsIgnoreCase("eclipse")) {
+			return null;
+		} else if (((MixinPluginMeta) v.getMeta()).eclipse$isMixinPlugin()) {
+			return (V) eclipseTreeMap.put(k, v);
+		} else {
+			return original.call(instance, key, value);
 		}
 
-		Component infoMessage = Component.text("Server Plugins (%s):".formatted(eclipsePlugins.size() + paperPlugins.size() + spigotPlugins.size()), NamedTextColor.WHITE);
+	}
 
-		sender.sendMessage(infoMessage);
+	@ModifyExpressionValue(method = "execute", at = @At(value = "INVOKE", target = "Ljava/util/TreeMap;size()I", ordinal = 1))
+	public int eclipse$includeEclipseTreeMap(int original, @Share("eclipsePlugins") @NotNull LocalRef<TreeMap<String, PluginProvider<JavaPlugin>>> eclipsePlugins) {
+		return original + eclipsePlugins.get().size();
+	}
 
-		if (!eclipsePlugins.isEmpty()) {
+	@Inject(method = "execute", at = @At(value = "INVOKE", target = "Lorg/bukkit/command/CommandSender;sendMessage(Lnet/kyori/adventure/text/Component;)V", ordinal = 0, shift = At.Shift.AFTER))
+	public void eclipse$sendEclipseMessage(CommandSender sender, String currentAlias, String[] args, CallbackInfoReturnable<Boolean> cir, @Share("eclipsePlugins") @NotNull LocalRef<TreeMap<String, PluginProvider<JavaPlugin>>> eclipsePlugins) {
+		TreeMap<String, PluginProvider<JavaPlugin>> eclipseTreeMap = eclipsePlugins.get();
+
+		if (!eclipseTreeMap.isEmpty()) {
 			sender.sendMessage(ECLIPSE_HEADER);
 		}
 
-		for (Component component : formatProviders(eclipsePlugins)) {
+		for (Component component : formatProviders(eclipseTreeMap)) {
 			sender.sendMessage(component);
 		}
-
-		if (!paperPlugins.isEmpty()) {
-			sender.sendMessage(PAPER_HEADER);
-		}
-
-		for (Component component : formatProviders(paperPlugins)) {
-			sender.sendMessage(component);
-		}
-
-		if (!spigotPlugins.isEmpty()) {
-			sender.sendMessage(BUKKIT_HEADER);
-		}
-
-		for (Component component : formatProviders(spigotPlugins)) {
-			sender.sendMessage(component);
-		}
-
-		return true;
 	}
 
 }

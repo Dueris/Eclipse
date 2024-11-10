@@ -6,23 +6,17 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import me.dueris.eclipse.ignite.IgniteBootstrap;
-import me.dueris.eclipse.ignite.api.mod.ModContainer;
 import me.dueris.eclipse.util.SerializedOptionSetData;
 import org.bukkit.craftbukkit.Main;
-import org.simpleyaml.configuration.file.YamlConfiguration;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.tinylog.Logger;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.lang.reflect.Field;
 import java.util.Base64;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 

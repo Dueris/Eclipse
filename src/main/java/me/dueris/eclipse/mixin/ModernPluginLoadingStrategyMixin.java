@@ -12,8 +12,6 @@ import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-import java.util.Map;
-
 /**
  * ModernPluginLoadingStrategy Mixin to help resolve the issues with plugin loading /w mixin plugins
  */
@@ -26,15 +24,6 @@ public class ModernPluginLoadingStrategyMixin<T> {
 		if (tPluginProvider instanceof PaperPluginParent.PaperServerPluginProvider pluginProvider) {
 			EclipsePlugin.CURRENT_OPERATING_PROVIDER.set(pluginProvider);
 		}
-	}
-
-	@WrapOperation(method = "loadProviders", at = @At(value = "INVOKE", target = "Ljava/util/Map;get(Ljava/lang/Object;)Ljava/lang/Object;"))
-	public <V> V removeEclipseProvider(Map instance, @NotNull Object o, Operation<V> original) {
-		if (o.toString().equalsIgnoreCase("eclipse")) {
-			// Dont wanna load eclipse again
-			return null;
-		}
-		return original.call(instance, o);
 	}
 
 }

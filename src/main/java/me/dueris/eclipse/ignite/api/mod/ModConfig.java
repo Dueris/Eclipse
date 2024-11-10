@@ -5,11 +5,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 import org.simpleyaml.configuration.file.YamlConfiguration;
-import org.tinylog.Logger;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Represents a mod config.

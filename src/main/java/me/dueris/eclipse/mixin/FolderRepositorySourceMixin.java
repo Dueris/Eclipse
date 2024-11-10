@@ -40,10 +40,10 @@ public abstract class FolderRepositorySourceMixin {
 
 	@Shadow
 	@Final
-	private static PackSelectionConfig DISCOVERED_PACK_SELECTION_CONFIG;
+	static Logger LOGGER;
 	@Shadow
 	@Final
-	static Logger LOGGER;
+	private static PackSelectionConfig DISCOVERED_PACK_SELECTION_CONFIG;
 	@Shadow
 	@Final
 	private DirectoryValidator validator;
