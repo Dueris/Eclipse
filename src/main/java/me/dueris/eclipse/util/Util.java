@@ -18,7 +18,7 @@ import java.util.stream.Collector;
 public class Util {
 
 	public static final String ECLIPSE = "eclipse";
-	public static final String VANILLA = "paper";
+	public static final String VANILLA = "Paper";
 	static final Set<Collector.Characteristics> CH_ID
 		= Collections.unmodifiableSet(EnumSet.of(Collector.Characteristics.IDENTITY_FINISH));
 
@@ -59,7 +59,7 @@ public class Util {
 			return ECLIPSE;
 		}
 
-		return VANILLA.equals(brand) ? ECLIPSE : brand + ',' + ECLIPSE;
+		return VANILLA.equals(brand) ? ECLIPSE : brand + "/(" + ECLIPSE + ")";
 	}
 
 	record CollectorImpl<T, A, R>(Supplier<A> supplier,

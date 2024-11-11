@@ -9,6 +9,9 @@ import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
  * PaperPluginParent Mixin for saving the {@link PaperPluginClassLoader} in the {@link io.papermc.paper.plugin.provider.type.paper.PaperPluginParent.PaperServerPluginProvider} to help fix plugin loading errors
@@ -20,12 +23,11 @@ public class PaperPluginParentMixin {
 	@Final
 	private PaperPluginClassLoader classLoader;
 
-	@WrapMethod(method = "createPluginProvider")
-	public PaperPluginParent.PaperServerPluginProvider setPluginClassloader(PaperPluginParent.PaperBootstrapProvider provider, @NotNull Operation<PaperPluginParent.PaperServerPluginProvider> original) {
-		PaperPluginParent.PaperServerPluginProvider pluginProvider = original.call(provider);
+	@Inject(method = "createPluginProvider", at = @At("RETURN"))
+	public void eclipse$setPluginClassloader(PaperPluginParent.PaperBootstrapProvider provider, @NotNull CallbackInfoReturnable<PaperPluginParent.PaperServerPluginProvider> cir) {
+		PaperPluginParent.PaperServerPluginProvider pluginProvider = cir.getReturnValue();
 		if (pluginProvider instanceof PluginClassloaderHolder holder) {
 			holder.eclipse$setPluginClassLoader(classLoader);
 		}
-		return pluginProvider;
 	}
 }
