@@ -16,7 +16,7 @@ public class Injectors {
 				BootstrapEntrypoint.CONTEXT.getPluginSource().toFile(), optionset
 			);
 		} catch (Exception ea) {
-			throw new RuntimeException(ea);
+			throw new RuntimeException("Unable to launch eclipse server!", ea);
 		}
 	}
 }
