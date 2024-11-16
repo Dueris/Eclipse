@@ -52,10 +52,7 @@ public abstract class PaperPluginsCommandMixin<T> extends BukkitCommand {
 		String k = (String) key;
 		PluginProvider<JavaPlugin> v = (PluginProvider<JavaPlugin>) value;
 
-		// Ensure that eclipse isnt included in the plugins command, given its technically the server now...
-		if (v.getMeta().getName().toLowerCase().equalsIgnoreCase("eclipse")) {
-			return null;
-		} else if (((MixinPluginMeta) v.getMeta()).eclipse$isMixinPlugin()) {
+		if (((MixinPluginMeta) v.getMeta()).eclipse$isMixinPlugin()) {
 			return (V) eclipseTreeMap.put(k, v);
 		} else {
 			return original.call(instance, key, value);

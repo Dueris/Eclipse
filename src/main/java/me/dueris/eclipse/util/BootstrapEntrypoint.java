@@ -30,7 +30,10 @@ import java.lang.management.ThreadInfo;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
 @SuppressWarnings({"UnstableApiUsage", "ResultOfMethodCallIgnored"})
@@ -105,11 +108,13 @@ public class BootstrapEntrypoint implements PluginBootstrap {
 		Process process = processBuilder.start();
 		processRef.set(process);
 
+		Thread.currentThread().setName("Eclipse-Watcher");
 		try {
 			// Block current server process from doing anything, as we are currently in control now.
 			exit(process.waitFor());
 		} catch (InterruptedException interruptedException) {
-			logger.error("Current thread, 'Eclipse-Watcher-Thread', was interrupted by another process! Exiting eclipse runtime...");
+			logger.error("Current thread, '{}', was interrupted by another process! Exiting eclipse runtime...".replace("{}", Thread.currentThread().getName()));
+			checkKillProcess(); // Terminate the server running incase we can save the server runtime instead of force-killing
 			exit(1);
 		}
 
@@ -129,18 +134,7 @@ public class BootstrapEntrypoint implements PluginBootstrap {
 		}
 		shutdownHook(() -> {
 			try {
-				Process process = processRef.get();
-
-				if (process != null && process.isAlive()) {
-					logger.info("Eclipse-Cleanup: Runtime still alive, terminating process...");
-					process.destroy();
-					if (!process.waitFor(5, TimeUnit.SECONDS)) {
-						logger.warn("Eclipse-Cleanup: Process did not terminate gracefully, force-killing it.");
-						process.destroyForcibly();
-					}
-					logger.info("Eclipse-Cleanup: Process terminated.");
-				}
-
+				checkKillProcess();
 				File jsonFile = new File("eclipse.mixin.bootstrap.json");
 				if (jsonFile.exists()) {
 					jsonFile.delete();
@@ -193,6 +187,35 @@ public class BootstrapEntrypoint implements PluginBootstrap {
 				);
 			} catch (Throwable e) {
 				throw new RuntimeException(e);
+			}
+		}
+	}
+
+	public void checkKillProcess() throws InterruptedException {
+		Process process = processRef.get();
+	
+		if (process != null && process.isAlive()) {
+			logger.info("Eclipse-Cleanup: Runtime still alive, terminating process...");
+	
+			CompletableFuture<Void> serverExitFuture = new CompletableFuture<>();
+	
+			process.onExit().thenRun(() -> {
+				logger.info("Eclipse-Cleanup: Process terminated successfully.");
+				serverExitFuture.complete(null);
+			});
+	
+			logger.info("Called terminate, waiting 45 seconds to close until we force-kill.");
+	
+			try {
+				serverExitFuture.get(45, TimeUnit.SECONDS);
+				logger.info("Eclipse-Cleanup: Process terminated gracefully.");
+			} catch (TimeoutException | ExecutionException e) {
+				logger.warn("Eclipse-Cleanup: Process did not terminate within 45 seconds, force-killing it.");
+				try {
+					process.destroyForcibly();
+				} catch (Exception ex) {
+					logger.error("Eclipse-Cleanup: Failed to forcibly terminate the process.", ex);
+				}
 			}
 		}
 	}

@@ -29,6 +29,7 @@ import java.util.stream.Stream;
 	calledDirectly = true
 )
 public class IShellCodeLoadClassFromPCL extends ShellCode {
+	private static boolean logged = false;
 
 	private final String name;
 
@@ -44,19 +45,24 @@ public class IShellCodeLoadClassFromPCL extends ShellCode {
 	@SneakyThrows
 	public InsnList generate(MethodNode methodNode, LocalVarManager varManager) {
 		InsnList out = new InsnList();
-		List<? extends PluginProvider<?>> list = (List<? extends PluginProvider<?>>) LaunchEntryPointHandler.INSTANCE.getStorage().values().stream().toList().getFirst().getRegisteredProviders();
+		List<ProviderStorage<?>> root = LaunchEntryPointHandler.INSTANCE.getStorage().values().stream().toList();
+		boolean isLast = ((ArrayList<?>) ((SimpleProviderStorage<?>) root.getLast()).getRegisteredProviders()).getLast() instanceof PaperPluginParent.PaperBootstrapProvider;
+		List<? extends PluginProvider<?>> list = (List<? extends PluginProvider<?>>) (isLast ? root.getLast() : root.getFirst()).getRegisteredProviders();
 		int i;
 		for (i = 0; i < list.size(); i++) {
-			PluginProvider<?> pluginProvider = list.get(i);
+			PaperPluginParent.PaperBootstrapProvider pluginProvider = (PaperPluginParent.PaperBootstrapProvider) list.get(i);
 			if (pluginProvider.getMeta().getName().toLowerCase().equalsIgnoreCase("eclipse")) {
 				break;
 			}
+		}
+		if (!logged) {
+			System.out.println("Using index '{}' for ProviderStorage building".replace("{}", String.valueOf(i)));
+			logged = true;
 		}
 		out.add(new LdcInsnNode(name));
 		out.add(new IShellCodePushInt(1).generate()); // true
 
 		try {
-			boolean isLast = ((ArrayList) ((SimpleProviderStorage) LaunchEntryPointHandler.INSTANCE.getStorage().values().stream().toList().getLast()).getRegisteredProviders()).getLast() instanceof PaperPluginParent.PaperBootstrapProvider;
 			out.add(new IShellCodeFieldAccess(LaunchEntryPointHandler.class.getField("INSTANCE"), false).generate());
 			out.add(new IShellCodeMethodInvoke(LaunchEntryPointHandler.class.getMethod("getStorage")).generate());
 			out.add(new IShellCodeMethodInvoke(Map.class.getMethod("values")).generate());

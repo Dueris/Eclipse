@@ -29,7 +29,7 @@ public class MixBukkit {
 	public final static String VERSION = "0.1";
 	@Getter
 	private static final Map<String, MixinPlugin> plugins = new HashMap<>();
-	private static final org.slf4j.Logger log = LoggerFactory.getLogger(MixBukkit.class);
+	public static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(MixBukkit.class);
 	public static MixBukkit INSTANCE;
 	public static boolean DEBUG = true;
 	public static boolean WRITE_TRANSFORMED_CLASS = true;

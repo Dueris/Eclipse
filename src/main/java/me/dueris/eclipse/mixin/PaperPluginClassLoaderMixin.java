@@ -26,8 +26,4 @@ public abstract class PaperPluginClassLoaderMixin extends PaperSimplePluginClass
 		super(source, file, configuration, parentLoader);
 	}
 
-	@Inject(method = "<init>", at = @At("RETURN"))
-	public void loadEclipseClassloaderImpl(Logger logger, Path source, JarFile file, PaperPluginMeta configuration, ClassLoader parentLoader, URLClassLoader libraryLoader, CallbackInfo ci) {
-		EclipsePlugin.CLASSLOADERS.add(this);
-	}
 }

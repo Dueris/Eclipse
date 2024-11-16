@@ -38,14 +38,6 @@ public abstract class JavaPluginMixin implements MixinPlugin {
 				return holder.eclipse$getPluginClassLoader();
 			}
 
-			for (PaperSimplePluginClassLoader classloader : EclipsePlugin.CLASSLOADERS) {
-				try {
-					classloader.loadClass(this.getClass().getName());
-					return classloader;
-				} catch (ClassNotFoundException ignored) {
-				}
-			}
-
 			throw new RuntimeException("Unable to locate correct class loader for plugin!");
 		}
 	}
