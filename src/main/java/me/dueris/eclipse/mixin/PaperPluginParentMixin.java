@@ -1,7 +1,5 @@
 package me.dueris.eclipse.mixin;
 
-import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import io.papermc.paper.plugin.entrypoint.classloader.PaperPluginClassLoader;
 import io.papermc.paper.plugin.provider.type.paper.PaperPluginParent;
 import me.dueris.eclipse.access.PluginClassloaderHolder;

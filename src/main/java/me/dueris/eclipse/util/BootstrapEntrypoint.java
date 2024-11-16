@@ -36,6 +36,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * Bootstrap/pre-boot stage, setup for ignite context
+ */
 @SuppressWarnings({"UnstableApiUsage", "ResultOfMethodCallIgnored"})
 public class BootstrapEntrypoint implements PluginBootstrap {
 	protected static final Logger logger = LogManager.getLogger("EclipseBootstrap");
@@ -51,6 +54,9 @@ public class BootstrapEntrypoint implements PluginBootstrap {
 		shutdownHooks.add(new Thread(runnable));
 	}
 
+	/**
+	 * Builds execution arguments for starting a new {@link Process}
+	 */
 	private static @NotNull List<String> buildExecutionArgs(List<String> jvmArgs, String jarPath) {
 		List<String> executionArgs = new ArrayList<>();
 		Optional<String> commandPath = ProcessHandle.current().info().command();
@@ -61,6 +67,11 @@ public class BootstrapEntrypoint implements PluginBootstrap {
 		return executionArgs;
 	}
 
+	/**
+	 * Searches for a thread with the id matching the id provided
+	 * @param threadId the id of the thread to search for
+	 * @return the thread found, if null then no thread matching the id exists
+	 */
 	public static @Nullable Thread getThreadById(long threadId) {
 		Map<Thread, StackTraceElement[]> allThreads = Thread.getAllStackTraces();
 
@@ -73,6 +84,9 @@ public class BootstrapEntrypoint implements PluginBootstrap {
 		return null;
 	}
 
+	/**
+	 * Starts ignite process and transforms current thread into a watcher and listener for mirroring
+	 */
 	@SuppressWarnings("unchecked")
 	protected void executePlugin(File eclipseInstance, OptionSet optionSet) throws Exception {
 		File jsonFile = new File("eclipse.mixin.bootstrap.json");
@@ -120,6 +134,9 @@ public class BootstrapEntrypoint implements PluginBootstrap {
 
 	}
 
+	/**
+	 * Prepares the launch context
+	 */
 	protected void prepLaunch() {
 		if (Boolean.getBoolean("eclipse.isprovidercontext")) {
 			System.getProperties().remove("eclipse.isprovidercontext");
@@ -170,6 +187,10 @@ public class BootstrapEntrypoint implements PluginBootstrap {
 		System.exit(exitCode);
 	}
 
+	/**
+	 * Setup for pre-boot of ignite process, register hard-coded jvm modifier for init
+	 * @param bootstrapContext the server provided context
+	 */
 	@Override
 	public void bootstrap(@NotNull BootstrapContext bootstrapContext) {
 		if (!IgniteBootstrap.BOOTED.get()) {
@@ -191,21 +212,25 @@ public class BootstrapEntrypoint implements PluginBootstrap {
 		}
 	}
 
+	/**
+	 * Ensures the program is dead, and if it isnt then we politely ask to stop,
+	 * after 45 seconds we kill it
+	 */
 	public void checkKillProcess() throws InterruptedException {
 		Process process = processRef.get();
-	
+
 		if (process != null && process.isAlive()) {
 			logger.info("Eclipse-Cleanup: Runtime still alive, terminating process...");
-	
+
 			CompletableFuture<Void> serverExitFuture = new CompletableFuture<>();
-	
+
 			process.onExit().thenRun(() -> {
 				logger.info("Eclipse-Cleanup: Process terminated successfully.");
 				serverExitFuture.complete(null);
 			});
-	
+
 			logger.info("Called terminate, waiting 45 seconds to close until we force-kill.");
-	
+
 			try {
 				serverExitFuture.get(45, TimeUnit.SECONDS);
 				logger.info("Eclipse-Cleanup: Process terminated gracefully.");

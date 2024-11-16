@@ -2,7 +2,6 @@ package me.dueris.eclipse.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import io.papermc.paper.plugin.configuration.PluginMeta;
-import io.papermc.paper.plugin.entrypoint.classloader.PaperSimplePluginClassLoader;
 import io.papermc.paper.plugin.provider.classloader.ConfiguredPluginClassLoader;
 import io.papermc.paper.plugin.provider.type.paper.PaperPluginParent;
 import me.dueris.eclipse.EclipsePlugin;
