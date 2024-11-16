@@ -96,7 +96,7 @@ public abstract class FolderRepositorySourceMixin {
 				if (config.datapackEntry()) {
 					isValid.set(true);
 				}
-			}, () -> LOGGER.info("Unable to locate mod in Ignite containers! : {}", path.getFileName()));
+			}, () -> LOGGER.trace("Unable to locate mod in Ignite containers! : {}", path.getFileName()));
 		return isValid.get();
 	}
 
