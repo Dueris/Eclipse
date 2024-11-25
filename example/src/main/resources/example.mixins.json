@@ -1,0 +1,7 @@
+{
+    "mixins": [
+      "MinecraftServerMixin"
+    ],
+    "package": "io.github.dueris.example.mixin",
+    "compatibilityLevel": "JAVA_21"
+  }

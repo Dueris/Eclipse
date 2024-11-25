@@ -1,0 +1,15 @@
+name: EclipseTest
+version: '1.0.0-SNAPSHOT'
+main: io.github.dueris.example.EclipseExample
+api-version: '1.21'
+prefix: EclipseTest
+load: POSTWORLD
+authors: [ Dueris ]
+description: Test plugin for Eclipse
+
+mixins: [
+  "example.mixins.json"
+]
+wideners: [
+  "example.accesswidener"
+]

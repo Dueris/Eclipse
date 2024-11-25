@@ -19,7 +19,3 @@ wideners: [
 ]
 
 datapack-entry: false
-entrypoint:
-  registry: [
-    "me.dueris.eclipse.api.DedicatedServerInitEntrypoint"
-  ]

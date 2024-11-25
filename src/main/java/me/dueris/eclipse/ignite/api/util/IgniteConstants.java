@@ -40,13 +40,6 @@ public final class IgniteConstants {
 	public static final int ASM_VERSION = Opcodes.ASM9;
 
 	/**
-	 * The mod configuration file name. -- uses yaml
-	 *
-	 * @since 1.0.0
-	 */
-	public static final String MOD_CONFIG_YAML = "paper-plugin.yaml";
-
-	/**
 	 * The mod configuration file name. -- uses yml
 	 *
 	 * @since 1.0.0

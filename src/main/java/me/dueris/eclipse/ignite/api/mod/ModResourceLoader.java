@@ -34,11 +34,7 @@ public final class ModResourceLoader {
 			try (final JarFile jarFile = new JarFile(resourcePath.toFile())) {
 				JarEntry jarEntry = jarFile.getJarEntry(IgniteConstants.MOD_CONFIG_YML);
 				if (jarEntry == null) {
-					jarEntry = jarFile.getJarEntry(IgniteConstants.MOD_CONFIG_YAML);
-
-					if (jarEntry == null) {
-						continue;
-					}
+					continue;
 				}
 
 				final InputStream inputStream = jarFile.getInputStream(jarEntry);

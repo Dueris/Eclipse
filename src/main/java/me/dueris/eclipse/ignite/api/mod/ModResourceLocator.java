@@ -58,11 +58,7 @@ public final class ModResourceLocator {
 				try (final JarFile jarFile = new JarFile(childDirectory.toFile())) {
 					JarEntry jarEntry = jarFile.getJarEntry(IgniteConstants.MOD_CONFIG_YML);
 					if (jarEntry == null) {
-						jarEntry = jarFile.getJarEntry(IgniteConstants.MOD_CONFIG_YAML);
-
-						if (jarEntry == null) {
-							continue;
-						}
+						continue;
 					}
 
 					resources.add(new ModResourceImpl(ModResourceLocator.JAVA_LOCATOR, childDirectory, jarFile.getManifest()));
