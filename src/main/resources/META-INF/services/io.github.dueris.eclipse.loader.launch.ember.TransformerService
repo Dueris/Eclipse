@@ -1,0 +1,2 @@
+io.github.dueris.eclipse.loader.launch.transformer.AccessTransformerImpl
+io.github.dueris.eclipse.loader.launch.transformer.MixinTransformerImpl

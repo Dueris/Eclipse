@@ -1,14 +1,14 @@
 name: Eclipse
-version: '1.3.3-SNAPSHOT'
-main: me.dueris.eclipse.EclipsePlugin
+version: '2.0.0-SNAPSHOT'
+main: io.github.dueris.eclipse.plugin.EclipsePlugin
 api-version: '1.21'
 prefix: EclipseMixin
-load: POSTWORLD
+load: STARTUP
 authors: [ Dueris ]
 description: Mixin Launcher for Paper servers
 
-bootstrapper: me.dueris.eclipse.util.BootstrapEntrypoint
-loader: me.dueris.eclipse.DependencyLoader
+bootstrapper: io.github.dueris.eclipse.plugin.util.BootstrapEntrypoint
+loader: io.github.dueris.eclipse.plugin.util.DependencyLoader
 has-open-classloader: true
 
 mixins: [

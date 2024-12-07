@@ -15,20 +15,20 @@ val apiVersion = regexPattern.find(implementationVersion)?.value
 tasks.getByName<Jar>("jar") {
     manifest {
         attributes(
-            "Premain-Class" to "me.dueris.eclipse.ignite.agent.IgniteAgent",
-            "Agent-Class" to "me.dueris.eclipse.ignite.agent.IgniteAgent",
-            "Launcher-Agent-Class" to "me.dueris.eclipse.ignite.agent.IgniteAgent",
-            "Main-Class" to "me.dueris.eclipse.ignite.IgniteBootstrap",
+            "Premain-Class" to "io.github.dueris.eclipse.loader.agent.IgniteAgent",
+            "Agent-Class" to "io.github.dueris.eclipse.loader.agent.IgniteAgent",
+            "Launcher-Agent-Class" to "io.github.dueris.eclipse.loader.agent.IgniteAgent",
+            "Main-Class" to "io.github.dueris.eclipse.loader.EclipseLoaderBootstrap",
             "Multi-Release" to true,
             "Automatic-Module-Name" to "net.minecrell.terminalconsole",
 
-            "Specification-Title" to "ignite",
+            "Specification-Title" to "eclipse",
             "Specification-Version" to apiVersion,
-            "Specification-Vendor" to "vectrix.space",
+            "Specification-Vendor" to "Dueris",
 
             "Implementation-Title" to project.name,
             "Implementation-Version" to implementationVersion,
-            "Implementation-Vendor" to "vectrix.space"
+            "Implementation-Vendor" to "Dueris"
         )
 
         attributes(
@@ -41,5 +41,5 @@ tasks.getByName<Jar>("jar") {
 tasks.getByName<ShadowJar>("shadowJar") {
     mergeServiceFiles()
 
-    relocate("com.google.gson", "me.dueris.eclipse.ignite.libs.gson")
+    relocate("com.google.gson", "io.github.dueris.eclipse.loader.libs.gson")
 }
