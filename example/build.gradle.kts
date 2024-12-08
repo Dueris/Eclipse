@@ -3,11 +3,11 @@ import io.github.dueris.kotlin.eclipse.gradle.MinecraftVersion
 plugins {
     `java-library`
     `maven-publish`
-    id("io.papermc.paperweight.userdev") version "1.7.1" apply true
+    id("io.papermc.paperweight.userdev") version "1.7.7" apply true
     id("io.github.dueris.eclipse.gradle") version "1.2.2" apply true
 }
 
-val paperweightVersion: String = "1.21.3-R0.1-SNAPSHOT"
+val paperweightVersion: String = "1.21.4-R0.1-SNAPSHOT"
 
 apply(plugin = "java")
 apply(plugin = "maven-publish")
@@ -28,7 +28,7 @@ dependencies {
 }
 
 eclipse {
-    minecraft = MinecraftVersion.MC1_21_3.version
+    minecraft = MinecraftVersion.MC1_21_4.version
     wideners = files("example.accesswidener")
 }
 

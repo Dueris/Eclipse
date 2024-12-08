@@ -1,14 +1,14 @@
 plugins {
     `java-library`
     `maven-publish`
-    id("io.papermc.paperweight.userdev") version "1.7.1" apply true
+    id("io.papermc.paperweight.userdev") version "1.7.7" apply true
     id("xyz.jpenilla.run-paper") version "2.2.3"
     id("ignite.parent-conventions")
     id("ignite.launcher-conventions")
     id("ignite.publish-conventions")
 }
 
-val paperweightVersion: String = "1.21.3-R0.1-SNAPSHOT"
+val paperweightVersion: String = "1.21.4-R0.1-SNAPSHOT"
 
 extra["mcMajorVer"] = "21"
 extra["mcMinorVer"] = "3"
