@@ -2,6 +2,7 @@ package io.github.dueris.eclipse.loader.api.mod;
 
 import io.github.dueris.eclipse.loader.EclipseLoaderBootstrap;
 import io.github.dueris.eclipse.loader.api.Blackboard;
+import io.github.dueris.eclipse.loader.api.impl.ModResourceImpl;
 import io.github.dueris.eclipse.loader.api.util.IgniteConstants;
 import org.jetbrains.annotations.NotNull;
 import org.tinylog.Logger;
@@ -32,9 +33,9 @@ public final class ModResourceLocator {
 	public static final String GAME_LOCATOR = "game_locator";
 	private static final Map<Path, List<ModResource>> parentToChildren = new HashMap<>();
 
-	/* package */
+
 	@SuppressWarnings({"ResultOfMethodCallIgnored", "resource"})
-	@NotNull List<ModResourceImpl> locateResources() {
+	public @NotNull List<ModResourceImpl> locateResources() {
 		final List<ModResourceImpl> resources = new ArrayList<>();
 
 		// Add the launcher and game resources.
@@ -71,7 +72,10 @@ public final class ModResourceLocator {
 					}
 				});
 
-			List<Path> toInspect = new ArrayList<>(Files.walk(modDirectory).toList());
+			List<Path> toInspect = new ArrayList<>(Files.list(modDirectory)
+				.filter(Files::isRegularFile)
+				.toList()
+			);
 			if (EclipseLoaderBootstrap.IS_PROVIDER_SOURCE) {
 				toInspect.add(EclipseLoaderBootstrap.ROOT_ABSOLUTE);
 			}
@@ -109,7 +113,10 @@ public final class ModResourceLocator {
 
 	private void prepareCached(Path modDirectory, Path cacheDir, Function<Path, ModResource> resourceBuilder) throws Throwable {
 		//noinspection resource
-		List<Path> toInspect = new ArrayList<>(Files.walk(modDirectory).toList());
+		List<Path> toInspect = new ArrayList<>(Files.list(modDirectory)
+			.filter(Files::isRegularFile)
+			.toList()
+		);
 		for (final Path childDirectory : toInspect) {
 			if (!Files.isRegularFile(childDirectory) || !childDirectory.getFileName().toString().endsWith(".jar")) {
 				continue;

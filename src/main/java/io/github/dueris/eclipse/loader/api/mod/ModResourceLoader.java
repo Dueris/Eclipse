@@ -1,5 +1,7 @@
 package io.github.dueris.eclipse.loader.api.mod;
 
+import io.github.dueris.eclipse.loader.api.impl.ModContainerImpl;
+import io.github.dueris.eclipse.loader.api.impl.ModsImpl;
 import io.github.dueris.eclipse.loader.api.util.IgniteConstants;
 import org.jetbrains.annotations.NotNull;
 import org.simpleyaml.configuration.file.YamlConfiguration;
@@ -21,8 +23,8 @@ import java.util.jar.JarFile;
  * @since 1.0.0
  */
 public final class ModResourceLoader {
-	/* package */
-	@NotNull List<ModContainerImpl> loadResources(final @NotNull ModsImpl engine) {
+
+	public @NotNull List<ModContainerImpl> loadResources(final @NotNull ModsImpl engine) {
 		final List<ModContainerImpl> containers = new ArrayList<>();
 
 		for (final ModResource resource : engine.resources()) {

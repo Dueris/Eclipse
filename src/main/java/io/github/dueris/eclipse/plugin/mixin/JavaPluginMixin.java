@@ -1,6 +1,9 @@
 package io.github.dueris.eclipse.plugin.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Share;
+import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import io.github.dueris.eclipse.loader.EclipseLoaderBootstrap;
 import io.github.dueris.eclipse.loader.api.mod.ModContainer;
 import io.github.dueris.eclipse.loader.api.mod.ModMetadata;
@@ -8,6 +11,7 @@ import io.github.dueris.eclipse.plugin.EclipsePlugin;
 import io.github.dueris.eclipse.plugin.access.MixinPlugin;
 import io.github.dueris.eclipse.plugin.access.PluginClassloaderHolder;
 import io.papermc.paper.plugin.configuration.PluginMeta;
+import io.papermc.paper.plugin.provider.PluginProvider;
 import io.papermc.paper.plugin.provider.classloader.ConfiguredPluginClassLoader;
 import io.papermc.paper.plugin.provider.type.paper.PaperPluginParent;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -16,6 +20,10 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.TreeMap;
 
 /**
  * JavaPlugin Mixin to ensure the correct classloader is being used when invoking the constructor
@@ -54,4 +62,15 @@ public abstract class JavaPluginMixin implements MixinPlugin {
 		}
 		return container.config();
 	}
+
+	@Inject(method = "getPlugin", at = @At("HEAD"))
+	private static <T extends JavaPlugin> void storeGetting(@NotNull Class<T> clazz, CallbackInfoReturnable<T> cir, @Share("fetchingPlugin") @NotNull LocalRef<String> fetchingPlugin) {
+		fetchingPlugin.set(clazz.getName());
+	}
+
+	@ModifyExpressionValue(method = "getPlugin", at = @At(value = "INVOKE", target = "Ljava/lang/Class;getClassLoader()Ljava/lang/ClassLoader;"))
+	private static ClassLoader returnCorrectClassloader(ClassLoader original, @Share("fetchingPlugin") @NotNull LocalRef<String> fetchingPlugin) {
+		return ((PluginClassloaderHolder) EclipsePlugin.PLUGIN_TO_PROVIDER.get(fetchingPlugin.get())).eclipse$getPluginClassLoader();
+	}
+
 }

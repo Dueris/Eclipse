@@ -6,7 +6,7 @@ import io.github.dueris.eclipse.loader.agent.IgniteAgent;
 import io.github.dueris.eclipse.loader.api.Blackboard;
 import io.github.dueris.eclipse.loader.api.Platform;
 import io.github.dueris.eclipse.loader.api.mod.Mods;
-import io.github.dueris.eclipse.loader.api.mod.ModsImpl;
+import io.github.dueris.eclipse.loader.api.impl.ModsImpl;
 import io.github.dueris.eclipse.loader.api.util.IgniteConstants;
 import io.github.dueris.eclipse.loader.game.GameLocatorService;
 import io.github.dueris.eclipse.loader.game.GameProvider;

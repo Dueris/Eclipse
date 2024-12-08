@@ -1,8 +1,10 @@
-package io.github.dueris.eclipse.loader.api.mod;
+package io.github.dueris.eclipse.loader.api.impl;
 
+import io.github.dueris.eclipse.loader.api.mod.ModResource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
+import org.tinylog.Logger;
 
 import java.io.IOException;
 import java.nio.file.FileSystem;
@@ -27,7 +29,7 @@ public final class ModResourceImpl implements ModResource {
 
 	private FileSystem fileSystem;
 
-	ModResourceImpl(final @NotNull String locator,
+	public ModResourceImpl(final @NotNull String locator,
 					final @NotNull Path path,
 					final @UnknownNullability Manifest manifest, boolean child, List<ModResource> children) {
 		this.locator = locator;
@@ -74,6 +76,7 @@ public final class ModResourceImpl implements ModResource {
 	public boolean equals(final @Nullable Object other) {
 		if (this == other) return true;
 		if (!(other instanceof ModResourceImpl that)) return false;
+		Logger.trace("Checking for qualification for P1: " + path.toAbsolutePath().normalize().toString() + " and P2: " + that.path.toAbsolutePath().normalize().toString());
 		return Objects.equals(path.toAbsolutePath().normalize(), that.path.toAbsolutePath().normalize());
 	}
 

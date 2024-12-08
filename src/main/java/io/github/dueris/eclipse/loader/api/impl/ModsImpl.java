@@ -1,6 +1,7 @@
-package io.github.dueris.eclipse.loader.api.mod;
+package io.github.dueris.eclipse.loader.api.impl;
 
 import io.github.dueris.eclipse.loader.agent.IgniteAgent;
+import io.github.dueris.eclipse.loader.api.mod.*;
 import io.github.dueris.eclipse.loader.launch.ember.EmberMixinContainer;
 import io.github.dueris.eclipse.loader.launch.ember.EmberMixinService;
 import io.github.dueris.eclipse.loader.launch.ember.EmberTransformer;
