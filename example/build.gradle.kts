@@ -4,7 +4,7 @@ plugins {
     `java-library`
     `maven-publish`
     id("io.papermc.paperweight.userdev") version "1.7.1" apply true
-    id("io.github.dueris.eclipse.gradle") version "1.2.1" apply true
+    id("io.github.dueris.eclipse.gradle") version "1.2.2" apply true
 }
 
 val paperweightVersion: String = "1.21.3-R0.1-SNAPSHOT"
@@ -29,7 +29,7 @@ dependencies {
 }
 
 eclipse {
-    minecraft = MinecraftVersion.MC1_21_3
+    minecraft = MinecraftVersion.MC1_21_3.version
     wideners = files("example.accesswidener")
 }
 
