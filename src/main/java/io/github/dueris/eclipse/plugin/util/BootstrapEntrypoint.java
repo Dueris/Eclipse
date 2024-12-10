@@ -119,6 +119,7 @@ public class BootstrapEntrypoint implements PluginBootstrap {
 		}
 
 		ProcessBuilder processBuilder = new ProcessBuilder(buildExecutionArgs(jvmArgs, eclipseInstance.getAbsolutePath()));
+		// TODO - fix terminal input on some systems
 		processBuilder.redirectErrorStream(true); // Merge error stream with output stream
 		processBuilder.inheritIO();
 
@@ -155,11 +156,6 @@ public class BootstrapEntrypoint implements PluginBootstrap {
 		shutdownHook(() -> {
 			try {
 				checkKillProcess();
-				File jsonFile = new File("eclipse.mixin.bootstrap.json");
-				if (jsonFile.exists()) {
-					jsonFile.delete();
-				}
-
 				logger.info("Eclipse-Cleanup: Cleanup completed.");
 			} catch (InterruptedException e) {
 				logger.error("Eclipse-Cleanup: Interrupted during cleanup.", e);
