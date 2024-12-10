@@ -39,7 +39,7 @@ public class EclipseGameLocator implements GameLocatorService {
 
 	@Override
 	public @NotNull String name() {
-		return EclipseLoaderBootstrap.instance().softwareName;
+		return EclipseLoaderBootstrap.instance().context.brand();
 	}
 
 	@Override
@@ -99,7 +99,8 @@ public class EclipseGameLocator implements GameLocatorService {
 				throw new RuntimeException("Unable to build Eclipse GameProvider!", throwable);
 			}
 
-			this.provider = new EclipseGameProvider(game.get(), LIBRARIES, version.get());
+			Util.unloadNested(LIBRARIES);
+			this.provider = new EclipseGameProvider(game.get(), LIBRARIES.stream(), version.get());
 		}
 
 		if (Blackboard.get(Blackboard.GAME_JAR).isEmpty()) {
@@ -109,7 +110,8 @@ public class EclipseGameLocator implements GameLocatorService {
 	}
 
 	private void addLibrary(String libraryString, String libraryPath) {
-		LIBRARIES.add(new GameLibrary(Paths.get("./libraries/" + libraryPath), libraryString));
+		Path path = Paths.get("./libraries/" + libraryPath);
+		LIBRARIES.add(new GameLibrary(path, libraryString, path.toFile().exists()));
 	}
 
 	@Override
@@ -117,13 +119,8 @@ public class EclipseGameLocator implements GameLocatorService {
 		return this.provider;
 	}
 
-	public record EclipseGameProvider(String game, List<GameLibrary> libraries,
+	public record EclipseGameProvider(String game, Stream<GameLibrary> libraries,
 									  String version) implements GameProvider {
-
-		@Override
-		public @NotNull Stream<GameLibrary> gameLibraries() {
-			return this.libraries.stream();
-		}
 
 		@Override
 		public @NotNull Path gamePath() {

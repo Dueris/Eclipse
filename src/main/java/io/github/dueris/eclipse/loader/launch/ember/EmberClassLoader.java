@@ -1,12 +1,17 @@
 package io.github.dueris.eclipse.loader.launch.ember;
 
+import io.github.dueris.eclipse.loader.util.mrj.AbstractClassLoader;
+import io.github.dueris.eclipse.loader.util.mrj.AbstractUrlClassLoader;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.tinylog.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.*;
+import java.net.JarURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.nio.file.Path;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
@@ -28,7 +33,7 @@ import static java.util.Objects.requireNonNull;
  * @author vectrix
  * @since 1.0.0
  */
-public final class EmberClassLoader extends ClassLoader {
+public final class EmberClassLoader extends AbstractClassLoader {
 	private static final List<String> EXCLUDE_PACKAGES = Arrays.asList(
 		"java.", "javax.", "com.sun.", "org.objectweb.asm."
 	);
@@ -46,7 +51,7 @@ public final class EmberClassLoader extends ClassLoader {
 	private Predicate<String> transformationFilter;
 
 	EmberClassLoader(final @NotNull EmberTransformer transformer) {
-		super(new DynamicClassLoader(new URL[0]));
+		super("ember", new DynamicClassLoader(new URL[0]));
 
 		this.parent = EmberClassLoader.class.getClassLoader();
 		this.dynamic = (DynamicClassLoader) this.getParent();
@@ -213,13 +218,11 @@ public final class EmberClassLoader extends ClassLoader {
 			final InputStream stream = connection.stream();
 			final byte[] bytes = new byte[length];
 
-			// @formatter:off
-      int position = 0, remain = length, read;
-      while((read = stream.read(bytes, position, remain)) != -1 && remain > 0) {
-        position += read;
-        remain -= read;
-      }
-      // @formatter:on
+			int position = 0, remain = length, read;
+			while ((read = stream.read(bytes, position, remain)) != -1 && remain > 0) {
+				position += read;
+				remain -= read;
+			}
 
 			final Manifest manifest = connection.manifest();
 			final CodeSource source = connection.source();
@@ -238,10 +241,8 @@ public final class EmberClassLoader extends ClassLoader {
 				if (this.getPackage(name) != null) return;
 
 				final String path = name.replace('.', '/').concat("/");
-				// @formatter:off
-        String specTitle = null, specVersion = null, specVendor = null;
-        String implTitle = null, implVersion = null, implVendor = null;
-        // @formatter:on
+				String specTitle = null, specVersion = null, specVendor = null;
+				String implTitle = null, implVersion = null, implVendor = null;
 
 				if (manifest != null) {
 					final Attributes attributes = manifest.getAttributes(path);
@@ -361,13 +362,13 @@ public final class EmberClassLoader extends ClassLoader {
 		return "ember";
 	}
 
-	private static final class DynamicClassLoader extends URLClassLoader {
+	private static final class DynamicClassLoader extends AbstractUrlClassLoader {
 		static {
 			ClassLoader.registerAsParallelCapable();
 		}
 
 		DynamicClassLoader(final URL @NotNull [] urls) {
-			super(urls, new DummyClassLoader());
+			super("dynamic", urls, new DummyClassLoader());
 		}
 
 		@Override

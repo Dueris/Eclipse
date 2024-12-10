@@ -6,12 +6,17 @@ import io.github.dueris.eclipse.loader.api.Blackboard;
 import io.github.dueris.eclipse.loader.api.impl.ModContainerImpl;
 import io.github.dueris.eclipse.loader.api.impl.ModResourceImpl;
 import io.github.dueris.eclipse.loader.api.impl.ModsImpl;
-import io.github.dueris.eclipse.loader.api.mod.*;
+import io.github.dueris.eclipse.loader.api.mod.ModMetadata;
+import io.github.dueris.eclipse.loader.api.mod.ModResource;
+import io.github.dueris.eclipse.loader.api.mod.ModResourceLocator;
 import io.github.dueris.eclipse.loader.api.util.ClassLoaders;
 import io.github.dueris.eclipse.loader.api.util.IgniteConstants;
 import io.github.dueris.eclipse.loader.api.util.IgniteExclusions;
 import io.github.dueris.eclipse.loader.launch.ember.EmberClassLoader;
 import io.github.dueris.eclipse.loader.launch.ember.EmberTransformer;
+import io.github.dueris.eclipse.loader.util.LaunchException;
+import io.github.dueris.eclipse.plugin.access.EclipseMain;
+import joptsimple.OptionSet;
 import org.jetbrains.annotations.NotNull;
 import org.tinylog.Logger;
 
@@ -23,7 +28,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
@@ -121,22 +125,19 @@ public final class LaunchService {
 		engine.resolveMixins();
 	}
 
-	public @NotNull Callable<Void> launch(final @NotNull String @NotNull [] arguments, final @NotNull EmberClassLoader loader) {
-		// TODO - rewrite this callable
-		return () -> {
+	public void launch(final @NotNull OptionSet optionSet, final @NotNull EmberClassLoader loader) throws LaunchException {
+		try {
 			final Path gameJar = Blackboard.raw(Blackboard.GAME_JAR);
 			final String gameTarget = EclipseGameLocator.targetClass();
 			if (gameJar != null && Files.exists(gameJar)) {
-				// Invoke the main method.
-				Class.forName(gameTarget, true, loader)
-					.getMethod("main", String[].class)
-					.invoke(null, (Object) arguments);
+				Object instance = Class.forName(gameTarget, true, loader).newInstance();
+				EclipseMain.class.getMethod("eclipse$main", OptionSet.class).invoke(instance, optionSet);
 			} else {
 				throw new IllegalStateException("No game jar was found to launch!");
 			}
-
-			return null;
-		};
+		} catch (Throwable throwable) {
+			throw new LaunchException("Unable to launch Minecraft server!", throwable);
+		}
 	}
 
 	private @NotNull Predicate<String> packageFilter() {

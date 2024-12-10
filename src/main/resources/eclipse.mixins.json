@@ -8,13 +8,13 @@
     "MinecraftServerMixin",
     "ModernPluginLoadingStrategyMixin",
     "PackDetectorMixin",
-    "PaperBootstrapMixin",
     "PaperClasspathBuilderMixin",
     "PaperPluginMetaMixin",
     "PaperPluginParentMixin",
     "PaperPluginsCommandMixin",
     "PaperServerPluginProviderMixin",
-    "PluginInitializerManagerMixin"
+    "PluginInitializerManagerMixin",
+    "SysoutCatcherMixin"
   ],
   "package": "io.github.dueris.eclipse.plugin.mixin",
   "compatibilityLevel": "JAVA_21"

@@ -30,8 +30,8 @@ public final class ModResourceImpl implements ModResource {
 	private FileSystem fileSystem;
 
 	public ModResourceImpl(final @NotNull String locator,
-					final @NotNull Path path,
-					final @UnknownNullability Manifest manifest, boolean child, List<ModResource> children) {
+						   final @NotNull Path path,
+						   final @UnknownNullability Manifest manifest, boolean child, List<ModResource> children) {
 		this.locator = locator;
 		this.path = path;
 		this.manifest = manifest;
@@ -76,7 +76,7 @@ public final class ModResourceImpl implements ModResource {
 	public boolean equals(final @Nullable Object other) {
 		if (this == other) return true;
 		if (!(other instanceof ModResourceImpl that)) return false;
-		Logger.trace("Checking for qualification for P1: " + path.toAbsolutePath().normalize().toString() + " and P2: " + that.path.toAbsolutePath().normalize().toString());
+		Logger.trace("Checking for qualification for P1: " + path.toAbsolutePath().normalize() + " and P2: " + that.path.toAbsolutePath().normalize());
 		return Objects.equals(path.toAbsolutePath().normalize(), that.path.toAbsolutePath().normalize());
 	}
 

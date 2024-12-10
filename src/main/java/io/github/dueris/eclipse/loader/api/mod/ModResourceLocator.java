@@ -76,7 +76,7 @@ public final class ModResourceLocator {
 				.filter(Files::isRegularFile)
 				.toList()
 			);
-			if (EclipseLoaderBootstrap.IS_PROVIDER_SOURCE) {
+			if (EclipseLoaderBootstrap.INSTANCE.context.isProviderContext()) {
 				toInspect.add(EclipseLoaderBootstrap.ROOT_ABSOLUTE);
 			}
 

@@ -2,6 +2,7 @@ package io.github.dueris.eclipse.loader.launch.ember;
 
 import com.llamalad7.mixinextras.MixinExtrasBootstrap;
 import io.github.dueris.eclipse.loader.launch.LaunchService;
+import joptsimple.OptionSet;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.launch.MixinBootstrap;
 import org.spongepowered.asm.mixin.MixinEnvironment;
@@ -30,11 +31,11 @@ public final class Ember {
 	/**
 	 * The main entrypoint to launch Ember.
 	 *
-	 * @param arguments the launch arguments
+	 * @param optionSet the launch arguments
 	 * @since 1.0.0
 	 */
-	public static void launch(final String @NotNull [] arguments) {
-		new Ember().run(arguments);
+	public static void launch(final @NotNull OptionSet optionSet) {
+		new Ember().run(optionSet);
 	}
 
 	/* package */
@@ -53,7 +54,7 @@ public final class Ember {
 		return this.loader;
 	}
 
-	private void run(final String @NotNull [] arguments) {
+	private void run(final @NotNull OptionSet optionSet) {
 		// Initialize the launch.
 		this.service.initialize();
 
@@ -80,11 +81,7 @@ public final class Ember {
 		MixinExtrasBootstrap.init();
 
 		// Execute the launch.
-		try {
-			this.service.launch(arguments, this.loader).call();
-		} catch (final Exception exception) {
-			Logger.error(exception, "Failed to launch the game!");
-		}
+		this.service.launch(optionSet, this.loader);
 	}
 
 	private void completeMixinBootstrap() {

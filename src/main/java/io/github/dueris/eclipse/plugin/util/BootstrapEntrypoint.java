@@ -8,6 +8,9 @@ import com.dragoncommissions.mixbukkit.api.action.impl.MActionInsertShellCode;
 import com.dragoncommissions.mixbukkit.api.locator.impl.HLocatorHead;
 import com.dragoncommissions.mixbukkit.api.shellcode.impl.api.CallbackInfo;
 import com.dragoncommissions.mixbukkit.api.shellcode.impl.api.ShellCodeReflectionMixinPluginMethodCall;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.github.dueris.eclipse.loader.EclipseLoaderBootstrap;
 import io.papermc.paper.ServerBuildInfo;
@@ -20,7 +23,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.json.simple.JSONObject;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -88,24 +90,24 @@ public class BootstrapEntrypoint implements PluginBootstrap {
 	/**
 	 * Starts ignite process and transforms current thread into a watcher and listener for mirroring
 	 */
-	@SuppressWarnings("unchecked")
 	protected void executePlugin(File eclipseInstance, OptionSet optionSet) throws Exception {
-		File jsonFile = new File("eclipse.mixin.bootstrap.json");
-		try (FileWriter writer = new FileWriter(jsonFile)) {
-			JSONObject jsonObject = new JSONObject(Map.of(
-				"ServerPath", Paths.get(ManagementFactory.getRuntimeMXBean().getClassPath()).toString(),
-				"SoftwareName", ServerBuildInfo.buildInfo().brandName(),
-				"OptionSet", OptionSetStringSerializer.serializeOptionSet(optionSet),
-				"IsProviderContext", PROVIDER_CONTEXT
-			));
+		File contextFile = new File(Paths.get(".").resolve("cache").resolve(".eclipse").toFile(), "bootstrap.context");
+		if (!contextFile.getParentFile().exists()) {
+			contextFile.getParentFile().mkdirs();
+		}
+		try (FileWriter writer = new FileWriter(contextFile)) {
+			Gson gson = new GsonBuilder().setPrettyPrinting().create();
 			JsonObject gsonObject = new JsonObject();
+			gsonObject.addProperty("path", Paths.get(ManagementFactory.getRuntimeMXBean().getClassPath()).toAbsolutePath().normalize().toString());
+			gsonObject.addProperty("brand", ServerBuildInfo.buildInfo().brandName());
+			gsonObject.addProperty("is_provider_context", PROVIDER_CONTEXT);
 
-			for (String key : (Iterable<String>) jsonObject.keySet()) {
-				String value = jsonObject.get(key).toString();
-				gsonObject.addProperty(key, value);
+			JsonArray jsonArray = new JsonArray();
+			for (byte b : new SerializedOptionSetData().serialize(optionSet).compileBytes()) {
+				jsonArray.add(b);
 			}
-
-			writer.write(gsonObject.toString());
+			gsonObject.add("optionset", jsonArray);
+			writer.write(gson.toJson(gsonObject));
 		} catch (IOException e) {
 			logger.error("Failed to create JSON file: {}", e.getMessage());
 			throw e;

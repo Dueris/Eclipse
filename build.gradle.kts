@@ -1,3 +1,8 @@
+import java.util.zip.ZipEntry
+import java.util.zip.ZipInputStream
+import java.util.zip.ZipOutputStream
+import kotlin.io.path.Path
+
 plugins {
     `java-library`
     `maven-publish`
@@ -86,11 +91,11 @@ dependencies {
         exclude(group = "org.ow2.asm")
     }
 
-    implementation(libs.mixinExtras) {
+    compileOnly(libs.mixinExtras) {
         exclude(group = "org.apache.commons")
     }
 
-    implementation(libs.accessWidener)
+    compileOnly(libs.accessWidener)
     implementation(libs.asm)
     implementation(libs.asm.analysis)
     implementation(libs.asm.commons)
@@ -100,8 +105,8 @@ dependencies {
     implementation(libs.gson)
     implementation("com.github.Carleslc.Simple-YAML:Simple-Yaml:1.8.4")
 
-    implementation("jline:jline:2.12.1")
     implementation(project("injection"))
+    implementation("net.sf.jopt-simple:jopt-simple:6.0-alpha-3")
 }
 
 tasks {
@@ -110,5 +115,66 @@ tasks {
     }
     shadowJar {
         mergeServiceFiles()
+    }
+}
+
+tasks.register("eclipseJar") {
+    dependsOn(":console:build", "shadowJar")
+
+    doLast {
+        val consoleJar = rootDir.resolve("console/build/libs/console-v1.0.0.jar").absoluteFile
+
+        if (!consoleJar.exists()) {
+            throw GradleException("Console JAR not found at: $consoleJar")
+        }
+
+        val shadowJarTask = tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar").get()
+        val shadowJar = shadowJarTask.archiveFile.get().asFile
+
+        val tempJar = file("${buildDir}/libs/temp-${shadowJar.name}")
+
+        var entryAlreadyExists = false
+        shadowJar.inputStream().use { shadowJarInput ->
+            ZipInputStream(shadowJarInput).use { zipInput ->
+                var entry = zipInput.nextEntry
+                while (entry != null) {
+                    if (entry.name == "nested-libs/console-v1.0.0.jar") {
+                        entryAlreadyExists = true
+                        break
+                    }
+                    entry = zipInput.nextEntry
+                }
+            }
+        }
+
+        if (entryAlreadyExists) {
+            println("Entry 'nested-libs/console-v1.0.0.jar' already exists in ${shadowJar.name}. Skipping addition.")
+            return@doLast
+        }
+
+        shadowJar.inputStream().use { shadowJarInput ->
+            tempJar.outputStream().use { tempJarOutput ->
+                ZipInputStream(shadowJarInput).use { zipInput ->
+                    ZipOutputStream(tempJarOutput).use { zipOutput ->
+                        var entry = zipInput.nextEntry
+                        while (entry != null) {
+                            zipOutput.putNextEntry(entry)
+                            zipInput.copyTo(zipOutput)
+                            zipOutput.closeEntry()
+                            entry = zipInput.nextEntry
+                        }
+
+                        zipOutput.putNextEntry(ZipEntry("nested-libs/console-v1.0.0.jar"))
+                        consoleJar.inputStream().use { it.copyTo(zipOutput) }
+                        zipOutput.closeEntry()
+                    }
+                }
+            }
+        }
+
+        shadowJar.delete()
+        tempJar.renameTo(shadowJar)
+
+        println("Added ${consoleJar.name} as a nested entry in ${shadowJar.name}")
     }
 }

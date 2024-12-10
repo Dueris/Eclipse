@@ -1,31 +1,24 @@
 package io.github.dueris.eclipse.loader;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import io.github.dueris.eclipse.loader.agent.IgniteAgent;
 import io.github.dueris.eclipse.loader.api.Blackboard;
 import io.github.dueris.eclipse.loader.api.Platform;
-import io.github.dueris.eclipse.loader.api.mod.Mods;
 import io.github.dueris.eclipse.loader.api.impl.ModsImpl;
+import io.github.dueris.eclipse.loader.api.mod.Mods;
 import io.github.dueris.eclipse.loader.api.util.IgniteConstants;
 import io.github.dueris.eclipse.loader.game.GameLocatorService;
 import io.github.dueris.eclipse.loader.game.GameProvider;
 import io.github.dueris.eclipse.loader.launch.EclipseGameLocator;
 import io.github.dueris.eclipse.loader.launch.ember.Ember;
-import joptsimple.OptionSet;
+import io.github.dueris.eclipse.loader.util.BootstrapEntryContext;
+import io.github.dueris.eclipse.plugin.util.OptionSetUtils;
 import org.jetbrains.annotations.NotNull;
-import org.spongepowered.asm.util.JavaVersion;
-import org.spongepowered.asm.util.asm.ASM;
 import org.tinylog.Logger;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -36,17 +29,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @since 1.0.0
  */
 public final class EclipseLoaderBootstrap {
-	public static boolean IS_PROVIDER_SOURCE = false;
 	public static AtomicBoolean BOOTED = new AtomicBoolean(false);
-	public static OptionSet OPTIONSET;
 	public static EclipseLoaderBootstrap INSTANCE;
 	public static Path ROOT_ABSOLUTE;
 	private static Platform PLATFORM;
 	private final ModsImpl engine;
-	public String softwareName;
+	public BootstrapEntryContext context;
 	public GameLocatorService gameLocator;
 	public String versionString;
-	public JsonObject bootstrapInfo;
 
 	EclipseLoaderBootstrap() {
 		EclipseLoaderBootstrap.INSTANCE = this;
@@ -70,39 +60,15 @@ public final class EclipseLoaderBootstrap {
 	 * @since 1.0.0
 	 */
 	public static void main(final String @NotNull [] arguments) {
-		Logger.trace("Running {} v{} (API: {}, ASM: {}, Java: {})",
-			IgniteConstants.API_TITLE,
-			IgniteConstants.IMPLEMENTATION_VERSION,
-			IgniteConstants.API_VERSION,
-			ASM.getVersionString(),
-			JavaVersion.current());
-
 		EclipseLoaderBootstrap ignite = new EclipseLoaderBootstrap();
 		try {
 			ROOT_ABSOLUTE = Path.of(EclipseLoaderBootstrap.class.getProtectionDomain().getCodeSource().getLocation().toURI()).toAbsolutePath();
 		} catch (URISyntaxException e) {
 			throw new RuntimeException("Invalid URI in CodeSource of EclipseLoaderBootstrap", e);
 		}
-		EclipseLoaderBootstrap.INSTANCE.bootstrapInfo = new Gson().fromJson(((Getter<String>) () -> {
-			File bootstrapFile = Paths.get("eclipse.mixin.bootstrap.json").toFile();
-			if (!bootstrapFile.exists()) {
-				throw new IllegalStateException("Unable to find bootstrap json! Did Eclipse start correctly?");
-			}
 
-			try {
-				return Files.readString(bootstrapFile.toPath());
-			} catch (IOException e) {
-				throw new RuntimeException("Unable to build String contents of Bootstrap!", e);
-			}
-		}).get(), JsonObject.class);
-
-
-		IS_PROVIDER_SOURCE = EclipseLoaderBootstrap.INSTANCE.bootstrapInfo.get("IsProviderContext").getAsBoolean();
-		String serverPath = EclipseLoaderBootstrap.INSTANCE.bootstrapInfo.get("ServerPath").getAsString();
-		if (serverPath.startsWith("/")) {
-			serverPath = serverPath.substring(1);
-		}
-		Path jarPath = Path.of(serverPath);
+		ignite.context = BootstrapEntryContext.read();
+		Path jarPath = ignite.context.serverPath();
 
 		Blackboard.GAME_JAR = Blackboard.key("ignite.jar", Path.class, jarPath);
 		Blackboard.compute(Blackboard.GAME_JAR, () -> jarPath);
@@ -110,7 +76,6 @@ public final class EclipseLoaderBootstrap {
 		Blackboard.compute(Blackboard.GAME_LIBRARIES, () -> Paths.get(System.getProperty(Blackboard.GAME_LIBRARIES.name())));
 		Blackboard.compute(Blackboard.MODS_DIRECTORY, () -> Paths.get(System.getProperty(Blackboard.MODS_DIRECTORY.name())));
 
-		ignite.softwareName = EclipseLoaderBootstrap.INSTANCE.bootstrapInfo.get("SoftwareName").getAsString();
 		BOOTED.set(true);
 
 		ignite.ignite(arguments);
@@ -133,8 +98,6 @@ public final class EclipseLoaderBootstrap {
 	}
 
 	private void ignite(final String @NotNull [] args) {
-		final List<String> arguments = Arrays.asList(args);
-		final List<String> launchArguments = new ArrayList<>(arguments);
 
 		// Get a suitable game locator and game provider.
 		System.out.println("Preparing Minecraft server");
@@ -168,11 +131,17 @@ public final class EclipseLoaderBootstrap {
 		}
 
 		// Add the game libraries.
-		gameProvider.gameLibraries().forEach(library -> {
-			if (!library.libraryPath().toString().endsWith(".jar")) return;
+		final List<String> contained = List.of("net.sf.jopt-simple:jopt-simple:6.0-alpha-3", "net.minecrell:terminalconsoleappender:1.3.0");
+		gameProvider.libraries().forEach(library -> {
+			if (!library.libraryPath().toString().endsWith(".jar") || contained.contains(library.libraryString()))
+				return;
 
 			try {
-				System.out.println("Unpacking (" + library.libraryString() + ") to " + library.libraryPath());
+				if (library.trace()) {
+					Logger.trace("Unpacking (" + library.libraryString() + ") to " + library.libraryPath());
+				} else {
+					System.out.println("Unpacking (" + library.libraryString() + ") to " + library.libraryPath());
+				}
 				IgniteAgent.addJar(library.libraryPath());
 
 				Logger.trace("Added game library jar: {}", library);
@@ -187,7 +156,7 @@ public final class EclipseLoaderBootstrap {
 		EclipseLoaderBootstrap.initialize(new PlatformImpl());
 
 		// Launch the game.
-		Ember.launch(launchArguments.toArray(new String[0]));
+		Ember.launch(OptionSetUtils.Serializer.deserialize(context.optionSet()));
 	}
 
 	/**
@@ -198,9 +167,5 @@ public final class EclipseLoaderBootstrap {
 	 */
 	public @NotNull ModsImpl engine() {
 		return this.engine;
-	}
-
-	private interface Getter<T> {
-		T get();
 	}
 }

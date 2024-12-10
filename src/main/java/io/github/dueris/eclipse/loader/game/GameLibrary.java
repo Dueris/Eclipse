@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;
 
-public record GameLibrary(Path libraryPath, String libraryString) {
+public record GameLibrary(Path libraryPath, String libraryString, boolean trace) {
 
 	@Override
 	public @NotNull String toString() {

@@ -18,7 +18,7 @@ public interface GameProvider {
 	 * @return the game library paths
 	 * @since 1.0.0
 	 */
-	@NotNull Stream<GameLibrary> gameLibraries();
+	@NotNull Stream<GameLibrary> libraries();
 
 	/**
 	 * Returns the game path.
