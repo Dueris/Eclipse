@@ -77,8 +77,7 @@ public final class EclipseLoaderBootstrap {
 		Blackboard.compute(Blackboard.MODS_DIRECTORY, () -> Paths.get(System.getProperty(Blackboard.MODS_DIRECTORY.name())));
 
 		BOOTED.set(true);
-
-		ignite.ignite(arguments);
+		ignite.ignite();
 	}
 
 	static void initialize(final @NotNull Platform platform) {
@@ -97,8 +96,7 @@ public final class EclipseLoaderBootstrap {
 		return EclipseLoaderBootstrap.PLATFORM.mods();
 	}
 
-	private void ignite(final String @NotNull [] args) {
-
+	private void ignite() {
 		// Get a suitable game locator and game provider.
 		System.out.println("Preparing Minecraft server");
 		final GameProvider gameProvider;
