@@ -1,5 +1,6 @@
 package io.github.dueris.eclipse.loader.api.mod;
 
+import io.github.dueris.eclipse.loader.api.impl.ModMetadata;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.tinylog.TaggedLogger;

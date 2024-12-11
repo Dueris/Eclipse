@@ -2,13 +2,12 @@ package io.github.dueris.eclipse.loader.launch;
 
 import com.llamalad7.mixinextras.MixinExtrasBootstrap;
 import io.github.dueris.eclipse.loader.EclipseLoaderBootstrap;
+import io.github.dueris.eclipse.loader.api.impl.MixinEngine;
 import io.github.dueris.eclipse.loader.api.Blackboard;
 import io.github.dueris.eclipse.loader.api.impl.ModContainerImpl;
 import io.github.dueris.eclipse.loader.api.impl.ModResourceImpl;
-import io.github.dueris.eclipse.loader.api.impl.ModsImpl;
-import io.github.dueris.eclipse.loader.api.mod.ModMetadata;
+import io.github.dueris.eclipse.loader.api.impl.ModMetadata;
 import io.github.dueris.eclipse.loader.api.mod.ModResource;
-import io.github.dueris.eclipse.loader.api.mod.ModResourceLocator;
 import io.github.dueris.eclipse.loader.api.util.ClassLoaders;
 import io.github.dueris.eclipse.loader.api.util.IgniteConstants;
 import io.github.dueris.eclipse.loader.api.util.IgniteExclusions;
@@ -49,7 +48,7 @@ public final class LaunchService {
 
 	public void initialize() {
 		// Initialize the mod engine.
-		final ModsImpl engine = EclipseLoaderBootstrap.instance().engine();
+		final MixinEngine engine = EclipseLoaderBootstrap.instance().engine();
 		if (engine.locateResources()) {
 			engine.resolveResources();
 
@@ -61,10 +60,10 @@ public final class LaunchService {
 				ModContainerImpl modContainer = bootstrap.engine().getContainerFromResource(realResource);
 				if (modContainer == null) {
 					String locator = realResource.locator();
-					if (locator.equalsIgnoreCase(ModResourceLocator.LAUNCHER_LOCATOR)) {
+					if (locator.equalsIgnoreCase(MixinEngine.LAUNCHER_LOCATOR)) {
 						builder.append("\t- ").append("eclipseloader ").append(IgniteConstants.IMPLEMENTATION_VERSION).append("\n");
 						builder.append("\t   \\-- mixinextras ").append(MixinExtrasBootstrap.getVersion()).append("\n");
-					} else if (locator.equalsIgnoreCase(ModResourceLocator.GAME_LOCATOR)) {
+					} else if (locator.equalsIgnoreCase(MixinEngine.GAME_LOCATOR)) {
 						builder.append("\t- ").append("minecraft ").append(bootstrap.versionString).append("\n");
 					} else {
 						throw new NullPointerException("Unable to find container impl for resource of mod! : " + realResource);
@@ -116,7 +115,7 @@ public final class LaunchService {
 	}
 
 	public void prepare(final @NotNull EmberTransformer transformer) {
-		final ModsImpl engine = EclipseLoaderBootstrap.instance().engine();
+		final MixinEngine engine = EclipseLoaderBootstrap.instance().engine();
 
 		// Resolve the wideners.
 		engine.resolveWideners(transformer);
@@ -165,14 +164,14 @@ public final class LaunchService {
 	}
 
 	private @NotNull Function<URLConnection, Optional<Manifest>> manifestLocator() {
-		final ModsImpl engine = EclipseLoaderBootstrap.instance().engine();
+		final MixinEngine engine = EclipseLoaderBootstrap.instance().engine();
 
 		return connection -> {
 			if (connection instanceof JarURLConnection) {
 				final URL url = ((JarURLConnection) connection).getJarFileURL();
 				final Optional<Manifest> manifest = this.manifests.computeIfAbsent(url.toString(), key -> {
 					for (final ModResource resource : engine.resources()) {
-						if (!resource.locator().equals(ModResourceLocator.JAVA_LOCATOR)) {
+						if (!resource.locator().equals(MixinEngine.JAVA_LOCATOR)) {
 							continue;
 						}
 

@@ -2,9 +2,8 @@ package io.github.dueris.eclipse.loader;
 
 import io.github.dueris.eclipse.loader.agent.IgniteAgent;
 import io.github.dueris.eclipse.loader.api.Blackboard;
-import io.github.dueris.eclipse.loader.api.Platform;
-import io.github.dueris.eclipse.loader.api.impl.ModsImpl;
-import io.github.dueris.eclipse.loader.api.mod.Mods;
+import io.github.dueris.eclipse.loader.api.impl.MixinEngine;
+import io.github.dueris.eclipse.loader.api.mod.Engine;
 import io.github.dueris.eclipse.loader.api.util.IgniteConstants;
 import io.github.dueris.eclipse.loader.game.GameLocatorService;
 import io.github.dueris.eclipse.loader.game.GameProvider;
@@ -32,15 +31,14 @@ public final class EclipseLoaderBootstrap {
 	public static AtomicBoolean BOOTED = new AtomicBoolean(false);
 	public static EclipseLoaderBootstrap INSTANCE;
 	public static Path ROOT_ABSOLUTE;
-	private static Platform PLATFORM;
-	private final ModsImpl engine;
+	private final MixinEngine engine;
 	public BootstrapEntryContext context;
 	public GameLocatorService gameLocator;
 	public String versionString;
 
 	EclipseLoaderBootstrap() {
 		EclipseLoaderBootstrap.INSTANCE = this;
-		this.engine = new ModsImpl();
+		this.engine = new MixinEngine();
 	}
 
 	/**
@@ -80,20 +78,14 @@ public final class EclipseLoaderBootstrap {
 		ignite.ignite();
 	}
 
-	static void initialize(final @NotNull Platform platform) {
-		EclipseLoaderBootstrap.PLATFORM = platform;
-	}
-
 	/**
-	 * Returns the {@link Mods}.
+	 * Returns the {@link Engine}.
 	 *
 	 * @return the mods
 	 * @since 1.0.0
 	 */
-	public static @NotNull Mods mods() {
-		if (EclipseLoaderBootstrap.PLATFORM == null)
-			throw new IllegalStateException("Ignite has not been initialized yet!");
-		return EclipseLoaderBootstrap.PLATFORM.mods();
+	public static @NotNull Engine mods() {
+		return instance().engine;
 	}
 
 	private void ignite() {
@@ -150,9 +142,6 @@ public final class EclipseLoaderBootstrap {
 
 		Logger.info("Loading Minecraft {} with Eclipse version {}", versionString, IgniteConstants.IMPLEMENTATION_VERSION);
 
-		// Initialize the API.
-		EclipseLoaderBootstrap.initialize(new PlatformImpl());
-
 		// Launch the game.
 		Ember.launch(OptionSetUtils.Serializer.deserialize(context.optionSet()));
 	}
@@ -163,7 +152,7 @@ public final class EclipseLoaderBootstrap {
 	 * @return the mod engine
 	 * @since 1.0.0
 	 */
-	public @NotNull ModsImpl engine() {
+	public @NotNull MixinEngine engine() {
 		return this.engine;
 	}
 }

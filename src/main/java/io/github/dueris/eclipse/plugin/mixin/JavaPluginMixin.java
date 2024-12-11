@@ -5,7 +5,7 @@ import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import io.github.dueris.eclipse.loader.EclipseLoaderBootstrap;
 import io.github.dueris.eclipse.loader.api.mod.ModContainer;
-import io.github.dueris.eclipse.loader.api.mod.ModMetadata;
+import io.github.dueris.eclipse.loader.api.impl.ModMetadata;
 import io.github.dueris.eclipse.plugin.EclipsePlugin;
 import io.github.dueris.eclipse.plugin.access.MixinPlugin;
 import io.github.dueris.eclipse.plugin.access.PluginClassloaderHolder;

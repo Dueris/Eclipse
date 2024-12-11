@@ -14,7 +14,7 @@ import java.util.Optional;
  * @since 1.0.0
  */
 @ApiStatus.NonExtendable
-public interface Mods {
+public interface Engine {
 	/**
 	 * Returns {@code true} if the given mod is loaded, otherwise it returns
 	 * {@code false}.

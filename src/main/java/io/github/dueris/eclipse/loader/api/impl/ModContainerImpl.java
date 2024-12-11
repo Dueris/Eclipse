@@ -1,7 +1,6 @@
 package io.github.dueris.eclipse.loader.api.impl;
 
 import io.github.dueris.eclipse.loader.api.mod.ModContainer;
-import io.github.dueris.eclipse.loader.api.mod.ModMetadata;
 import io.github.dueris.eclipse.loader.api.mod.ModResource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

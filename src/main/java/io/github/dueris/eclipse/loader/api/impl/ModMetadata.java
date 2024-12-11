@@ -1,4 +1,4 @@
-package io.github.dueris.eclipse.loader.api.mod;
+package io.github.dueris.eclipse.loader.api.impl;
 
 import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;

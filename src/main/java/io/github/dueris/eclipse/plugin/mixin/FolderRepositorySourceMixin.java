@@ -3,8 +3,8 @@ package io.github.dueris.eclipse.plugin.mixin;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.dueris.eclipse.loader.EclipseLoaderBootstrap;
-import io.github.dueris.eclipse.loader.api.mod.ModMetadata;
-import io.github.dueris.eclipse.loader.api.mod.Mods;
+import io.github.dueris.eclipse.loader.api.impl.ModMetadata;
+import io.github.dueris.eclipse.loader.api.mod.Engine;
 import io.github.dueris.eclipse.plugin.EclipsePlugin;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.PackLocationInfo;
@@ -88,9 +88,9 @@ public abstract class FolderRepositorySourceMixin {
 	 */
 	@Unique
 	private static boolean eclipse$filterJar(Path path) {
-		Mods mods = EclipseLoaderBootstrap.mods();
+		Engine engine = EclipseLoaderBootstrap.mods();
 		AtomicBoolean isValid = new AtomicBoolean(false);
-		mods.containers().stream()
+		engine.containers().stream()
 			.filter(p -> p.resource().path().toAbsolutePath().normalize().toString().equals(path.toAbsolutePath().normalize().toString()))
 			.findFirst().ifPresentOrElse(resource -> {
 				ModMetadata config = resource.config();
