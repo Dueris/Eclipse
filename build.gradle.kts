@@ -119,7 +119,7 @@ tasks {
 }
 
 tasks.register("eclipseJar") {
-    dependsOn(":console:build", "shadowJar")
+    dependsOn(":console:build", "shadowJar", "example:build")
 
     doLast {
         val consoleJar = rootDir.resolve("console/build/libs/console-v1.0.0.jar").absoluteFile

@@ -117,38 +117,12 @@ public class BootstrapEntrypoint implements PluginBootstrap {
 		}
 
 		ProcessBuilder processBuilder = new ProcessBuilder(buildExecutionArgs(jvmArgs, eclipseInstance.getAbsolutePath()));
+		processBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
+		processBuilder.redirectErrorStream();
 
 		Process process = processBuilder.start();
 		processRef.set(process);
 
-		Thread outputHandler = new Thread(() -> {
-			InputStream in = process.getInputStream();
-			try (BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-				 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(System.out))) {
-				String line;
-				while ((line = reader.readLine()) != null) {
-					writer.write(line);
-					writer.newLine();
-					writer.flush();
-				}
-			} catch (IOException e) {
-				System.err.println("Stream handler encountered an error: " + e.getMessage());
-			}
-		}, "ProcessOutStream");
-		Thread errorHandler = new Thread(() -> {
-			InputStream err = process.getErrorStream();
-			try (BufferedReader reader = new BufferedReader(new InputStreamReader(err));
-				 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(System.err))) {
-				String line;
-				while ((line = reader.readLine()) != null) {
-					writer.write(line);
-					writer.newLine();
-					writer.flush();
-				}
-			} catch (IOException e) {
-				System.err.println("Error handler encountered an error: " + e.getMessage());
-			}
-		}, "ProcessErrStream");
 		Thread inputHandler = new Thread(() -> {
 			OutputStream out = process.getOutputStream();
 			try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
@@ -166,16 +140,12 @@ public class BootstrapEntrypoint implements PluginBootstrap {
 			}
 		}, "ProcessInStream");
 
-		outputHandler.start();
 		inputHandler.start();
-		errorHandler.start();
 
 		Thread.currentThread().setName("Eclipse-Watcher");
 		try {
 			int exitCode = process.waitFor();
-			outputHandler.interrupt();
 			inputHandler.interrupt();
-			errorHandler.interrupt();
 			exit(exitCode);
 		} catch (InterruptedException e) {
 			checkKillProcess();

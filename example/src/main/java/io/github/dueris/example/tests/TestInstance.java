@@ -7,7 +7,7 @@ import org.apache.logging.log4j.*;
 import io.github.dueris.example.EclipseExample;
 
 public interface TestInstance {
-    static Logger LOGGER = LogManager.getLogger("EclipseTests");
+    public static Logger LOGGER = LogManager.getLogger("EclipseTests");
     void test() throws TestFailedException;
 
     static void runTests() {
