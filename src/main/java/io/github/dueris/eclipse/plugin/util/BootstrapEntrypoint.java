@@ -24,9 +24,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 import java.nio.file.Path;
@@ -119,20 +117,53 @@ public class BootstrapEntrypoint implements PluginBootstrap {
 		}
 
 		ProcessBuilder processBuilder = new ProcessBuilder(buildExecutionArgs(jvmArgs, eclipseInstance.getAbsolutePath()));
-		// TODO - fix terminal input on some systems
-		processBuilder.redirectErrorStream(true); // Merge error stream with output stream
-		processBuilder.inheritIO();
+		processBuilder.redirectErrorStream(true);
 
 		Process process = processBuilder.start();
 		processRef.set(process);
 
+		Thread outputHandler = new Thread(() -> {
+			InputStream in = process.getInputStream();
+			try (BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+				 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(System.out))) {
+				String line;
+				while ((line = reader.readLine()) != null) {
+					writer.write(line);
+					writer.newLine();
+					writer.flush();
+				}
+			} catch (IOException e) {
+				System.err.println("Stream handler encountered an error: " + e.getMessage());
+			}
+		}, "ProcessOutStream");
+		Thread inputHandler = new Thread(() -> {
+			OutputStream out = process.getOutputStream();
+			try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+				 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out))) {
+				String line;
+				while (!Thread.currentThread().isInterrupted() && (line = reader.readLine()) != null) {
+					writer.write(line);
+					writer.newLine();
+					writer.flush();
+				}
+			} catch (IOException e) {
+				if (!Thread.currentThread().isInterrupted()) {
+					System.err.println("Input handler encountered an I/O error: " + e.getMessage());
+				}
+			}
+		}, "ProcessInStream");
+
+		outputHandler.start();
+		inputHandler.start();
+
 		Thread.currentThread().setName("Eclipse-Watcher");
 		try {
-			// Block current server process from doing anything, as we are currently in control now.
-			exit(process.waitFor());
-		} catch (InterruptedException interruptedException) {
-			logger.error("Current thread, '{}', was interrupted by another process! Exiting eclipse runtime...".replace("{}", Thread.currentThread().getName()));
-			checkKillProcess(); // Terminate the server running incase we can save the server runtime instead of force-killing
+			int exitCode = process.waitFor();
+			outputHandler.interrupt();
+			inputHandler.interrupt();
+			exit(exitCode);
+		} catch (InterruptedException e) {
+			checkKillProcess();
 			exit(1);
 		}
 
@@ -156,11 +187,10 @@ public class BootstrapEntrypoint implements PluginBootstrap {
 		shutdownHook(() -> {
 			try {
 				checkKillProcess();
-				logger.info("Eclipse-Cleanup: Cleanup completed.");
 			} catch (InterruptedException e) {
-				logger.error("Eclipse-Cleanup: Interrupted during cleanup.", e);
+				System.err.println("Eclipse-Cleanup: Interrupted during cleanup." + e);
 			} catch (Exception e) {
-				logger.error("Eclipse-Cleanup: Error during cleanup.", e);
+				System.err.println("Eclipse-Cleanup: Error during cleanup." + e);
 			}
 		});
 
@@ -174,12 +204,6 @@ public class BootstrapEntrypoint implements PluginBootstrap {
 	 * Depending on the one provided, Eclipse will handle it differently
 	 */
 	private void exit(int exitCode) {
-		if (exitCode == 0) {
-			logger.info("Eclipse/Ignite process completed successfully");
-		} else {
-			logger.error("Eclipse/Ignite process exited with abnormal termination: {}", exitCode);
-		}
-
 		if (!shutdownHooks.isEmpty()) {
 			shutdownHooks.forEach(Runnable::run);
 		}
