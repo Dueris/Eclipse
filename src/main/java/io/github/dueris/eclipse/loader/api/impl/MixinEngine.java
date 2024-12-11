@@ -229,19 +229,23 @@ public class MixinEngine implements Engine {
 			}
 
 			AtomicBoolean childLoading = new AtomicBoolean(true);
-			Function<Path, ModResource> resourceBuilder = (childDirectory) -> {
-				ModResourceImpl resource;
-				if (!Files.isRegularFile(childDirectory) || !childDirectory.getFileName().toString().endsWith(".jar")) {
+			Function<Path, ModResource> resourceBuilder = (childFile) -> {
+				if (!Files.isRegularFile(childFile) || !childFile.getFileName().toString().endsWith(".jar")) {
 					return null;
 				}
 
-				try (final JarFile jarFile = new JarFile(childDirectory.toFile())) {
+				try (final JarFile jarFile = new JarFile(childFile.toFile())) {
 					JarEntry jarEntry = jarFile.getJarEntry(IgniteConstants.MOD_CONFIG_YML);
 					if (jarEntry == null) {
+						if (childLoading.get()) {
+							// Loading children in META-INF/mods, most likely a library because it isn't a mod
+							Logger.trace("Assuming child is library jar, merging to classpath: {}", childFile.toAbsolutePath().normalize().toString());
+							IgniteAgent.addJar(childFile);
+						}
 						return null;
 					}
 
-					resource = new ModResourceImpl(JAVA_LOCATOR, childDirectory, jarFile.getManifest(), childLoading.get(), parentToChildren.getOrDefault(childDirectory, List.of()));
+					ModResourceImpl resource = new ModResourceImpl(JAVA_LOCATOR, childFile, jarFile.getManifest(), childLoading.get(), parentToChildren.getOrDefault(childFile, List.of()));
 					resources.add(resource);
 					return resource;
 				} catch (IOException e) {
