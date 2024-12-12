@@ -51,7 +51,7 @@ public abstract class JavaPluginMixin implements MixinPlugin {
 				return holder.eclipse$getPluginClassLoader();
 			}
 
-			throw new RuntimeException("Unable to locate correct class loader for plugin!");
+			throw new RuntimeException("Unable to locate correct class loader for plugin! Found: " + original.getClass().getName());
 		}
 	}
 

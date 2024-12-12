@@ -34,6 +34,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 
 public class MixinEngine implements Engine {
 	public static final String JAVA_LOCATOR = "java_locator";
@@ -235,21 +236,21 @@ public class MixinEngine implements Engine {
 				}
 
 				try (final JarFile jarFile = new JarFile(childFile.toFile())) {
+					Manifest manifest = jarFile.getManifest();
+					if (manifest != null && (manifest.getMainAttributes().getValue("paperweight-mappings-namespace") != null && !manifest.getMainAttributes().getValue("paperweight-mappings-namespace").equals("mojang+yarn"))) {
+						Logger.warn("JarFile, {}, doesn't have a safe mappings namespace(recommended: {}, but found {})! If this is a mixin plugin, it might not work. Proceed with caution", jarFile.getName(), "mojang+yarn", manifest.getMainAttributes().getValue("paperweight-mappings-namespace"));
+					}
 					JarEntry jarEntry = jarFile.getJarEntry(IgniteConstants.MOD_CONFIG_YML);
 					if (jarEntry == null) {
-						if (childLoading.get()) {
-							// Loading children in META-INF/mods, most likely a library because it isn't a mod
-							Logger.trace("Assuming child is library jar, merging to classpath: {}", childFile.toAbsolutePath().normalize().toString());
-							IgniteAgent.addJar(childFile);
-						}
 						return null;
 					}
 
 					ModResourceImpl resource = new ModResourceImpl(JAVA_LOCATOR, childFile, jarFile.getManifest(), childLoading.get(), parentToChildren.getOrDefault(childFile, List.of()));
 					resources.add(resource);
 					return resource;
-				} catch (IOException e) {
-					throw new RuntimeException("Failed to walk child file when reading mod resource!", e);
+				} catch (Throwable e) {
+					e.printStackTrace();
+					return null;
 				}
 			};
 
