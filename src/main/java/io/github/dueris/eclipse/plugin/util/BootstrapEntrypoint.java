@@ -117,8 +117,6 @@ public class BootstrapEntrypoint implements PluginBootstrap {
 		}
 
 		ProcessBuilder processBuilder = new ProcessBuilder(buildExecutionArgs(jvmArgs, eclipseInstance.getAbsolutePath()));
-		processBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
-		processBuilder.redirectErrorStream();
 
 		Process process = processBuilder.start();
 		processRef.set(process);
@@ -142,10 +140,38 @@ public class BootstrapEntrypoint implements PluginBootstrap {
 
 		inputHandler.start();
 
+		Thread outputHandler = new Thread(() -> {
+			try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+				String line;
+				while ((line = reader.readLine()) != null) {
+					printLine(line, System.out);
+				}
+			} catch (IOException e) {
+				System.err.println("Error reading process output: " + e.getMessage());
+			}
+		}, "ProcessOutStream");
+
+		outputHandler.start();
+
+		Thread errorHandler = new Thread(() -> {
+			try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
+				String line;
+				while ((line = reader.readLine()) != null) {
+					printLine(line, System.err);
+				}
+			} catch (IOException e) {
+				System.err.println("Error reading process error stream: " + e.getMessage());
+			}
+		}, "ProcessErrStream");
+		
+		errorHandler.start();
+
 		Thread.currentThread().setName("Eclipse-Watcher");
 		try {
 			int exitCode = process.waitFor();
 			inputHandler.interrupt();
+			outputHandler.interrupt();
+    		errorHandler.interrupt();
 			exit(exitCode);
 		} catch (InterruptedException e) {
 			checkKillProcess();
@@ -192,7 +218,14 @@ public class BootstrapEntrypoint implements PluginBootstrap {
 		if (!shutdownHooks.isEmpty()) {
 			shutdownHooks.forEach(Runnable::run);
 		}
+		printLine("Exiting Minecraft server via Eclipse with exit code " + exitCode, System.out);
 		System.exit(exitCode);
+	}
+
+	private void printLine(String line, PrintStream stream) {
+		// We have to run it through "print" because "println" is overrided by Papers
+		// "WrappedOutStream" class, which appends with the plugin logger
+		stream.print(line + "\n");
 	}
 
 	/**
