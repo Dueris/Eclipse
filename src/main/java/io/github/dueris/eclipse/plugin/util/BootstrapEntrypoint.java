@@ -18,9 +18,12 @@ import io.papermc.paper.plugin.bootstrap.BootstrapContext;
 import io.papermc.paper.plugin.bootstrap.PluginBootstrap;
 import io.papermc.paper.plugin.entrypoint.classloader.PaperPluginClassLoader;
 import joptsimple.OptionSet;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
 import net.minecraft.server.dedicated.DedicatedServerProperties;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bukkit.ChatColor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -94,7 +97,6 @@ public class BootstrapEntrypoint implements PluginBootstrap {
 			contextFile.getParentFile().mkdirs();
 		}
 		try (FileWriter writer = new FileWriter(contextFile)) {
-			Gson gson = new GsonBuilder().setPrettyPrinting().create();
 			JsonObject gsonObject = new JsonObject();
 			gsonObject.addProperty("path", Paths.get(ManagementFactory.getRuntimeMXBean().getClassPath()).toAbsolutePath().normalize().toString());
 			gsonObject.addProperty("brand", ServerBuildInfo.buildInfo().brandName());
@@ -105,9 +107,9 @@ public class BootstrapEntrypoint implements PluginBootstrap {
 				jsonArray.add(b);
 			}
 			gsonObject.add("optionset", jsonArray);
-			writer.write(gson.toJson(gsonObject));
+			writer.write(new GsonBuilder().setPrettyPrinting().create().toJson(gsonObject));
 		} catch (IOException e) {
-			logger.error("Failed to create JSON file: {}", e.getMessage());
+			logger.error("Failed to create context file: {}", e.getMessage());
 			throw e;
 		}
 
@@ -121,6 +123,48 @@ public class BootstrapEntrypoint implements PluginBootstrap {
 		Process process = processBuilder.start();
 		processRef.set(process);
 
+		Thread inHandler = inputThread(process);
+		Thread outHandler = outThread(process.getInputStream(), System.out, "Error reading process output: ", "ProcessOutStream");
+		Thread errHandler = outThread(process.getErrorStream(), System.err, "Error reading process error stream: ", "ProcessErrStream");
+
+		Thread.currentThread().setName("Eclipse-Watcher");
+		try {
+			int exitCode = process.waitFor();
+			inHandler.interrupt();
+			outHandler.interrupt();
+    		errHandler.interrupt();
+			exit(exitCode);
+		} catch (InterruptedException e) {
+			checkKillProcess();
+			exit(1);
+		}
+
+	}
+
+	private @NotNull Thread outThread(InputStream process, PrintStream out, String x, String ProcessOutStream) {
+		Thread outputHandler = new Thread(() -> {
+			try (BufferedReader reader = new BufferedReader(new InputStreamReader(process))) {
+				String line;
+				while ((line = reader.readLine()) != null) {
+					if (line.matches("^\\[.*?]\\s\\[.*?/WARN]:.*")) {
+						line = "\u001B[33m" + line + "\u001B[0m";
+					} else if (line.matches("^\\[.*?]\\s\\[.*?/ERROR]:.*")
+						|| line.matches("^\\s+at\\s+(.*?)?[\\w.$_]+\\.[\\w$<>]+\\(.*:\\d+\\)(\\s~\\[.*])?")
+						|| line.matches("^(?!\\[\\d{2}:\\d{2}:\\d{2}] \\[[^]]+/[A-Za-z]+]:)[a-zA-Z0-9_]+(?:\\.[a-zA-Z0-9_]+)*:.*$")) {
+						line = "\u001B[31m" + line + "\u001B[0m";
+					}
+					printLine(line, out);
+				}
+			} catch (IOException e) {
+				printLine(x + e.getMessage(), System.err);
+			}
+		}, ProcessOutStream);
+
+		outputHandler.start();
+		return outputHandler;
+	}
+
+	private @NotNull Thread inputThread(Process process) {
 		Thread inputHandler = new Thread(() -> {
 			OutputStream out = process.getOutputStream();
 			try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
@@ -133,51 +177,13 @@ public class BootstrapEntrypoint implements PluginBootstrap {
 				}
 			} catch (IOException e) {
 				if (!Thread.currentThread().isInterrupted()) {
-					System.err.println("Input handler encountered an I/O error: " + e.getMessage());
+					printLine("Input handler encountered an I/O error: " + e.getMessage(), System.err);
 				}
 			}
 		}, "ProcessInStream");
 
 		inputHandler.start();
-
-		Thread outputHandler = new Thread(() -> {
-			try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-				String line;
-				while ((line = reader.readLine()) != null) {
-					printLine(line, System.out);
-				}
-			} catch (IOException e) {
-				System.err.println("Error reading process output: " + e.getMessage());
-			}
-		}, "ProcessOutStream");
-
-		outputHandler.start();
-
-		Thread errorHandler = new Thread(() -> {
-			try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
-				String line;
-				while ((line = reader.readLine()) != null) {
-					printLine(line, System.err);
-				}
-			} catch (IOException e) {
-				System.err.println("Error reading process error stream: " + e.getMessage());
-			}
-		}, "ProcessErrStream");
-		
-		errorHandler.start();
-
-		Thread.currentThread().setName("Eclipse-Watcher");
-		try {
-			int exitCode = process.waitFor();
-			inputHandler.interrupt();
-			outputHandler.interrupt();
-    		errorHandler.interrupt();
-			exit(exitCode);
-		} catch (InterruptedException e) {
-			checkKillProcess();
-			exit(1);
-		}
-
+		return inputHandler;
 	}
 
 	/**
@@ -222,10 +228,11 @@ public class BootstrapEntrypoint implements PluginBootstrap {
 		System.exit(exitCode);
 	}
 
-	private void printLine(String line, PrintStream stream) {
+	private void printLine(Object line, @NotNull PrintStream stream) {
 		// We have to run it through "print" because "println" is overrided by Papers
 		// "WrappedOutStream" class, which appends with the plugin logger
-		stream.print(line + "\n");
+		stream.print(line);
+		stream.print("\n");
 	}
 
 	/**

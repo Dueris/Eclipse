@@ -11,7 +11,7 @@ public interface TestInstance {
     void test() throws TestFailedException;
 
     static void runTests() {
-       for (Class<? extends TestInstance> testClass : List.of(StaticGetPluginTest.class, PluginManagerGetPlugin.class)) {
+       for (Class<? extends TestInstance> testClass : List.of(StaticGetPluginTest.class, PluginManagerGetPlugin.class, ColoredLoggingOutputTest.class)) {
         try {
             TestInstance testInstance = testClass.newInstance();
             try {

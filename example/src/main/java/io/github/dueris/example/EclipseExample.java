@@ -8,7 +8,9 @@ public class EclipseExample extends JavaPlugin {
     
     @Override
     public void onEnable() {
-        getLog4JLogger().info("Loaded Eclipse example plugin!");
+        getLog4JLogger().warn("TEST");
+        getLog4JLogger().error("TEST");
+        getLog4JLogger().info("Loaded Eclipse example/test plugin!");
         TestInstance.runTests();
     }
 }
