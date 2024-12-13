@@ -1,12 +1,12 @@
 package io.github.dueris.eclipse.loader.launch;
 
-import com.llamalad7.mixinextras.MixinExtrasBootstrap;
+import com.llamalad7.mixinextras.service.MixinExtrasVersion;
 import io.github.dueris.eclipse.loader.EclipseLoaderBootstrap;
-import io.github.dueris.eclipse.loader.api.impl.MixinEngine;
 import io.github.dueris.eclipse.loader.api.Blackboard;
+import io.github.dueris.eclipse.loader.api.impl.MixinEngine;
 import io.github.dueris.eclipse.loader.api.impl.ModContainerImpl;
-import io.github.dueris.eclipse.loader.api.impl.ModResourceImpl;
 import io.github.dueris.eclipse.loader.api.impl.ModMetadata;
+import io.github.dueris.eclipse.loader.api.impl.ModResourceImpl;
 import io.github.dueris.eclipse.loader.api.mod.ModResource;
 import io.github.dueris.eclipse.loader.api.util.ClassLoaders;
 import io.github.dueris.eclipse.loader.api.util.IgniteConstants;
@@ -62,7 +62,7 @@ public final class LaunchService {
 					String locator = realResource.locator();
 					if (locator.equalsIgnoreCase(MixinEngine.LAUNCHER_LOCATOR)) {
 						builder.append("\t- ").append("eclipseloader ").append(IgniteConstants.IMPLEMENTATION_VERSION).append("\n");
-						builder.append("\t   \\-- mixinextras ").append(MixinExtrasBootstrap.getVersion()).append("\n");
+						builder.append("\t   \\-- mixinextras ").append(MixinExtrasVersion.LATEST.toString()).append("\n");
 					} else if (locator.equalsIgnoreCase(MixinEngine.GAME_LOCATOR)) {
 						builder.append("\t- ").append("minecraft ").append(bootstrap.versionString).append("\n");
 					} else {
@@ -129,7 +129,7 @@ public final class LaunchService {
 			final Path gameJar = Blackboard.raw(Blackboard.GAME_JAR);
 			final String gameTarget = EclipseGameLocator.targetClass();
 			if (gameJar != null && Files.exists(gameJar)) {
-				Object instance = Class.forName(gameTarget, true, loader).newInstance();
+				Object instance = Class.forName(gameTarget, true, loader).getConstructor().newInstance();
 				EclipseMain.class.getMethod("eclipse$main", OptionSet.class).invoke(instance, optionSet);
 			} else {
 				throw new IllegalStateException("No game jar was found to launch!");

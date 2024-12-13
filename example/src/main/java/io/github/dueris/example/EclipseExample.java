@@ -10,7 +10,7 @@ public class EclipseExample extends JavaPlugin {
     public void onEnable() {
         getLog4JLogger().warn("TEST");
         getLog4JLogger().error("TEST");
-        getLog4JLogger().info("Loaded Eclipse example/test plugin!");
         TestInstance.runTests();
+        getLog4JLogger().info("Loaded Eclipse example/test plugin!");
     }
 }

@@ -8,7 +8,6 @@ import com.dragoncommissions.mixbukkit.api.action.impl.MActionInsertShellCode;
 import com.dragoncommissions.mixbukkit.api.locator.impl.HLocatorHead;
 import com.dragoncommissions.mixbukkit.api.shellcode.impl.api.CallbackInfo;
 import com.dragoncommissions.mixbukkit.api.shellcode.impl.api.ShellCodeReflectionMixinPluginMethodCall;
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -20,16 +19,17 @@ import io.papermc.paper.plugin.entrypoint.classloader.PaperPluginClassLoader;
 import joptsimple.OptionSet;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import net.minecraft.server.dedicated.DedicatedServerProperties;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.bukkit.ChatColor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
+import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -38,6 +38,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 
 /**
  * Bootstrap/pre-boot stage, setup for ignite context
@@ -52,6 +53,7 @@ public class BootstrapEntrypoint implements PluginBootstrap {
 	private static final List<Runnable> shutdownHooks = new LinkedList<>();
 	protected static BootstrapContext CONTEXT;
 	private static boolean PROVIDER_CONTEXT = false;
+	private Function<Component, String> serializer;
 
 	public static void shutdownHook(Runnable runnable) {
 		shutdownHooks.add(new Thread(runnable));
@@ -119,6 +121,14 @@ public class BootstrapEntrypoint implements PluginBootstrap {
 		}
 
 		ProcessBuilder processBuilder = new ProcessBuilder(buildExecutionArgs(jvmArgs, eclipseInstance.getAbsolutePath()));
+		{
+			// We use kyori component logger to grab its serializer, which translates a Component -> String, including its custom colors
+			ComponentLogger componentLogger = ComponentLogger.logger("Eclipse");
+			Field serializerField = componentLogger.getClass().getDeclaredField("serializer");
+			serializerField.setAccessible(true);
+			//noinspection unchecked
+			serializer = (Function<Component, String>) serializerField.get(componentLogger);
+		}
 
 		Process process = processBuilder.start();
 		processRef.set(process);
@@ -132,7 +142,7 @@ public class BootstrapEntrypoint implements PluginBootstrap {
 			int exitCode = process.waitFor();
 			inHandler.interrupt();
 			outHandler.interrupt();
-    		errHandler.interrupt();
+			errHandler.interrupt();
 			exit(exitCode);
 		} catch (InterruptedException e) {
 			checkKillProcess();
@@ -145,18 +155,23 @@ public class BootstrapEntrypoint implements PluginBootstrap {
 		Thread outputHandler = new Thread(() -> {
 			try (BufferedReader reader = new BufferedReader(new InputStreamReader(process))) {
 				String line;
+				Component lineComponent;
 				while ((line = reader.readLine()) != null) {
 					if (line.matches("^\\[.*?]\\s\\[.*?/WARN]:.*")) {
-						line = "\u001B[33m" + line + "\u001B[0m";
+						lineComponent = warnComponent(line);
 					} else if (line.matches("^\\[.*?]\\s\\[.*?/ERROR]:.*")
-						|| line.matches("^\\s+at\\s+(.*?)?[\\w.$_]+\\.[\\w$<>]+\\(.*:\\d+\\)(\\s~\\[.*])?")
-						|| line.matches("^(?!\\[\\d{2}:\\d{2}:\\d{2}] \\[[^]]+/[A-Za-z]+]:)[a-zA-Z0-9_]+(?:\\.[a-zA-Z0-9_]+)*:.*$")) {
-						line = "\u001B[31m" + line + "\u001B[0m";
+						|| (line.matches("^\\s+at\\s+(.*?)?[\\w.$_]+\\.[\\w$<>]+\\(.*:\\d+\\)(\\s~\\[.*])?")
+						|| line.matches("^(?!\\[\\d{2}:\\d{2}:\\d{2}] \\[[^]]+/[A-Za-z]+]:)[a-zA-Z0-9_]+(?:\\.[a-zA-Z0-9_]+)*:.*$")
+						|| line.matches("^Caused by: [a-zA-Z0-9_]+(?:\\.[a-zA-Z0-9_]+)*:.*$")
+						|| line.matches("^\\s*\\.\\.\\. \\d+ more$"))) {
+						lineComponent = errorComponent(line);
+					} else {
+						lineComponent = Component.text(line);
 					}
-					printLine(line, out);
+					printLine(lineComponent, out);
 				}
 			} catch (IOException e) {
-				printLine(x + e.getMessage(), System.err);
+				printLine(errorComponent(x + e.getMessage()), System.err);
 			}
 		}, ProcessOutStream);
 
@@ -177,7 +192,7 @@ public class BootstrapEntrypoint implements PluginBootstrap {
 				}
 			} catch (IOException e) {
 				if (!Thread.currentThread().isInterrupted()) {
-					printLine("Input handler encountered an I/O error: " + e.getMessage(), System.err);
+					printLine(errorComponent("Input handler encountered an I/O error: " + e.getMessage()), System.err);
 				}
 			}
 		}, "ProcessInStream");
@@ -224,15 +239,23 @@ public class BootstrapEntrypoint implements PluginBootstrap {
 		if (!shutdownHooks.isEmpty()) {
 			shutdownHooks.forEach(Runnable::run);
 		}
-		printLine("Exiting Minecraft server via Eclipse with exit code " + exitCode, System.out);
+		printLine(Component.text("Exiting Minecraft server via Eclipse with exit code " + exitCode), System.out);
 		System.exit(exitCode);
 	}
 
-	private void printLine(Object line, @NotNull PrintStream stream) {
+	private void printLine(Component line, @NotNull PrintStream stream) {
 		// We have to run it through "print" because "println" is overrided by Papers
 		// "WrappedOutStream" class, which appends with the plugin logger
-		stream.print(line);
+		stream.print(serializer.apply(line));
 		stream.print("\n");
+	}
+
+	private @NotNull Component errorComponent(String string) {
+		return Component.text(string).color(TextColor.color(0xE74856));
+	}
+
+	private @NotNull Component warnComponent(String string) {
+		return Component.text(string).color(TextColor.color(0xF9F2A1));
 	}
 
 	/**
