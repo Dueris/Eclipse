@@ -1,5 +1,8 @@
 package io.github.dueris.eclipse.loader.launch.ember;
 
+import io.github.dueris.eclipse.loader.launch.ember.transformer.EmberTransformer;
+import io.github.dueris.eclipse.loader.launch.ember.transformer.TransformPhase;
+import io.github.dueris.eclipse.loader.util.ResourceConnection;
 import io.github.dueris.eclipse.loader.util.mrj.AbstractClassLoader;
 import io.github.dueris.eclipse.loader.util.mrj.AbstractUrlClassLoader;
 import org.jetbrains.annotations.NotNull;

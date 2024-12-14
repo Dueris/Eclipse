@@ -1,4 +1,4 @@
-package io.github.dueris.eclipse.loader.launch.ember;
+package io.github.dueris.eclipse.loader.launch.ember.transformer;
 
 /**
  * Represents the phase of a transformation.

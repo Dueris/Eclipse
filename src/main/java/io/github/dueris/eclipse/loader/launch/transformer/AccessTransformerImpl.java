@@ -1,8 +1,8 @@
 package io.github.dueris.eclipse.loader.launch.transformer;
 
 import io.github.dueris.eclipse.loader.api.util.IgniteConstants;
-import io.github.dueris.eclipse.loader.launch.ember.TransformPhase;
-import io.github.dueris.eclipse.loader.launch.ember.TransformerService;
+import io.github.dueris.eclipse.loader.launch.ember.transformer.TransformPhase;
+import io.github.dueris.eclipse.loader.launch.ember.transformer.TransformerService;
 import net.fabricmc.accesswidener.AccessWidener;
 import net.fabricmc.accesswidener.AccessWidenerClassVisitor;
 import net.fabricmc.accesswidener.AccessWidenerReader;

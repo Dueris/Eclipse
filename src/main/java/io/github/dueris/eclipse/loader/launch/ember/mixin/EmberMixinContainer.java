@@ -1,4 +1,4 @@
-package io.github.dueris.eclipse.loader.launch.ember;
+package io.github.dueris.eclipse.loader.launch.ember.mixin;
 
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.launch.platform.container.ContainerHandleURI;

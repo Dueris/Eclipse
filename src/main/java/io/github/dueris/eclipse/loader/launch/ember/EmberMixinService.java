@@ -1,5 +1,9 @@
 package io.github.dueris.eclipse.loader.launch.ember;
 
+import io.github.dueris.eclipse.loader.launch.ember.mixin.EmberMixinContainer;
+import io.github.dueris.eclipse.loader.launch.ember.mixin.EmberMixinLogger;
+import io.github.dueris.eclipse.loader.launch.ember.transformer.EmberTransformer;
+import io.github.dueris.eclipse.loader.launch.ember.transformer.TransformPhase;
 import io.github.dueris.eclipse.loader.launch.transformer.MixinTransformerImpl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

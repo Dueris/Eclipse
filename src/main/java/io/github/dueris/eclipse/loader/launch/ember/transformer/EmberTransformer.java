@@ -1,6 +1,7 @@
-package io.github.dueris.eclipse.loader.launch.ember;
+package io.github.dueris.eclipse.loader.launch.ember.transformer;
 
 import io.github.dueris.eclipse.loader.api.util.IgniteConstants;
+import io.github.dueris.eclipse.loader.launch.ember.Ember;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.objectweb.asm.ClassReader;
@@ -25,7 +26,7 @@ public final class EmberTransformer {
 
 	private Predicate<String> resourceExclusionFilter = path -> true;
 
-	EmberTransformer() {
+	public EmberTransformer() {
 		final ServiceLoader<TransformerService> serviceLoader = ServiceLoader.load(TransformerService.class, Ember.class.getClassLoader());
 		for (final TransformerService service : serviceLoader) {
 			this.transformers.put(service.getClass(), service);
@@ -67,7 +68,7 @@ public final class EmberTransformer {
 		return Collections.unmodifiableCollection(this.transformers.values());
 	}
 
-	byte @NotNull [] transform(final @NotNull String className, final byte @NotNull [] input, final @NotNull TransformPhase phase) {
+	public byte @NotNull [] transform(final @NotNull String className, final byte @NotNull [] input, final @NotNull TransformPhase phase) {
 		final String internalName = className.replace('.', '/');
 
 		// Check if the path is excluded from transformation.

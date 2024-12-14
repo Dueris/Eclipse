@@ -2,14 +2,14 @@ package io.github.dueris.eclipse.loader.api.impl;
 
 import io.github.dueris.eclipse.loader.EclipseLoaderBootstrap;
 import io.github.dueris.eclipse.loader.agent.IgniteAgent;
-import io.github.dueris.eclipse.loader.api.Blackboard;
 import io.github.dueris.eclipse.loader.api.mod.Engine;
 import io.github.dueris.eclipse.loader.api.mod.ModContainer;
 import io.github.dueris.eclipse.loader.api.mod.ModResource;
 import io.github.dueris.eclipse.loader.api.util.IgniteConstants;
-import io.github.dueris.eclipse.loader.launch.ember.EmberMixinContainer;
+import io.github.dueris.eclipse.loader.launch.EmberLauncher;
 import io.github.dueris.eclipse.loader.launch.ember.EmberMixinService;
-import io.github.dueris.eclipse.loader.launch.ember.EmberTransformer;
+import io.github.dueris.eclipse.loader.launch.ember.mixin.EmberMixinContainer;
+import io.github.dueris.eclipse.loader.launch.ember.transformer.EmberTransformer;
 import io.github.dueris.eclipse.loader.launch.transformer.AccessTransformerImpl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -194,7 +194,7 @@ public class MixinEngine implements Engine {
 		resources.add(this.createGameResource());
 
 		// Retrieve the mods from the mods directory.
-		final Path modDirectory = Blackboard.raw(Blackboard.MODS_DIRECTORY);
+		final Path modDirectory = (Path) EmberLauncher.getProperties().get("modspath");
 		final Path cachedModsDirectory = Paths.get(".").toAbsolutePath().resolve("cache").resolve(".eclipse").resolve("processedMods");
 		try {
 			if (modDirectory == null) {
@@ -344,7 +344,7 @@ public class MixinEngine implements Engine {
 	}
 
 	private @NotNull ModResourceImpl createGameResource() {
-		final File gameFile = Blackboard.raw(Blackboard.GAME_JAR).toFile();
+		final File gameFile = ((Path)EmberLauncher.getProperties().get("gamejar")).toFile();
 		try (final JarFile jarFile = new JarFile(gameFile)) {
 			return new ModResourceImpl(GAME_LOCATOR, gameFile.toPath(), jarFile.getManifest(), false, List.of());
 		} catch (final Exception exception) {

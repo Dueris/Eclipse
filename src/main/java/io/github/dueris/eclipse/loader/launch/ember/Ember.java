@@ -1,7 +1,9 @@
 package io.github.dueris.eclipse.loader.launch.ember;
 
 import com.llamalad7.mixinextras.MixinExtrasBootstrap;
-import io.github.dueris.eclipse.loader.launch.LaunchService;
+import io.github.dueris.eclipse.loader.launch.EmberLauncher;
+import io.github.dueris.eclipse.loader.launch.ember.transformer.EmberTransformer;
+import io.github.dueris.eclipse.loader.launch.ember.transformer.TransformerService;
 import joptsimple.OptionSet;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.launch.MixinBootstrap;
@@ -18,14 +20,14 @@ import java.lang.reflect.Method;
  */
 public final class Ember {
 	private static Ember INSTANCE;
-	private final LaunchService service;
+	private final EmberLauncher service;
 	private EmberTransformer transformer;
 	private EmberClassLoader loader;
 
 	private Ember() {
 		Ember.INSTANCE = this;
 
-		this.service = new LaunchService();
+		this.service = new EmberLauncher();
 	}
 
 	/**

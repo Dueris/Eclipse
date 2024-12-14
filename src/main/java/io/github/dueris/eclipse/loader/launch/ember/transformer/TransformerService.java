@@ -1,4 +1,4 @@
-package io.github.dueris.eclipse.loader.launch.ember;
+package io.github.dueris.eclipse.loader.launch.ember.transformer;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

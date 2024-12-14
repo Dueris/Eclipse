@@ -1,4 +1,4 @@
-package io.github.dueris.eclipse.loader.launch.ember;
+package io.github.dueris.eclipse.loader.launch.ember.mixin;
 
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.logging.ILogger;
@@ -10,7 +10,7 @@ import org.tinylog.TaggedLogger;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-final class EmberMixinLogger extends LoggerAdapterAbstract {
+public final class EmberMixinLogger extends LoggerAdapterAbstract {
 	private static final Map<String, ILogger> LOGGERS = new ConcurrentHashMap<>();
 	private final TaggedLogger logger;
 
@@ -20,8 +20,7 @@ final class EmberMixinLogger extends LoggerAdapterAbstract {
 		this.logger = Logger.tag(id);
 	}
 
-	/* package */
-	static @NotNull ILogger get(final @NotNull String name) {
+	public static @NotNull ILogger get(final @NotNull String name) {
 		return EmberMixinLogger.LOGGERS.computeIfAbsent(name, EmberMixinLogger::new);
 	}
 

@@ -1,8 +1,8 @@
 package io.github.dueris.eclipse.loader.launch.transformer;
 
 import io.github.dueris.eclipse.loader.api.util.IgniteConstants;
-import io.github.dueris.eclipse.loader.launch.ember.TransformPhase;
-import io.github.dueris.eclipse.loader.launch.ember.TransformerService;
+import io.github.dueris.eclipse.loader.launch.ember.transformer.TransformPhase;
+import io.github.dueris.eclipse.loader.launch.ember.transformer.TransformerService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.objectweb.asm.ClassReader;

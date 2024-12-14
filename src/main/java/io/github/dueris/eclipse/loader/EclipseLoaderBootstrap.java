@@ -1,13 +1,13 @@
 package io.github.dueris.eclipse.loader;
 
 import io.github.dueris.eclipse.loader.agent.IgniteAgent;
-import io.github.dueris.eclipse.loader.api.Blackboard;
 import io.github.dueris.eclipse.loader.api.impl.MixinEngine;
 import io.github.dueris.eclipse.loader.api.mod.Engine;
 import io.github.dueris.eclipse.loader.api.util.IgniteConstants;
 import io.github.dueris.eclipse.loader.game.GameLocatorService;
 import io.github.dueris.eclipse.loader.game.GameProvider;
 import io.github.dueris.eclipse.loader.launch.EclipseGameLocator;
+import io.github.dueris.eclipse.loader.launch.EmberLauncher;
 import io.github.dueris.eclipse.loader.launch.ember.Ember;
 import io.github.dueris.eclipse.loader.util.BootstrapEntryContext;
 import io.github.dueris.eclipse.plugin.util.OptionSetUtils;
@@ -68,11 +68,10 @@ public final class EclipseLoaderBootstrap {
 		ignite.context = BootstrapEntryContext.read();
 		Path jarPath = ignite.context.serverPath();
 
-		Blackboard.GAME_JAR = Blackboard.key("ignite.jar", Path.class, jarPath);
-		Blackboard.compute(Blackboard.GAME_JAR, () -> jarPath);
-		Blackboard.compute(Blackboard.DEBUG, () -> Boolean.parseBoolean(System.getProperty(Blackboard.DEBUG.name())));
-		Blackboard.compute(Blackboard.GAME_LIBRARIES, () -> Paths.get(System.getProperty(Blackboard.GAME_LIBRARIES.name())));
-		Blackboard.compute(Blackboard.MODS_DIRECTORY, () -> Paths.get(System.getProperty(Blackboard.MODS_DIRECTORY.name())));
+		EmberLauncher.getProperties().put("gamejar", jarPath);
+		EmberLauncher.getProperties().put("debug", Boolean.parseBoolean(System.getProperty("eclipse.debug")));
+		EmberLauncher.getProperties().put("librariespath", Paths.get("./libraries"));
+		EmberLauncher.getProperties().put("modspath", Paths.get("./plugins"));
 
 		BOOTED.set(true);
 		ignite.ignite();

@@ -2,7 +2,6 @@ package io.github.dueris.eclipse.loader.launch;
 
 import com.llamalad7.mixinextras.service.MixinExtrasVersion;
 import io.github.dueris.eclipse.loader.EclipseLoaderBootstrap;
-import io.github.dueris.eclipse.loader.api.Blackboard;
 import io.github.dueris.eclipse.loader.api.impl.MixinEngine;
 import io.github.dueris.eclipse.loader.api.impl.ModContainerImpl;
 import io.github.dueris.eclipse.loader.api.impl.ModMetadata;
@@ -12,7 +11,7 @@ import io.github.dueris.eclipse.loader.api.util.ClassLoaders;
 import io.github.dueris.eclipse.loader.api.util.IgniteConstants;
 import io.github.dueris.eclipse.loader.api.util.IgniteExclusions;
 import io.github.dueris.eclipse.loader.launch.ember.EmberClassLoader;
-import io.github.dueris.eclipse.loader.launch.ember.EmberTransformer;
+import io.github.dueris.eclipse.loader.launch.ember.transformer.EmberTransformer;
 import io.github.dueris.eclipse.loader.util.LaunchException;
 import io.github.dueris.eclipse.plugin.access.EclipseMain;
 import joptsimple.OptionSet;
@@ -25,7 +24,9 @@ import java.net.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -40,11 +41,16 @@ import java.util.jar.Manifest;
  * @author vectrix
  * @since 1.0.0
  */
-public final class LaunchService {
+public final class EmberLauncher {
+	private static final Map<String, Object> properties = new LinkedHashMap<>();
 	private static final String JAVA_HOME = System.getProperty("java.home");
 	private static final @SuppressWarnings("OptionalUsedAsFieldOrParameterType") Optional<Manifest> DEFAULT_MANIFEST = Optional.of(new Manifest());
 
 	private final ConcurrentMap<String, Optional<Manifest>> manifests = new ConcurrentHashMap<>();
+
+	public static Map<String, Object> getProperties() {
+		return properties;
+	}
 
 	public void initialize() {
 		// Initialize the mod engine.
@@ -126,7 +132,7 @@ public final class LaunchService {
 
 	public void launch(final @NotNull OptionSet optionSet, final @NotNull EmberClassLoader loader) throws LaunchException {
 		try {
-			final Path gameJar = Blackboard.raw(Blackboard.GAME_JAR);
+			final Path gameJar = (Path) getProperties().get("gamejar");
 			final String gameTarget = EclipseGameLocator.targetClass();
 			if (gameJar != null && Files.exists(gameJar)) {
 				Object instance = Class.forName(gameTarget, true, loader).getConstructor().newInstance();
@@ -184,11 +190,11 @@ public final class LaunchService {
 						}
 					}
 
-					return LaunchService.DEFAULT_MANIFEST;
+					return EmberLauncher.DEFAULT_MANIFEST;
 				});
 
 				try {
-					if (manifest == LaunchService.DEFAULT_MANIFEST) {
+					if (manifest == EmberLauncher.DEFAULT_MANIFEST) {
 						return Optional.ofNullable(((JarURLConnection) connection).getManifest());
 					} else {
 						return manifest;
@@ -206,7 +212,7 @@ public final class LaunchService {
 		final File target = new File(uri);
 
 		// Ensure JVM internals are not transformable.
-		if (target.getAbsolutePath().startsWith(LaunchService.JAVA_HOME)) {
+		if (target.getAbsolutePath().startsWith(EmberLauncher.JAVA_HOME)) {
 			return false;
 		}
 
