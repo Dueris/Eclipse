@@ -13,3 +13,7 @@ mixins: [
 wideners: [
   "example.accesswidener"
 ]
+
+entrypoints:
+  bootstrap: "io.github.dueris.example.EclipseBootstrapEntrypoint"
+  server: "io.github.dueris.example.EclipseModEntrypoint"

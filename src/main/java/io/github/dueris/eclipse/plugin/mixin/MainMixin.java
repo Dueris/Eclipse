@@ -1,5 +1,7 @@
 package io.github.dueris.eclipse.plugin.mixin;
 
+import io.github.dueris.eclipse.loader.api.entrypoint.ModInitializer;
+import io.github.dueris.eclipse.loader.entrypoint.EntrypointContainer;
 import io.github.dueris.eclipse.plugin.access.EclipseMain;
 import joptsimple.OptionSet;
 import net.minecraft.SharedConstants;
@@ -43,6 +45,7 @@ public class MainMixin implements EclipseMain {
 
 			SharedConstants.tryDetectVersion();
 
+			EntrypointContainer.getEntrypoint(ModInitializer.class).enter();
 			net.minecraft.server.Main.main(options);
 		} catch (Throwable t) {
 			t.printStackTrace();

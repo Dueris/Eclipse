@@ -2,6 +2,8 @@ package io.github.dueris.eclipse.loader.launch;
 
 import com.llamalad7.mixinextras.service.MixinExtrasVersion;
 import io.github.dueris.eclipse.loader.EclipseLoaderBootstrap;
+import io.github.dueris.eclipse.loader.api.entrypoint.BootstrapInitializer;
+import io.github.dueris.eclipse.loader.api.entrypoint.ModInitializer;
 import io.github.dueris.eclipse.loader.api.impl.MixinEngine;
 import io.github.dueris.eclipse.loader.api.impl.ModContainerImpl;
 import io.github.dueris.eclipse.loader.api.impl.ModMetadata;
@@ -10,6 +12,7 @@ import io.github.dueris.eclipse.loader.api.mod.ModResource;
 import io.github.dueris.eclipse.loader.api.util.ClassLoaders;
 import io.github.dueris.eclipse.loader.api.util.IgniteConstants;
 import io.github.dueris.eclipse.loader.api.util.IgniteExclusions;
+import io.github.dueris.eclipse.loader.entrypoint.EntrypointContainer;
 import io.github.dueris.eclipse.loader.launch.ember.EmberClassLoader;
 import io.github.dueris.eclipse.loader.launch.ember.transformer.EmberTransformer;
 import io.github.dueris.eclipse.loader.util.LaunchException;
@@ -131,6 +134,12 @@ public final class EmberLauncher {
 	}
 
 	public void launch(final @NotNull OptionSet optionSet, final @NotNull EmberClassLoader loader) throws LaunchException {
+		// Load builtin entrypoints
+		{
+			EntrypointContainer.register("server", "onInitializeServer", ModInitializer.class);
+			EntrypointContainer.register("bootstrap", "onInitializeBootstrap", BootstrapInitializer.class);
+		}
+		// Launch the game
 		try {
 			final Path gameJar = (Path) getProperties().get("gamejar");
 			final String gameTarget = EclipseGameLocator.targetClass();

@@ -25,6 +25,7 @@ java {
 
 dependencies {
     paperweight.paperDevBundle(paperweightVersion)
+    compileOnly(rootProject)
 }
 
 eclipse {
