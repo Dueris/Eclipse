@@ -1,13 +1,14 @@
 package io.github.dueris.eclipse.loader.agent;
 
+import io.github.dueris.eclipse.loader.agent.patch.GamePatch;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.Instrumentation;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.util.jar.JarFile;
 
@@ -24,14 +25,17 @@ public final class IgniteAgent {
 	private IgniteAgent() {
 	}
 
-	/**
-	 * Adds a {@link ClassFileTransformer} to this agent.
-	 *
-	 * @param transformer the transformer
-	 * @since 1.0.0
-	 */
-	public static void addTransformer(final @NotNull ClassFileTransformer transformer) {
-		if (IgniteAgent.INSTRUMENTATION != null) IgniteAgent.INSTRUMENTATION.addTransformer(transformer);
+	public static <T extends GamePatch> void addPatch(final @NotNull T patch) {
+		if (IgniteAgent.INSTRUMENTATION != null) IgniteAgent.INSTRUMENTATION.addTransformer(patch);
+	}
+
+	public static <T extends GamePatch> void addPatch(@NotNull Class<T> patchClass) {
+		try {
+			addPatch(patchClass.getConstructor().newInstance());
+		} catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+				 NoSuchMethodException e) {
+			throw new RuntimeException("Unable to add patch to classpath agent!", e);
+		}
 	}
 
 	/**

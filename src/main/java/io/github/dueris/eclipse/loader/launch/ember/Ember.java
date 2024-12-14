@@ -1,6 +1,7 @@
 package io.github.dueris.eclipse.loader.launch.ember;
 
 import com.llamalad7.mixinextras.MixinExtrasBootstrap;
+import io.github.dueris.eclipse.loader.EclipseLoaderBootstrap;
 import io.github.dueris.eclipse.loader.launch.EmberLauncher;
 import io.github.dueris.eclipse.loader.launch.ember.transformer.EmberTransformer;
 import io.github.dueris.eclipse.loader.launch.ember.transformer.TransformerService;
@@ -57,6 +58,9 @@ public final class Ember {
 	}
 
 	private void run(final @NotNull OptionSet optionSet) {
+		// Transform context
+		EclipseLoaderBootstrap.instance().gameLocator.transformContext();
+
 		// Initialize the launch.
 		this.service.initialize();
 

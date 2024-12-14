@@ -344,7 +344,7 @@ public class MixinEngine implements Engine {
 	}
 
 	private @NotNull ModResourceImpl createGameResource() {
-		final File gameFile = ((Path)EmberLauncher.getProperties().get("gamejar")).toFile();
+		final File gameFile = ((Path) EmberLauncher.getProperties().get("gamejar")).toFile();
 		try (final JarFile jarFile = new JarFile(gameFile)) {
 			return new ModResourceImpl(GAME_LOCATOR, gameFile.toPath(), jarFile.getManifest(), false, List.of());
 		} catch (final Exception exception) {

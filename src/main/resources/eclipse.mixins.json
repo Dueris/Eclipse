@@ -6,7 +6,6 @@
     "FolderRepositorySourceMixin",
     "JavaPluginMixin",
     "MainMixin",
-    "MinecraftServerMixin",
     "ModernPluginLoadingStrategyMixin",
     "PackDetectorMixin",
     "PaperClasspathBuilderMixin",

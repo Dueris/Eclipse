@@ -14,8 +14,9 @@ public class EntrypointContainer {
 
 	/**
 	 * Registers your entrypoint and prepares it for calling
-	 * @param id the id that will be associated with your mod entrypoint
-	 * @param methodName the name of the method to invoke, like `onInitialize()`
+	 *
+	 * @param id               the id that will be associated with your mod entrypoint
+	 * @param methodName       the name of the method to invoke, like `onInitialize()`
 	 * @param instanceToInvoke the class type to invoke(must be an interface)
 	 */
 	public static EntrypointInstance register(String id, String methodName, Class<?> instanceToInvoke, Class<?>... argumentTypes) {

@@ -2,6 +2,7 @@ package io.github.dueris.eclipse.loader.launch;
 
 import io.github.dueris.eclipse.loader.EclipseLoaderBootstrap;
 import io.github.dueris.eclipse.loader.agent.IgniteAgent;
+import io.github.dueris.eclipse.loader.agent.patch.BrandingPatch;
 import io.github.dueris.eclipse.loader.game.GameLibrary;
 import io.github.dueris.eclipse.loader.game.GameLocatorService;
 import io.github.dueris.eclipse.loader.game.GameProvider;
@@ -54,7 +55,7 @@ public class EclipseGameLocator implements GameLocatorService {
 	@Override
 	public void apply(@NotNull EclipseLoaderBootstrap bootstrap) {
 		// Hypothetically, paperclip doesn't even need to run, since we already have the jar executed beforehand(and is executing the eclipse jar...)
-		Path gameJarPath = (Path)EmberLauncher.getProperties().get("gamejar");
+		Path gameJarPath = (Path) EmberLauncher.getProperties().get("gamejar");
 		try {
 			IgniteAgent.addJar(gameJarPath);
 		} catch (final IOException exception) {
@@ -114,6 +115,13 @@ public class EclipseGameLocator implements GameLocatorService {
 	@Override
 	public @NotNull GameProvider locate() {
 		return this.provider;
+	}
+
+	@Override
+	public void transformContext() {
+		List.of(
+			BrandingPatch.class
+		).forEach(IgniteAgent::addPatch);
 	}
 
 	public record EclipseGameProvider(String game, Stream<GameLibrary> libraries,

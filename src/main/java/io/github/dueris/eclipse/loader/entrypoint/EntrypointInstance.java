@@ -13,9 +13,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class EntrypointInstance<T> {
+	protected final Class<T> instanceClass;
 	private final String id;
 	private final String methodName;
-	protected final Class<T> instanceClass;
 	private final Class<?>[] argumentTypes;
 	private final Map<ModResource, Class<? extends T>> registeredEntrypoints = new HashMap<>();
 

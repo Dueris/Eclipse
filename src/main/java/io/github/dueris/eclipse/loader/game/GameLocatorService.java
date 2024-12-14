@@ -59,4 +59,9 @@ public interface GameLocatorService {
 	 * @since 1.0.0
 	 */
 	@NotNull GameProvider locate();
+
+	/**
+	 * Prepares the game context
+	 */
+	void transformContext();
 }
