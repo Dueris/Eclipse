@@ -1,30 +1,33 @@
 package io.github.dueris.eclipse.loader.game;
 
-import org.jetbrains.annotations.NotNull;
+import io.github.dueris.eclipse.loader.api.GameLibrary;
+import io.github.dueris.eclipse.loader.api.McVersion;
+import io.github.dueris.eclipse.loader.launch.EmberLauncher;
+import joptsimple.OptionSet;
 
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
-/**
- * Represents a game resource provider.
- *
- * @author vectrix
- * @since 1.0.0
- */
 public interface GameProvider {
-	/**
-	 * Returns a stream of library paths to load.
-	 *
-	 * @return the game library paths
-	 * @since 1.0.0
-	 */
-	@NotNull Stream<GameLibrary> libraries();
+	Stream<GameLibrary> getLibraries();
 
-	/**
-	 * Returns the game path.
-	 *
-	 * @return the game path
-	 * @since 1.0.0
-	 */
-	@NotNull Path gamePath();
+	Path getLaunchJar();
+
+	String getGameId();
+
+	String getGameName();
+
+	McVersion getVersion();
+
+	String getEntrypoint();
+
+	Path getLaunchDirectory();
+
+	void initialize(EmberLauncher launcher);
+
+	GameTransformer getEntrypointTransformer();
+
+	void launch(ClassLoader loader);
+
+	OptionSet getArguments();
 }

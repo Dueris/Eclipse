@@ -25,20 +25,10 @@ public final class Ember {
 	private EmberTransformer transformer;
 	private EmberClassLoader loader;
 
-	private Ember() {
+	public Ember() {
 		Ember.INSTANCE = this;
 
 		this.service = new EmberLauncher();
-	}
-
-	/**
-	 * The main entrypoint to launch Ember.
-	 *
-	 * @param optionSet the launch arguments
-	 * @since 1.0.0
-	 */
-	public static void launch(final @NotNull OptionSet optionSet) {
-		new Ember().run(optionSet);
 	}
 
 	/* package */
@@ -57,9 +47,9 @@ public final class Ember {
 		return this.loader;
 	}
 
-	private void run(final @NotNull OptionSet optionSet) {
+	public void burn(final @NotNull OptionSet optionSet) {
 		// Transform context
-		EclipseLoaderBootstrap.instance().gameLocator.transformContext();
+		EclipseLoaderBootstrap.instance().provider.initialize(this.service);
 
 		// Initialize the launch.
 		this.service.initialize();
@@ -87,7 +77,7 @@ public final class Ember {
 		MixinExtrasBootstrap.init();
 
 		// Execute the launch.
-		this.service.launch(optionSet, this.loader);
+		this.service.launch(this.loader);
 	}
 
 	private void completeMixinBootstrap() {
@@ -105,5 +95,9 @@ public final class Ember {
 		for (final TransformerService transformer : this.transformer.transformers()) {
 			transformer.prepare();
 		}
+	}
+
+	public EmberLauncher getService() {
+		return this.service;
 	}
 }

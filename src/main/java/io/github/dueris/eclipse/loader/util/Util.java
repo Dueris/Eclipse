@@ -1,7 +1,7 @@
 package io.github.dueris.eclipse.loader.util;
 
 import io.github.dueris.eclipse.loader.EclipseLoaderBootstrap;
-import io.github.dueris.eclipse.loader.game.GameLibrary;
+import io.github.dueris.eclipse.loader.api.GameLibrary;
 import org.jetbrains.annotations.NotNull;
 import org.tinylog.Logger;
 
@@ -18,7 +18,6 @@ import java.util.jar.JarFile;
 import java.util.stream.Collector;
 
 public class Util {
-
 	public static final String ECLIPSE = "eclipse";
 	public static final String VANILLA = "Paper";
 	static final Set<Collector.Characteristics> CH_ID

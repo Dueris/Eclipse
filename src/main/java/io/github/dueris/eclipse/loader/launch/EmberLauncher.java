@@ -16,16 +16,12 @@ import io.github.dueris.eclipse.loader.entrypoint.EntrypointContainer;
 import io.github.dueris.eclipse.loader.launch.ember.EmberClassLoader;
 import io.github.dueris.eclipse.loader.launch.ember.transformer.EmberTransformer;
 import io.github.dueris.eclipse.loader.util.LaunchException;
-import io.github.dueris.eclipse.plugin.access.EclipseMain;
-import joptsimple.OptionSet;
 import org.jetbrains.annotations.NotNull;
 import org.tinylog.Logger;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -73,7 +69,7 @@ public final class EmberLauncher {
 						builder.append("\t- ").append("eclipseloader ").append(IgniteConstants.IMPLEMENTATION_VERSION).append("\n");
 						builder.append("\t   \\-- mixinextras ").append(MixinExtrasVersion.LATEST.toString()).append("\n");
 					} else if (locator.equalsIgnoreCase(MixinEngine.GAME_LOCATOR)) {
-						builder.append("\t- ").append("minecraft ").append(bootstrap.versionString).append("\n");
+						builder.append("\t- ").append(bootstrap.provider.getGameName().toLowerCase()).append(" ").append(bootstrap.provider.getVersion().id()).append("\n");
 					} else {
 						throw new NullPointerException("Unable to find container impl for resource of mod! : " + realResource);
 					}
@@ -133,25 +129,14 @@ public final class EmberLauncher {
 		engine.resolveMixins();
 	}
 
-	public void launch(final @NotNull OptionSet optionSet, final @NotNull EmberClassLoader loader) throws LaunchException {
+	public void launch(final @NotNull EmberClassLoader loader) throws LaunchException {
 		// Load builtin entrypoints
 		{
 			EntrypointContainer.register("server", "onInitializeServer", ModInitializer.class);
 			EntrypointContainer.register("bootstrap", "onInitializeBootstrap", BootstrapInitializer.class);
 		}
 		// Launch the game
-		try {
-			final Path gameJar = (Path) getProperties().get("gamejar");
-			final String gameTarget = EclipseGameLocator.targetClass();
-			if (gameJar != null && Files.exists(gameJar)) {
-				Object instance = Class.forName(gameTarget, true, loader).getConstructor().newInstance();
-				EclipseMain.class.getMethod("eclipse$main", OptionSet.class).invoke(instance, optionSet);
-			} else {
-				throw new IllegalStateException("No game jar was found to launch!");
-			}
-		} catch (Throwable throwable) {
-			throw new LaunchException("Unable to launch Minecraft server!", throwable);
-		}
+		EclipseLoaderBootstrap.instance().provider.launch(loader);
 	}
 
 	private @NotNull Predicate<String> packageFilter() {

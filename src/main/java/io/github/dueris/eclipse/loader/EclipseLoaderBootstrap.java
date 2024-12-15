@@ -4,11 +4,10 @@ import io.github.dueris.eclipse.loader.agent.IgniteAgent;
 import io.github.dueris.eclipse.loader.api.impl.MixinEngine;
 import io.github.dueris.eclipse.loader.api.mod.Engine;
 import io.github.dueris.eclipse.loader.api.util.IgniteConstants;
-import io.github.dueris.eclipse.loader.game.GameLocatorService;
 import io.github.dueris.eclipse.loader.game.GameProvider;
-import io.github.dueris.eclipse.loader.launch.EclipseGameLocator;
 import io.github.dueris.eclipse.loader.launch.EmberLauncher;
 import io.github.dueris.eclipse.loader.launch.ember.Ember;
+import io.github.dueris.eclipse.loader.minecraft.MinecraftGameProvider;
 import io.github.dueris.eclipse.loader.util.BootstrapEntryContext;
 import io.github.dueris.eclipse.plugin.util.OptionSetUtils;
 import org.jetbrains.annotations.NotNull;
@@ -33,8 +32,7 @@ public final class EclipseLoaderBootstrap {
 	public static Path ROOT_ABSOLUTE;
 	private final MixinEngine engine;
 	public BootstrapEntryContext context;
-	public GameLocatorService gameLocator;
-	public String versionString;
+	public GameProvider provider;
 
 	EclipseLoaderBootstrap() {
 		EclipseLoaderBootstrap.INSTANCE = this;
@@ -88,28 +86,18 @@ public final class EclipseLoaderBootstrap {
 	}
 
 	private void ignite() {
-		// Get a suitable game locator and game provider.
+
+		// Prepare the context with the game provider
 		System.out.println("Preparing Minecraft server");
-		final GameProvider gameProvider;
+		Ember ember = new Ember();
 		{
-			gameLocator = new EclipseGameLocator();
-
-			try {
-				gameLocator.apply(this);
-			} catch (final Throwable throwable) {
-				Logger.error(throwable, "Failed to start game: Unable to apply GameLocator service.");
-				System.exit(1);
-				return;
-			}
-
-			gameProvider = gameLocator.locate();
+			provider = new MinecraftGameProvider();
 		}
 
 		// Add the game.
-		final Path gameJar = gameProvider.gamePath();
-		versionString = ((EclipseGameLocator.EclipseGameProvider) EclipseLoaderBootstrap.instance().gameLocator.locate()).version().split("/")[0];
+		final Path gameJar = provider.getLaunchJar();
 		try {
-			System.out.println("Unpacking and linking version:" + versionString + " to " + gameJar);
+			System.out.println("Unpacking and linking version:" + provider.getVersion().id() + " to " + gameJar);
 			IgniteAgent.addJar(gameJar);
 
 			Logger.trace("Added game jar: {}", gameJar);
@@ -121,7 +109,7 @@ public final class EclipseLoaderBootstrap {
 
 		// Add the game libraries.
 		final List<String> contained = List.of("net.sf.jopt-simple:jopt-simple:6.0-alpha-3", "net.minecrell:terminalconsoleappender:1.3.0");
-		gameProvider.libraries().forEach(library -> {
+		provider.getLibraries().forEach(library -> {
 			if (!library.libraryPath().toString().endsWith(".jar") || contained.contains(library.libraryString()))
 				return;
 
@@ -139,10 +127,10 @@ public final class EclipseLoaderBootstrap {
 			}
 		});
 
-		Logger.info("Loading Minecraft {} with Eclipse version {}", versionString, IgniteConstants.IMPLEMENTATION_VERSION);
+		Logger.info("Loading {} {} with Eclipse version {}", provider.getGameName(), provider.getVersion().id(), IgniteConstants.IMPLEMENTATION_VERSION);
 
 		// Launch the game.
-		Ember.launch(OptionSetUtils.Serializer.deserialize(context.optionSet()));
+		ember.burn(OptionSetUtils.Serializer.deserialize(context.optionSet()));
 	}
 
 	/**

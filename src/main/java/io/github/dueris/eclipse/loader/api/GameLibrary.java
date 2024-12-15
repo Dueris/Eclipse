@@ -1,4 +1,4 @@
-package io.github.dueris.eclipse.loader.game;
+package io.github.dueris.eclipse.loader.api;
 
 import org.jetbrains.annotations.NotNull;
 
