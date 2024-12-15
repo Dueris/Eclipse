@@ -23,7 +23,7 @@ public final class IgniteExclusions {
 	 */
 	public static final String[] TRANSFORMATION_EXCLUDED_PACKAGES = {
 		// Launcher
-		"com.astrafell.ignite.",
+		"io.github.dueris.eclipse.",
 		"org.tinylog.",
 
 		// Mixin
