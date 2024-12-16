@@ -11,9 +11,14 @@ import org.spongepowered.asm.mixin.MixinEnvironment;
 import org.tinylog.Logger;
 
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Path;
+import java.util.LinkedList;
+import java.util.List;
 
 public final class Ember {
+	private static final List<URL> classPathUrls = new LinkedList<>();
 	private static Ember INSTANCE;
 	private final EclipseLauncher service;
 	private EmberTransformer transformer;
@@ -23,6 +28,14 @@ public final class Ember {
 		Ember.INSTANCE = this;
 
 		this.service = EclipseLauncher.INSTANCE;
+	}
+
+	public static void appendToClassPath(Path path) {
+		try {
+			classPathUrls.add(path.toUri().toURL());
+		} catch (MalformedURLException e) {
+			throw new RuntimeException("Url was malformed?", e);
+		}
 	}
 
 	static @NotNull Ember instance() {
@@ -47,7 +60,7 @@ public final class Ember {
 		this.transformer = mixinModEngine.gameProvider().getTransformer();
 
 		// Create the class loader.
-		this.loader = new EmberClassLoader(this.transformer, (new URL[0]));
+		this.loader = new EmberClassLoader(this.transformer, (classPathUrls.toArray(new URL[0])));
 		Thread.currentThread().setContextClassLoader(this.loader);
 
 		// Configure the class loader.
