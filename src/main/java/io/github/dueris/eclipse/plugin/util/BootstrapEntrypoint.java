@@ -160,7 +160,7 @@ public class BootstrapEntrypoint implements PluginBootstrap {
 					if (line.matches("^\\[.*?]\\s\\[.*?/WARN]:.*")) {
 						lineComponent = warnComponent(line);
 					} else if (line.matches("^\\[.*?]\\s\\[.*?/ERROR]:.*")
-						|| (line.matches("^\\s+at\\s+(.*?)?[\\w.$_]+\\.[\\w$<>]+\\(.*:\\d+\\)(\\s~\\[.*])?")
+						|| (line.matches("^\\s+at\\s+(.*?)?[\\w.$_]+\\.[\\w$<>]+\\((.*?:\\d+|Native Method)\\)(\\s~\\[.*])?")
 						|| line.matches("^(?!\\[\\d{2}:\\d{2}:\\d{2}] \\[[^]]+/[A-Za-z]+]:)[a-zA-Z0-9_]+(?:\\.[a-zA-Z0-9_]+)*:.*$")
 						|| line.matches("^Caused by: [a-zA-Z0-9_]+(?:\\.[a-zA-Z0-9_]+)*:.*$")
 						|| line.matches("^\\s*\\.\\.\\. \\d+ more$"))) {
