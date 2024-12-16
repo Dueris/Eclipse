@@ -12,7 +12,7 @@ public interface Launcher {
 		Launcher ret = EclipseLauncher.INSTANCE;
 
 		if (ret == null) {
-			throw new RuntimeException("Accessed FabricLoader too early!");
+			throw new RuntimeException("Accessed EclipseLoader too early!");
 		}
 
 		return ret;
