@@ -163,7 +163,8 @@ public class BootstrapEntrypoint implements PluginBootstrap {
 						|| (line.matches("^\\s+at\\s+(.*?)?[\\w.$_]+\\.[\\w$<>]+\\((.*?:\\d+|Native Method)\\)(\\s~\\[.*])?")
 						|| line.matches("^(?!\\[\\d{2}:\\d{2}:\\d{2}] \\[[^]]+/[A-Za-z]+]:)[a-zA-Z0-9_]+(?:\\.[a-zA-Z0-9_]+)*:.*$")
 						|| line.matches("^Caused by: [a-zA-Z0-9_]+(?:\\.[a-zA-Z0-9_]+)*:.*$")
-						|| line.matches("^\\s*\\.\\.\\. \\d+ more$"))) {
+						|| line.matches("^\\s*\\.\\.\\. \\d+ more$")
+						|| line.matches("^Exception in thread \".*?\" [a-zA-Z0-9_]+(?:\\.[a-zA-Z0-9_]+)*: .*$"))) {
 						lineComponent = errorComponent(line);
 					} else {
 						lineComponent = Component.text(line);
