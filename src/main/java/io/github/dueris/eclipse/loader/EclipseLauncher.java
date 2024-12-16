@@ -151,7 +151,7 @@ public final class EclipseLauncher implements Launcher {
 	public void launch(final @NotNull EmberClassLoader loader) throws LaunchException {
 		// Load builtin entrypoints
 		{
-			EntrypointContainer.register("server", "onInitializeServer", ModInitializer.class);
+			EntrypointContainer.register("server", "onInitialize", ModInitializer.class);
 			EntrypointContainer.register("bootstrap", "onInitializeBootstrap", BootstrapInitializer.class);
 		}
 		// Launch the game
