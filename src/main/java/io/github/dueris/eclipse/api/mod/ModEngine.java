@@ -24,4 +24,8 @@ public interface ModEngine {
 	 * Only returns null if the ModResource isn't registered to a ModContainer, or it's the Launcher or Game resource.
 	 */
 	@Nullable ModContainer getContainerFromResource(ModResource modResource);
+
+	@NotNull ModResource getLauncherResource();
+
+	@NotNull ModResource getGameResource();
 }

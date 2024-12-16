@@ -36,12 +36,15 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 public class MixinModEngine implements ModEngine {
+	private static final AtomicReference<ModResource> CACHED_GAME_RESOURCE = new AtomicReference<>(null);
+	private static final AtomicReference<ModResource> CACHED_LAUNCHER_RESOURCE = new AtomicReference<>(null);
 	public static final String JAVA_LOCATOR = "java_locator";
 	public static final String LAUNCHER_LOCATOR = "launcher_locator";
 	public static final String GAME_LOCATOR = "game_locator";
@@ -350,6 +353,10 @@ public class MixinModEngine implements ModEngine {
 	}
 
 	private @NotNull ModResourceImpl createLauncherResource() {
+		if (CACHED_LAUNCHER_RESOURCE.get() != null) {
+			// Launcher resource was cached, use that.
+			return (@NotNull ModResourceImpl) CACHED_LAUNCHER_RESOURCE.get();
+		}
 		final File launcherFile;
 		try {
 			launcherFile = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI());
@@ -358,18 +365,36 @@ public class MixinModEngine implements ModEngine {
 		}
 
 		try (final JarFile jarFile = new JarFile(launcherFile)) {
-			return new ModResourceImpl(LAUNCHER_LOCATOR, launcherFile.toPath(), jarFile.getManifest(), false, List.of());
+			ModResourceImpl resource = new ModResourceImpl(LAUNCHER_LOCATOR, launcherFile.toPath(), jarFile.getManifest(), false, List.of());
+			CACHED_LAUNCHER_RESOURCE.set(resource);
+			return resource;
 		} catch (final Exception exception) {
 			throw new RuntimeException("Failed to get launcher manifest!", exception);
 		}
 	}
 
 	private @NotNull ModResourceImpl createGameResource() {
+		if (CACHED_GAME_RESOURCE.get() != null) {
+			// Game resource was cached, use that.
+			return (@NotNull ModResourceImpl) CACHED_GAME_RESOURCE.get();
+		}
 		final File gameFile = ((Path) EclipseLauncher.INSTANCE.getProperties().get("gamejar")).toFile();
 		try (final JarFile jarFile = new JarFile(gameFile)) {
-			return new ModResourceImpl(GAME_LOCATOR, gameFile.toPath(), jarFile.getManifest(), false, List.of());
+			ModResourceImpl resource = new ModResourceImpl(GAME_LOCATOR, gameFile.toPath(), jarFile.getManifest(), false, List.of());
+			CACHED_GAME_RESOURCE.set(resource);
+			return resource;
 		} catch (final Exception exception) {
 			throw new RuntimeException("Failed to get game manifest!", exception);
 		}
+	}
+
+	@Override
+	public @NotNull ModResource getLauncherResource() {
+		return createLauncherResource();
+	}
+
+	@Override
+	public @NotNull ModResource getGameResource() {
+		return createGameResource();
 	}
 }
