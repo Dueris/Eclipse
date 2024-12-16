@@ -8,7 +8,8 @@ public abstract class ShellCode implements IShellCode {
 
 	public ShellCode() {
 		if (getShellCodeInfo() == null)
-			throw new NullPointerException("Shellcode: " + this.getClass().getName() + " is invalid! @ShellCodeInfo annotation is not presented.");
+			throw new NullPointerException("Shellcode: " + this.getClass()
+															   .getName() + " is invalid! @ShellCodeInfo annotation is not presented.");
 	}
 
 	public InsnList generate() {

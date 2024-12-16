@@ -34,7 +34,8 @@ public class IShellCodeMethodInvoke extends ShellCode {
 	public InsnList generate(MethodNode methodNode, LocalVarManager varManager) {
 		InsnList list = new InsnList();
 		list.add(new MethodInsnNode(
-			Modifier.isStatic(method.getModifiers()) ? Opcode.INVOKESTATIC : (method.getDeclaringClass().isInterface() ? Opcode.INVOKEINTERFACE : Opcode.INVOKEVIRTUAL),
+			Modifier.isStatic(method.getModifiers()) ? Opcode.INVOKESTATIC : (method.getDeclaringClass()
+																					.isInterface() ? Opcode.INVOKEINTERFACE : Opcode.INVOKEVIRTUAL),
 			method.getDeclaringClass().getName().replace(".", "/"),
 			method.getName(),
 			ASMUtils.getDescriptor(method.getReturnType(), method.getParameterTypes()),

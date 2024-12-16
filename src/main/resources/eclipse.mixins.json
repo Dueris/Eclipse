@@ -1,7 +1,5 @@
 {
   "mixins": [
-    "BootstrapMixin",
-    "CraftServerMixin",
     "DirectoryProviderSourceMixin",
     "FolderRepositorySourceMixin",
     "JavaPluginMixin",

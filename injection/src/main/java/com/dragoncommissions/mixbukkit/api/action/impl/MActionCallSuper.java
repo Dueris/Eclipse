@@ -21,7 +21,8 @@ public record MActionCallSuper(MixinPlugin plugin) implements MixinAction {
 		Method superMethod = null;
 		for (Method declaredMethod : owner.getDeclaredMethods()) {
 			if (declaredMethod.getName().equals(method.name)) {
-				if (ASMUtils.getDescriptor(declaredMethod.getReturnType(), declaredMethod.getParameterTypes()).equals(method.desc)) {
+				if (ASMUtils.getDescriptor(declaredMethod.getReturnType(), declaredMethod.getParameterTypes())
+							.equals(method.desc)) {
 					m = declaredMethod;
 				}
 			}
@@ -31,7 +32,8 @@ public record MActionCallSuper(MixinPlugin plugin) implements MixinAction {
 			while (superclass != null) {
 				for (Method declaredMethod : superclass.getDeclaredMethods()) {
 					if (declaredMethod.getName().equals(method.name)) {
-						if (ASMUtils.getDescriptor(declaredMethod.getReturnType(), declaredMethod.getParameterTypes()).equals(method.desc)) {
+						if (ASMUtils.getDescriptor(declaredMethod.getReturnType(), declaredMethod.getParameterTypes())
+									.equals(method.desc)) {
 							superMethod = declaredMethod;
 						}
 					}

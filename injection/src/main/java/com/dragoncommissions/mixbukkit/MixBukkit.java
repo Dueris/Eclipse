@@ -27,9 +27,10 @@ import java.util.jar.JarFile;
 public class MixBukkit {
 
 	public final static String VERSION = "0.1";
+	public static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(MixBukkit.class);
+
 	@Getter
 	private static final Map<String, MixinPlugin> plugins = new HashMap<>();
-	public static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(MixBukkit.class);
 	public static MixBukkit INSTANCE;
 	public static boolean DEBUG = true;
 	public static boolean WRITE_TRANSFORMED_CLASS = true;
@@ -38,10 +39,13 @@ public class MixBukkit {
 	public static boolean PREPARED = false;
 	public static BukkitErrorOutputStream ERROR_OUTPUT_STREAM = new BukkitErrorOutputStream();
 	public static ClassesManager classesManager;
+
 	@ApiStatus.Internal
 	public static AtomicReference<PaperPluginClassLoader> CLASSLOADER = new AtomicReference<>();
+
 	@Getter
 	private static JVMAttacher jvmAttacher;
+
 	@Getter
 	private File pluginFile;
 

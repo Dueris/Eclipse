@@ -35,8 +35,10 @@ import java.util.List;
 public class MixinPlugin {
 
 	private static final Logger log = LoggerFactory.getLogger(MixinPlugin.class);
+
 	@Getter
 	private final ObfMap obfMap;
+
 	@Getter
 	private final MixinPluginInstance plugin;
 
@@ -84,7 +86,8 @@ public class MixinPlugin {
 
 	@SneakyThrows
 	public Method getMethod(Class<?> clazz, String methodName, Class<?> returnType, Class<?>... arguments) {
-		String original = obfMap.resolveMapping(new ObfMap.MethodMapping(clazz.getName().replace(".", "/"), ASMUtils.getDescriptor(returnType, arguments), methodName));
+		String original = obfMap.resolveMapping(new ObfMap.MethodMapping(clazz.getName()
+																			  .replace(".", "/"), ASMUtils.getDescriptor(returnType, arguments), methodName));
 		try {
 			return clazz.getDeclaredMethod(original, arguments);
 		} catch (NoSuchMethodException e) {
@@ -96,16 +99,19 @@ public class MixinPlugin {
 	public boolean registerMixin(String namespace, MixinAction mixinAction, Class<?> owner, String deObfMethodName, Class<?> returnType, Class<?>... arguments) {
 		if (registeredMixins.contains(namespace)) {
 			if (MixBukkit.DEBUG) {
-				Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW + "[!] Mixin with namespace: " + namespace + " is already registered! Skipping...");
+				Bukkit.getConsoleSender()
+					  .sendMessage(ChatColor.YELLOW + "[!] Mixin with namespace: " + namespace + " is already registered! Skipping...");
 			}
 			return false;
 		}
 		String descriptor = ASMUtils.getDescriptor(returnType, arguments);
-		String obfMethodName = obfMap.resolveMapping(new ObfMap.MethodMapping(owner.getName().replace(".", "/"), descriptor, deObfMethodName));
+		String obfMethodName = obfMap.resolveMapping(new ObfMap.MethodMapping(owner.getName()
+																				   .replace(".", "/"), descriptor, deObfMethodName));
 
 		ClassNode classNode = ClassesManager.getClassNode(owner.getName());
 		if (classNode == null) {
-			Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[!] Failed to load mixin: " + plugin.name() + ":" + namespace + ", Reason: Could not find the target class: " + owner.getName());
+			Bukkit.getConsoleSender()
+				  .sendMessage(ChatColor.RED + "[!] Failed to load mixin: " + plugin.name() + ":" + namespace + ", Reason: Could not find the target class: " + owner.getName());
 			return false;
 		}
 		PrintWriter printWriter = new PrintWriter(MixBukkit.ERROR_OUTPUT_STREAM, true);
@@ -117,7 +123,8 @@ public class MixinPlugin {
 
 				ClassReader classReader = new ClassReader(data);
 				boolean[] illegal = new boolean[]{false};
-				CheckClassAdapter.verify(classReader, getClass().getClassLoader().getParent(), false, new PrintWriter(new OutputStream() {
+				CheckClassAdapter.verify(classReader, getClass().getClassLoader()
+																.getParent(), false, new PrintWriter(new OutputStream() {
 					@Override
 					public void write(int b) throws IOException {
 						illegal[0] = true;
@@ -134,7 +141,8 @@ public class MixinPlugin {
 						}
 						printWriter.println("");
 						printWriter.println("");
-						CheckClassAdapter.verify(classReader, getClass().getClassLoader().getParent(), false, printWriter);
+						CheckClassAdapter.verify(classReader, getClass().getClassLoader()
+																		.getParent(), false, printWriter);
 					}
 					if (MixBukkit.SAFE_MODE) {
 						MixinPlugin.log.info("{}[!] Failed to load mixin: {}:{}, Reason: Invalid Bytecode, and safe-mode is on", ChatColor.RED, plugin.name(), namespace);
@@ -150,13 +158,15 @@ public class MixinPlugin {
 					ClassesManager.classes.put(owner.getName(), data);
 				} catch (Exception e) {
 					e.printStackTrace();
-					Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[!] Failed to load mixin: " + plugin.name() + ":" + namespace + ", Reason: Could not redefine class: " + owner.getSimpleName());
+					Bukkit.getConsoleSender()
+						  .sendMessage(ChatColor.RED + "[!] Failed to load mixin: " + plugin.name() + ":" + namespace + ", Reason: Could not redefine class: " + owner.getSimpleName());
 				}
 				registeredMixins.add(namespace);
 				return true;
 			}
 		}
-		Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[!] Failed to load mixin: " + plugin.name() + ":" + namespace + ", Reason: Could not find the target method");
+		Bukkit.getConsoleSender()
+			  .sendMessage(ChatColor.RED + "[!] Failed to load mixin: " + plugin.name() + ":" + namespace + ", Reason: Could not find the target method");
 		return false;
 	}
 

@@ -2,7 +2,7 @@ package io.github.dueris.eclipse.loader.minecraft;
 
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
-import io.github.dueris.eclipse.loader.api.McVersion;
+import io.github.dueris.eclipse.api.McVersion;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,12 +16,6 @@ public final class McVersionUtil {
 	private McVersionUtil() {
 	}
 
-	/**
-	 * Reads a JSON InputStream and builds an McVersion instance.
-	 *
-	 * @param is the input JSON InputStream
-	 * @return a new McVersion instance if successful, null otherwise
-	 */
 	public static @Nullable McVersion fromVersionJson(InputStream is) {
 		try (JsonReader reader = new JsonReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
 			String id = null;

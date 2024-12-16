@@ -225,21 +225,29 @@ public class ASMUtils {
 
 	public static InsnList generateGetClassNode(Class<?> type) {
 		if (type == byte.class)
-			return ASMUtils.asInsnList(new FieldInsnNode(Opcode.GETSTATIC, Byte.class.getName().replace(".", "/"), "TYPE", "Ljava/lang/Class;"));
+			return ASMUtils.asInsnList(new FieldInsnNode(Opcode.GETSTATIC, Byte.class.getName()
+																					 .replace(".", "/"), "TYPE", "Ljava/lang/Class;"));
 		else if (type == char.class)
-			return ASMUtils.asInsnList(new FieldInsnNode(Opcode.GETSTATIC, Character.class.getName().replace(".", "/"), "TYPE", "Ljava/lang/Class;"));
+			return ASMUtils.asInsnList(new FieldInsnNode(Opcode.GETSTATIC, Character.class.getName()
+																						  .replace(".", "/"), "TYPE", "Ljava/lang/Class;"));
 		else if (type == double.class)
-			return ASMUtils.asInsnList(new FieldInsnNode(Opcode.GETSTATIC, Double.class.getName().replace(".", "/"), "TYPE", "Ljava/lang/Class;"));
+			return ASMUtils.asInsnList(new FieldInsnNode(Opcode.GETSTATIC, Double.class.getName()
+																					   .replace(".", "/"), "TYPE", "Ljava/lang/Class;"));
 		else if (type == float.class)
-			return ASMUtils.asInsnList(new FieldInsnNode(Opcode.GETSTATIC, Float.class.getName().replace(".", "/"), "TYPE", "Ljava/lang/Class;"));
+			return ASMUtils.asInsnList(new FieldInsnNode(Opcode.GETSTATIC, Float.class.getName()
+																					  .replace(".", "/"), "TYPE", "Ljava/lang/Class;"));
 		else if (type == int.class)
-			return ASMUtils.asInsnList(new FieldInsnNode(Opcode.GETSTATIC, Integer.class.getName().replace(".", "/"), "TYPE", "Ljava/lang/Class;"));
+			return ASMUtils.asInsnList(new FieldInsnNode(Opcode.GETSTATIC, Integer.class.getName()
+																						.replace(".", "/"), "TYPE", "Ljava/lang/Class;"));
 		else if (type == long.class)
-			return ASMUtils.asInsnList(new FieldInsnNode(Opcode.GETSTATIC, Long.class.getName().replace(".", "/"), "TYPE", "Ljava/lang/Class;"));
+			return ASMUtils.asInsnList(new FieldInsnNode(Opcode.GETSTATIC, Long.class.getName()
+																					 .replace(".", "/"), "TYPE", "Ljava/lang/Class;"));
 		else if (type == short.class)
-			return ASMUtils.asInsnList(new FieldInsnNode(Opcode.GETSTATIC, Short.class.getName().replace(".", "/"), "TYPE", "Ljava/lang/Class;"));
+			return ASMUtils.asInsnList(new FieldInsnNode(Opcode.GETSTATIC, Short.class.getName()
+																					  .replace(".", "/"), "TYPE", "Ljava/lang/Class;"));
 		else if (type == boolean.class)
-			return ASMUtils.asInsnList(new FieldInsnNode(Opcode.GETSTATIC, Boolean.class.getName().replace(".", "/"), "TYPE", "Ljava/lang/Class;"));
+			return ASMUtils.asInsnList(new FieldInsnNode(Opcode.GETSTATIC, Boolean.class.getName()
+																						.replace(".", "/"), "TYPE", "Ljava/lang/Class;"));
 		return new IShellCodeLoadClassFromPCL(type).generate();
 	}
 

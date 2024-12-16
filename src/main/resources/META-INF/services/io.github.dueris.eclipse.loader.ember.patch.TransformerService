@@ -1,0 +1,2 @@
+io.github.dueris.eclipse.loader.launch.transformer.AccessWidenerTransformer
+io.github.dueris.eclipse.loader.launch.transformer.MixinTransformer

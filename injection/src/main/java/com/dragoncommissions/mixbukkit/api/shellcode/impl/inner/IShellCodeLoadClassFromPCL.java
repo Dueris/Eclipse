@@ -51,7 +51,7 @@ public class IShellCodeLoadClassFromPCL extends ShellCode {
 		int i;
 		for (i = 0; i < list.size(); i++) {
 			PaperPluginParent.PaperBootstrapProvider pluginProvider = (PaperPluginParent.PaperBootstrapProvider) list.get(i);
-			if (pluginProvider.getMeta().getName().toLowerCase().equalsIgnoreCase("eclipse")) {
+			if (pluginProvider.getMeta().getName().equalsIgnoreCase("eclipse")) {
 				break;
 			}
 		}

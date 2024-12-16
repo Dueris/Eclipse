@@ -1,13 +1,12 @@
 package io.github.dueris.eclipse.loader.minecraft;
 
-import io.github.dueris.eclipse.loader.EclipseLoaderBootstrap;
-import io.github.dueris.eclipse.loader.agent.IgniteAgent;
-import io.github.dueris.eclipse.loader.api.GameLibrary;
-import io.github.dueris.eclipse.loader.api.McVersion;
-import io.github.dueris.eclipse.loader.game.GameProvider;
-import io.github.dueris.eclipse.loader.game.GameTransformer;
-import io.github.dueris.eclipse.loader.launch.EmberLauncher;
-import io.github.dueris.eclipse.loader.util.BootstrapEntryContext;
+import io.github.dueris.eclipse.api.GameLibrary;
+import io.github.dueris.eclipse.api.Launcher;
+import io.github.dueris.eclipse.api.McVersion;
+import io.github.dueris.eclipse.api.game.GameProvider;
+import io.github.dueris.eclipse.api.util.BootstrapEntryContext;
+import io.github.dueris.eclipse.loader.MixinJavaAgent;
+import io.github.dueris.eclipse.loader.ember.patch.EmberTransformer;
 import io.github.dueris.eclipse.loader.util.LaunchException;
 import io.github.dueris.eclipse.plugin.access.EclipseMain;
 import io.github.dueris.eclipse.plugin.util.OptionSetUtils;
@@ -21,25 +20,25 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 public class MinecraftGameProvider implements GameProvider {
-	final MinecraftGameTransformer transformer = new MinecraftGameTransformer();
 	private final String gameBrand;
 	private final McVersion version;
 	private final String mainClass;
 	private final OptionSet optionSet;
 	private final PaperclipJar paperclipJar;
+	private EmberTransformer transformer;
 
 	public MinecraftGameProvider() {
-		Map<String, Object> properties = EmberLauncher.getProperties();
+		Map<String, Object> properties = Launcher.getInstance().getProperties();
 		Path gameJarPath = (Path) properties.get("gamejar");
 		try {
-			IgniteAgent.addJar(gameJarPath);
+			MixinJavaAgent.appendToClassPath(gameJarPath);
 		} catch (final IOException exception) {
 			throw new IllegalStateException("Unable to add paperclip jar to classpath!", exception);
 		}
 
 		try {
 			PaperclipJar paperclipJar = new PaperclipJar(gameJarPath.toFile());
-			BootstrapEntryContext context = EclipseLoaderBootstrap.instance().context;
+			BootstrapEntryContext context = Launcher.getInstance().entryContext();
 			this.gameBrand = context.brand();
 			this.version = paperclipJar.mcVer();
 			this.mainClass = paperclipJar.getMainClass();
@@ -88,20 +87,9 @@ public class MinecraftGameProvider implements GameProvider {
 		return Paths.get(".");
 	}
 
-	@Override
-	public void initialize(EmberLauncher launcher) {
-		this.transformer.transformContext();
-	}
-
-	@Override
-	public GameTransformer getEntrypointTransformer() {
-		return transformer;
-	}
-
-	@Override
 	public void launch(ClassLoader loader) {
 		try {
-			final Path gameJar = (Path) EmberLauncher.getProperties().get("gamejar");
+			final Path gameJar = (Path) Launcher.getInstance().getProperties().get("gamejar");
 			final String gameTarget = this.paperclipJar.getMainClass();
 			if (gameJar != null && Files.exists(gameJar)) {
 				Object instance = Class.forName(gameTarget, true, loader).getConstructor().newInstance();
@@ -112,6 +100,16 @@ public class MinecraftGameProvider implements GameProvider {
 		} catch (Throwable throwable) {
 			throw new LaunchException("Unable to launch Minecraft server!", throwable);
 		}
+	}
+
+	@Override
+	public void prepareTransformer() {
+		this.transformer = new EmberTransformer();
+	}
+
+	@Override
+	public EmberTransformer getTransformer() {
+		return this.transformer;
 	}
 
 	@Override

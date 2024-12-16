@@ -1,6 +1,6 @@
 package io.github.dueris.eclipse.loader.api.impl;
 
-import io.github.dueris.eclipse.loader.api.mod.ModResource;
+import io.github.dueris.eclipse.api.mod.ModResource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
@@ -14,12 +14,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.jar.Manifest;
 
-/**
- * Represents a mod resource that may not be resolved.
- *
- * @author vectrix
- * @since 1.0.0
- */
 public final class ModResourceImpl implements ModResource {
 	private final String locator;
 	private final Path path;
@@ -76,7 +70,9 @@ public final class ModResourceImpl implements ModResource {
 	public boolean equals(final @Nullable Object other) {
 		if (this == other) return true;
 		if (!(other instanceof ModResourceImpl that)) return false;
-		Logger.trace("Checking for qualification for P1: " + path.toAbsolutePath().normalize() + " and P2: " + that.path.toAbsolutePath().normalize());
+		Logger.trace("Checking for qualification for P1: " + path.toAbsolutePath()
+																 .normalize() + " and P2: " + that.path.toAbsolutePath()
+																									   .normalize());
 		return Objects.equals(path.toAbsolutePath().normalize(), that.path.toAbsolutePath().normalize());
 	}
 

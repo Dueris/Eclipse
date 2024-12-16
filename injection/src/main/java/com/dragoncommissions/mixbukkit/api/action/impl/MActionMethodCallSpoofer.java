@@ -50,7 +50,8 @@ public class MActionMethodCallSpoofer implements MixinAction {
 		for (AbstractInsnNode instruction : methodNode.instructions) {
 			out.add(instruction);
 			if (instruction instanceof MethodInsnNode insn) {
-				if (insn.name.equals(method.getName()) && insn.owner.equals(method.getDeclaringClass().getName().replace(".", "/"))
+				if (insn.name.equals(method.getName()) && insn.owner.equals(method.getDeclaringClass().getName()
+																				  .replace(".", "/"))
 					&& insn.desc.equals(ASMUtils.getDescriptor(method.getReturnType(), method.getParameterTypes())) && filter.test(amount++)) {
 					out.add(new InsnNode(Opcode.POP)); // Pop the return value first
 					out.add(new LdcInsnNode(key));

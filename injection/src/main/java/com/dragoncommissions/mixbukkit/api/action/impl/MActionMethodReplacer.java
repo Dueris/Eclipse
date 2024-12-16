@@ -23,7 +23,8 @@ public record MActionMethodReplacer(Method handler) implements MixinAction {
 		methodNode.instructions.clear();
 		Class<?> returnType = ASMUtils.getReturnType(methodNode.desc);
 		if (returnType != handler.getReturnType())
-			throw new IllegalArgumentException("Handler: " + handler.getName() + " is not returning same type as target method (" + handler.getReturnType().getName() + "(return type of handler) != " + returnType.getName() + "(return type of target) )");
+			throw new IllegalArgumentException("Handler: " + handler.getName() + " is not returning same type as target method (" + handler.getReturnType()
+																																		   .getName() + "(return type of handler) != " + returnType.getName() + "(return type of target) )");
 		LocalVarManager varManager = new LocalVarManager(methodNode);
 		InsnList out = new InsnList();
 		Class<?>[] parameterTypes = handler.getParameterTypes();

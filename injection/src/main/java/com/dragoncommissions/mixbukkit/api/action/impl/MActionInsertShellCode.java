@@ -30,11 +30,15 @@ public record MActionInsertShellCode(ShellCode shellCode, HookLocator hookLocato
 						newInstructions.add(instructions);
 						newInstructions.add(shellCode.popExtraStack());
 					} catch (Exception e) {
-						Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[!] Shell Code \"" + ChatColor.YELLOW + shellCode.getShellCodeInfo().name() + ChatColor.RED + "\" has failed generating instructions: Exception Thrown");
+						Bukkit.getConsoleSender()
+							  .sendMessage(ChatColor.RED + "[!] Shell Code \"" + ChatColor.YELLOW + shellCode.getShellCodeInfo()
+																											 .name() + ChatColor.RED + "\" has failed generating instructions: Exception Thrown");
 						e.printStackTrace();
 					}
 				} else {
-					Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[!] Shell Code \"" + ChatColor.YELLOW + shellCode.getShellCodeInfo().name() + ChatColor.RED + "\" shouldn't be called directly (calledDirectly = false)");
+					Bukkit.getConsoleSender()
+						  .sendMessage(ChatColor.RED + "[!] Shell Code \"" + ChatColor.YELLOW + shellCode.getShellCodeInfo()
+																										 .name() + ChatColor.RED + "\" shouldn't be called directly (calledDirectly = false)");
 				}
 
 			}

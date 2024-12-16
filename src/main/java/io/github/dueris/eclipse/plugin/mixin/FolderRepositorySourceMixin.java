@@ -2,9 +2,9 @@ package io.github.dueris.eclipse.plugin.mixin;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import io.github.dueris.eclipse.loader.EclipseLoaderBootstrap;
-import io.github.dueris.eclipse.loader.api.impl.ModMetadata;
-import io.github.dueris.eclipse.loader.api.mod.Engine;
+import io.github.dueris.eclipse.api.Launcher;
+import io.github.dueris.eclipse.api.mod.ModEngine;
+import io.github.dueris.eclipse.api.mod.ModMetadata;
 import io.github.dueris.eclipse.plugin.EclipsePlugin;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.PackLocationInfo;
@@ -42,15 +42,19 @@ public abstract class FolderRepositorySourceMixin {
 	@Shadow
 	@Final
 	static Logger LOGGER;
+
 	@Shadow
 	@Final
 	private static PackSelectionConfig DISCOVERED_PACK_SELECTION_CONFIG;
+
 	@Shadow
 	@Final
 	private DirectoryValidator validator;
+
 	@Shadow
 	@Final
 	private PackSource packSource;
+
 	@Shadow
 	@Final
 	private PackType packType;
@@ -88,16 +92,17 @@ public abstract class FolderRepositorySourceMixin {
 	 */
 	@Unique
 	private static boolean eclipse$filterJar(Path path) {
-		Engine engine = EclipseLoaderBootstrap.mods();
+		ModEngine modEngine = Launcher.getInstance().modEngine();
 		AtomicBoolean isValid = new AtomicBoolean(false);
-		engine.containers().stream()
-			.filter(p -> p.resource().path().toAbsolutePath().normalize().toString().equals(path.toAbsolutePath().normalize().toString()))
-			.findFirst().ifPresentOrElse(resource -> {
-				ModMetadata config = resource.config();
-				if (config.datapackEntry()) {
-					isValid.set(true);
-				}
-			}, () -> LOGGER.trace("Unable to locate mod in Ignite containers! : {}", path.getFileName()));
+		modEngine.containers().stream()
+				 .filter(p -> p.resource().path().toAbsolutePath().normalize().toString()
+							   .equals(path.toAbsolutePath().normalize().toString()))
+				 .findFirst().ifPresentOrElse(resource -> {
+					 ModMetadata config = resource.config();
+					 if (config.datapackEntry()) {
+						 isValid.set(true);
+					 }
+				 }, () -> LOGGER.trace("Unable to locate mod in Ignite containers! : {}", path.getFileName()));
 		return isValid.get();
 	}
 
@@ -107,7 +112,8 @@ public abstract class FolderRepositorySourceMixin {
 			LOGGER.info("Loading plugin repositories...");
 			EclipsePlugin.eclipse$allowsJars = true;
 			eclipse$loadDirectory(profileAdder, Paths.get("plugins"));
-			eclipse$loadDirectory(profileAdder, Paths.get(".").toAbsolutePath().resolve("cache").resolve(".eclipse").resolve("processedMods"));
+			eclipse$loadDirectory(profileAdder, Paths.get(".").toAbsolutePath().resolve("cache").resolve(".eclipse")
+													 .resolve("processedMods"));
 			EclipsePlugin.eclipse$allowsJars = false;
 		} catch (IOException e) {
 			throw new RuntimeException("Unable to load plugins repository from Folder repo", e);

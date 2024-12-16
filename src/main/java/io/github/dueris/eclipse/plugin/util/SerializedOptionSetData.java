@@ -94,12 +94,13 @@ public class SerializedOptionSetData implements Serializable {
 		Map<String, OptionSpec<?>> recognizedSpecs = parser.recognizedOptions();
 		try {
 			detectedSpecsField.set(optionSet, this.detectedSpecs.stream()
-				.map(recognizedSpecs::get).collect(Collectors.toList()));
+																.map(recognizedSpecs::get)
+																.collect(Collectors.toList()));
 			detectedOptionsField.set(optionSet, this.detectedOptions.keySet().stream()
-				.collect(Collectors.toMap(k -> k, recognizedSpecs::get)));
+																	.collect(Collectors.toMap(k -> k, recognizedSpecs::get)));
 
 			optionsToArgumentsField.set(optionSet, this.optionsToArguments.entrySet().stream()
-				.collect(Collectors.toMap(e -> recognizedSpecs.get(e.getKey()), Map.Entry::getValue)));
+																		  .collect(Collectors.toMap(e -> recognizedSpecs.get(e.getKey()), Map.Entry::getValue)));
 
 			recognizedSpecsField.set(optionSet, recognizedSpecs);
 

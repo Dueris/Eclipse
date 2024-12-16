@@ -1,0 +1,3 @@
+io.github.dueris.eclipse.loader.launch.patch.BrandingPatch
+io.github.dueris.eclipse.loader.launch.patch.CraftServerNamePatch
+io.github.dueris.eclipse.loader.launch.patch.BootstrapEntrypointPatch

@@ -1,19 +1,14 @@
 package io.github.dueris.eclipse.loader.api.impl;
 
-import io.github.dueris.eclipse.loader.api.mod.ModContainer;
-import io.github.dueris.eclipse.loader.api.mod.ModResource;
+import io.github.dueris.eclipse.api.mod.ModContainer;
+import io.github.dueris.eclipse.api.mod.ModMetadata;
+import io.github.dueris.eclipse.api.mod.ModResource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.tinylog.TaggedLogger;
 
 import java.util.Objects;
 
-/**
- * Represents a mod container.
- *
- * @author vectrix
- * @since 1.0.0
- */
 public record ModContainerImpl(TaggedLogger logger, ModResource resource, ModMetadata config) implements ModContainer {
 
 	@Override

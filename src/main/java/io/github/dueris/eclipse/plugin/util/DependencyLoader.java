@@ -1,6 +1,6 @@
 package io.github.dueris.eclipse.plugin.util;
 
-import io.github.dueris.eclipse.loader.EclipseLoaderBootstrap;
+import io.github.dueris.eclipse.loader.Main;
 import io.papermc.paper.plugin.loader.PluginClasspathBuilder;
 import io.papermc.paper.plugin.loader.PluginLoader;
 import io.papermc.paper.plugin.loader.library.impl.MavenLibraryResolver;
@@ -16,7 +16,7 @@ public class DependencyLoader implements PluginLoader {
 
 	@Override
 	public void classloader(@NotNull PluginClasspathBuilder classpathBuilder) {
-		if (EclipseLoaderBootstrap.BOOTED.get()) {
+		if (Main.BOOTED.get()) {
 			return;
 		}
 		MavenLibraryResolver resolver = new MavenLibraryResolver();
@@ -39,6 +39,7 @@ public class DependencyLoader implements PluginLoader {
 	}
 
 	private void maven(@NotNull MavenLibraryResolver resolver, String url) {
-		resolver.addRepository(new RemoteRepository.Builder(url.replace("https://", "").split("/")[0], "default", url).build());
+		resolver.addRepository(new RemoteRepository.Builder(url.replace("https://", "")
+															   .split("/")[0], "default", url).build());
 	}
 }

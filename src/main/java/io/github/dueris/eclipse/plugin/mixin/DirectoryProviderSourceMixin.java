@@ -1,6 +1,6 @@
 package io.github.dueris.eclipse.plugin.mixin;
 
-import io.github.dueris.eclipse.loader.EclipseLoaderBootstrap;
+import io.github.dueris.eclipse.loader.Main;
 import io.papermc.paper.plugin.provider.source.DirectoryProviderSource;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
@@ -16,7 +16,7 @@ public class DirectoryProviderSourceMixin {
 
 	@Inject(method = "lambda$prepareContext$1", at = @At("HEAD"), cancellable = true)
 	private static void eclipse$dontLoadEclipse(List files, @NotNull Path path, CallbackInfo ci) {
-		if (EclipseLoaderBootstrap.ROOT_ABSOLUTE.toString().equalsIgnoreCase(path.toAbsolutePath().toString())) {
+		if (Main.ROOT_ABSOLUTE.toString().equalsIgnoreCase(path.toAbsolutePath().toString())) {
 			ci.cancel();
 		}
 	}

@@ -16,6 +16,7 @@ public class CallbackInfo {
 	@Getter
 	@Setter
 	private Object returnValue = null;
+
 	@Getter
 	@Setter
 	private boolean returned;

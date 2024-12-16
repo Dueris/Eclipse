@@ -1,6 +1,6 @@
 package io.github.dueris.example;
 
-import io.github.dueris.eclipse.loader.api.entrypoint.BootstrapInitializer;
+import io.github.dueris.eclipse.api.entrypoint.BootstrapInitializer;
 
 public class EclipseBootstrapEntrypoint implements BootstrapInitializer {
 	@Override

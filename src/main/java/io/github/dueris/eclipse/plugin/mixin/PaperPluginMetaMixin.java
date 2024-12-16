@@ -1,6 +1,6 @@
 package io.github.dueris.eclipse.plugin.mixin;
 
-import io.github.dueris.eclipse.loader.EclipseLoaderBootstrap;
+import io.github.dueris.eclipse.api.Launcher;
 import io.github.dueris.eclipse.plugin.access.MixinPluginMeta;
 import io.papermc.paper.plugin.provider.configuration.PaperPluginMeta;
 import org.jetbrains.annotations.NotNull;
@@ -14,6 +14,6 @@ public abstract class PaperPluginMetaMixin implements MixinPluginMeta {
 
 	@Override
 	public boolean eclipse$isMixinPlugin() {
-		return EclipseLoaderBootstrap.mods().loaded(getName().toLowerCase());
+		return Launcher.getInstance().modEngine().loaded(getName().toLowerCase());
 	}
 }

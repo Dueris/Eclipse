@@ -15,10 +15,10 @@ val apiVersion = regexPattern.find(implementationVersion)?.value
 tasks.getByName<Jar>("jar") {
     manifest {
         attributes(
-            "Premain-Class" to "io.github.dueris.eclipse.loader.agent.IgniteAgent",
-            "Agent-Class" to "io.github.dueris.eclipse.loader.agent.IgniteAgent",
-            "Launcher-Agent-Class" to "io.github.dueris.eclipse.loader.agent.IgniteAgent",
-            "Main-Class" to "io.github.dueris.eclipse.loader.EclipseLoaderBootstrap",
+            "Premain-Class" to "io.github.dueris.eclipse.loader.MixinJavaAgent",
+            "Agent-Class" to "io.github.dueris.eclipse.loader.MixinJavaAgent",
+            "Launcher-Agent-Class" to "io.github.dueris.eclipse.loader.MixinJavaAgent",
+            "Main-Class" to "io.github.dueris.eclipse.loader.Main",
             "Multi-Release" to true,
             "Automatic-Module-Name" to "net.minecrell.terminalconsole",
 

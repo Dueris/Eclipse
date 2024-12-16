@@ -1,7 +1,7 @@
 package io.github.dueris.eclipse.plugin.mixin;
 
-import io.github.dueris.eclipse.loader.api.entrypoint.ModInitializer;
-import io.github.dueris.eclipse.loader.entrypoint.EntrypointContainer;
+import io.github.dueris.eclipse.api.entrypoint.EntrypointContainer;
+import io.github.dueris.eclipse.api.entrypoint.ModInitializer;
 import io.github.dueris.eclipse.plugin.access.EclipseMain;
 import joptsimple.OptionSet;
 import net.minecraft.SharedConstants;

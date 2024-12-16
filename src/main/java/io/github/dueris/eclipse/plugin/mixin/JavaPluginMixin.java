@@ -3,10 +3,10 @@ package io.github.dueris.eclipse.plugin.mixin;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
-import io.github.dueris.eclipse.loader.EclipseLoaderBootstrap;
-import io.github.dueris.eclipse.loader.api.impl.ModMetadata;
-import io.github.dueris.eclipse.loader.api.mod.ModContainer;
-import io.github.dueris.eclipse.loader.launch.ember.EmberClassLoader;
+import io.github.dueris.eclipse.api.Launcher;
+import io.github.dueris.eclipse.api.mod.ModContainer;
+import io.github.dueris.eclipse.api.mod.ModMetadata;
+import io.github.dueris.eclipse.loader.ember.EmberClassLoader;
 import io.github.dueris.eclipse.plugin.EclipsePlugin;
 import io.github.dueris.eclipse.plugin.access.MixinPlugin;
 import io.github.dueris.eclipse.plugin.access.PluginClassloaderHolder;
@@ -56,9 +56,9 @@ public abstract class JavaPluginMixin implements MixinPlugin {
 				fetchingPlugin.set(clazz.getName());
 			} else {
 				try {
-					Path path = Path.of(clazz.getProtectionDomain().getCodeSource().getLocation().toURI()).toAbsolutePath().normalize();
-					EclipseLoaderBootstrap bootstrap = EclipseLoaderBootstrap.instance();
-					for (ModContainer container : bootstrap.engine().containers()) {
+					Path path = Path.of(clazz.getProtectionDomain().getCodeSource().getLocation().toURI())
+									.toAbsolutePath().normalize();
+					for (ModContainer container : Launcher.getInstance().modEngine().containers()) {
 						if (container.resource().path().toAbsolutePath().normalize().equals(path)) {
 							fetchingPlugin.set(container.config().backend().getString("main"));
 							break;
@@ -88,17 +88,18 @@ public abstract class JavaPluginMixin implements MixinPlugin {
 			return original;
 		} else {
 			PaperPluginParent.PaperServerPluginProvider runningProvider = EclipsePlugin.CURRENT_OPERATING_PROVIDER.get();
-			if (runningProvider != null && runningProvider instanceof PluginClassloaderHolder holder) {
+			if (runningProvider instanceof PluginClassloaderHolder holder) {
 				return holder.eclipse$getPluginClassLoader();
 			}
 
-			throw new RuntimeException("Unable to locate correct class loader for plugin! Found: " + original.getClass().getName());
+			throw new RuntimeException("Unable to locate correct class loader for plugin! Found: " + original.getClass()
+																											 .getName());
 		}
 	}
 
 	@Override
 	public @Nullable ModContainer eclipse$getModContainer() {
-		return EclipseLoaderBootstrap.mods().container(getPluginMeta().getName()).orElse(null);
+		return Launcher.getInstance().modEngine().container(getPluginMeta().getName()).orElse(null);
 	}
 
 	@Override

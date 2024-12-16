@@ -90,7 +90,8 @@ public class CustomTextifier extends MethodVisitor {
 			int majorVersion = version & '\uffff';
 			int minorVersion = version >>> 16;
 			this.stringBuilder.setLength(0);
-			this.stringBuilder.append("// class version ").append(majorVersion).append('.').append(minorVersion).append(" (").append(version).append(")\n");
+			this.stringBuilder.append("// class version ").append(majorVersion).append('.').append(minorVersion)
+							  .append(" (").append(version).append(")\n");
 			if ((access & 131072) != 0) {
 				this.stringBuilder.append("// DEPRECATED\n");
 			}
@@ -158,7 +159,8 @@ public class CustomTextifier extends MethodVisitor {
 			this.stringBuilder.append("open ");
 		}
 
-		this.stringBuilder.append("module ").append(name).append(" { ").append(version == null ? "" : "// " + version).append("\n\n");
+		this.stringBuilder.append("module ").append(name).append(" { ").append(version == null ? "" : "// " + version)
+						  .append("\n\n");
 		this.text.add(this.stringBuilder.toString());
 		return this.addNewTextifier(null);
 	}
@@ -648,13 +650,15 @@ public class CustomTextifier extends MethodVisitor {
 
 	public void visitIntInsn(int opcode, int operand) {
 		this.stringBuilder.setLength(0);
-		this.stringBuilder.append(this.tab).append(rip++).append(this.tab).append(OPCODES[opcode]).append(' ').append(opcode == 188 ? TYPES[operand] : Integer.toString(operand));
+		this.stringBuilder.append(this.tab).append(rip++).append(this.tab).append(OPCODES[opcode]).append(' ')
+						  .append(opcode == 188 ? TYPES[operand] : Integer.toString(operand));
 		this.text.add(this.stringBuilder.toString());
 	}
 
 	public void visitVarInsn(int opcode, int var) {
 		this.stringBuilder.setLength(0);
-		this.stringBuilder.append(this.tab).append(rip++).append(this.tab).append(OPCODES[opcode]).append(' ').append(var);
+		this.stringBuilder.append(this.tab).append(rip++).append(this.tab).append(OPCODES[opcode]).append(' ')
+						  .append(var);
 		this.text.add(this.stringBuilder.toString());
 	}
 
@@ -770,7 +774,8 @@ public class CustomTextifier extends MethodVisitor {
 
 	public void visitIincInsn(int var, int increment) {
 		this.stringBuilder.setLength(0);
-		this.stringBuilder.append(this.tab).append(rip++).append(this.tab).append("IINC ").append(var).append(' ').append(increment);
+		this.stringBuilder.append(this.tab).append(rip++).append(this.tab).append("IINC ").append(var).append(' ')
+						  .append(increment);
 		this.text.add(this.stringBuilder.toString());
 	}
 
@@ -1126,10 +1131,12 @@ public class CustomTextifier extends MethodVisitor {
 				this.stringBuilder.append("CLASS_EXTENDS ").append(typeReference.getSuperTypeIndex());
 				break;
 			case 17:
-				this.stringBuilder.append("CLASS_TYPE_PARAMETER_BOUND ").append(typeReference.getTypeParameterIndex()).append(", ").append(typeReference.getTypeParameterBoundIndex());
+				this.stringBuilder.append("CLASS_TYPE_PARAMETER_BOUND ").append(typeReference.getTypeParameterIndex())
+								  .append(", ").append(typeReference.getTypeParameterBoundIndex());
 				break;
 			case 18:
-				this.stringBuilder.append("METHOD_TYPE_PARAMETER_BOUND ").append(typeReference.getTypeParameterIndex()).append(", ").append(typeReference.getTypeParameterBoundIndex());
+				this.stringBuilder.append("METHOD_TYPE_PARAMETER_BOUND ").append(typeReference.getTypeParameterIndex())
+								  .append(", ").append(typeReference.getTypeParameterBoundIndex());
 				break;
 			case 19:
 				this.stringBuilder.append("FIELD");
@@ -1171,16 +1178,20 @@ public class CustomTextifier extends MethodVisitor {
 				this.stringBuilder.append("CAST ").append(typeReference.getTypeArgumentIndex());
 				break;
 			case 72:
-				this.stringBuilder.append("CONSTRUCTOR_INVOCATION_TYPE_ARGUMENT ").append(typeReference.getTypeArgumentIndex());
+				this.stringBuilder.append("CONSTRUCTOR_INVOCATION_TYPE_ARGUMENT ")
+								  .append(typeReference.getTypeArgumentIndex());
 				break;
 			case 73:
-				this.stringBuilder.append("METHOD_INVOCATION_TYPE_ARGUMENT ").append(typeReference.getTypeArgumentIndex());
+				this.stringBuilder.append("METHOD_INVOCATION_TYPE_ARGUMENT ")
+								  .append(typeReference.getTypeArgumentIndex());
 				break;
 			case 74:
-				this.stringBuilder.append("CONSTRUCTOR_REFERENCE_TYPE_ARGUMENT ").append(typeReference.getTypeArgumentIndex());
+				this.stringBuilder.append("CONSTRUCTOR_REFERENCE_TYPE_ARGUMENT ")
+								  .append(typeReference.getTypeArgumentIndex());
 				break;
 			case 75:
-				this.stringBuilder.append("METHOD_REFERENCE_TYPE_ARGUMENT ").append(typeReference.getTypeArgumentIndex());
+				this.stringBuilder.append("METHOD_REFERENCE_TYPE_ARGUMENT ")
+								  .append(typeReference.getTypeArgumentIndex());
 		}
 
 	}

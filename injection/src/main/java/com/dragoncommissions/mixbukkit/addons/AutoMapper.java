@@ -104,7 +104,8 @@ public class AutoMapper {
 		if (!buildDataDir.exists()) {
 			log.info("[!] Cloning Spigot's BuildData repository to {} . It should take a while (Usually around 35 MB), but it's a one time process (across every server)", buildDataDir.getAbsolutePath());
 			try {
-				buildData = Git.cloneRepository().setURI("https://hub.spigotmc.org/stash/scm/spigot/builddata.git").setDirectory(buildDataDir).call();
+				buildData = Git.cloneRepository().setURI("https://hub.spigotmc.org/stash/scm/spigot/builddata.git")
+							   .setDirectory(buildDataDir).call();
 			} catch (GitAPIException e) {
 				throw new RuntimeException(e);
 			}

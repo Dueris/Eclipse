@@ -1,7 +1,7 @@
 package io.github.dueris.eclipse.loader.util;
 
-import io.github.dueris.eclipse.loader.EclipseLoaderBootstrap;
-import io.github.dueris.eclipse.loader.api.GameLibrary;
+import io.github.dueris.eclipse.api.GameLibrary;
+import io.github.dueris.eclipse.loader.Main;
 import org.jetbrains.annotations.NotNull;
 import org.tinylog.Logger;
 
@@ -18,8 +18,6 @@ import java.util.jar.JarFile;
 import java.util.stream.Collector;
 
 public class Util {
-	public static final String ECLIPSE = "eclipse";
-	public static final String VANILLA = "Paper";
 	static final Set<Collector.Characteristics> CH_ID
 		= Collections.unmodifiableSet(EnumSet.of(Collector.Characteristics.IDENTITY_FINISH));
 
@@ -67,18 +65,9 @@ public class Util {
 		return i -> (R) i;
 	}
 
-	public static String insertBranding(final String brand) {
-		if (brand == null || brand.isEmpty()) {
-			Logger.warn("Null or empty branding found!", new IllegalStateException());
-			return ECLIPSE;
-		}
-
-		return VANILLA.equals(brand) ? ECLIPSE : brand + "/(" + ECLIPSE + ")";
-	}
-
 	public static void unloadNested(List<GameLibrary> libraries) {
 		try {
-			@SuppressWarnings("resource") JarFile jarFile = new JarFile(EclipseLoaderBootstrap.ROOT_ABSOLUTE.toFile());
+			@SuppressWarnings("resource") JarFile jarFile = new JarFile(Main.ROOT_ABSOLUTE.toFile());
 			String entryName = "/nested-libs/console-v1.0.0.jar";
 			Path root = Paths.get(".");
 			Path outputDirPath = root.toAbsolutePath().resolve("cache").resolve(".eclipse").resolve("server");
@@ -110,10 +99,17 @@ public class Util {
 
 			// Download required libraries and add them
 			libraries.add(new GameLibrary(
-				outputFilePath.toAbsolutePath().normalize(), "patched//net.minecrell:terminalconsoleappender:1.3.0", existsAlready
+				outputFilePath.toAbsolutePath()
+							  .normalize(), "patched//net.minecrell:terminalconsoleappender:1.3.0", existsAlready
 			));
-			libraries.add(downloadLibrary("net.fabricmc:access-widener:2.1.0", "https://maven.fabricmc.net/", root.resolve("libraries").toAbsolutePath().normalize().toString()));
-			libraries.add(downloadLibrary("io.github.llamalad7:mixinextras-common:0.4.1", "https://repo.maven.apache.org/maven2/", root.resolve("libraries").toAbsolutePath().normalize().toString()));
+			libraries.add(downloadLibrary("net.fabricmc:access-widener:2.1.0", "https://maven.fabricmc.net/", root.resolve("libraries")
+																												  .toAbsolutePath()
+																												  .normalize()
+																												  .toString()));
+			libraries.add(downloadLibrary("io.github.llamalad7:mixinextras-common:0.4.1", "https://repo.maven.apache.org/maven2/", root.resolve("libraries")
+																																	   .toAbsolutePath()
+																																	   .normalize()
+																																	   .toString()));
 		} catch (IOException e) {
 			throw new RuntimeException("Unable to unload nested jars!", e);
 		}
@@ -150,7 +146,6 @@ public class Util {
 		}
 
 		boolean trace = outputFile.exists();
-		//noinspection deprecation
 		try (BufferedInputStream in = new BufferedInputStream(new URL(jarUrl).openStream());
 			 FileOutputStream fileOutputStream = new FileOutputStream(outputFile)) {
 

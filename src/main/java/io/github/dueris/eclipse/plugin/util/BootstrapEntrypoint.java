@@ -8,10 +8,10 @@ import com.dragoncommissions.mixbukkit.api.action.impl.MActionInsertShellCode;
 import com.dragoncommissions.mixbukkit.api.locator.impl.HLocatorHead;
 import com.dragoncommissions.mixbukkit.api.shellcode.impl.api.CallbackInfo;
 import com.dragoncommissions.mixbukkit.api.shellcode.impl.api.ShellCodeReflectionMixinPluginMethodCall;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import io.github.dueris.eclipse.loader.EclipseLoaderBootstrap;
+import io.github.dueris.eclipse.api.util.IgniteConstants;
+import io.github.dueris.eclipse.loader.Main;
 import io.papermc.paper.ServerBuildInfo;
 import io.papermc.paper.plugin.bootstrap.BootstrapContext;
 import io.papermc.paper.plugin.bootstrap.PluginBootstrap;
@@ -100,7 +100,8 @@ public class BootstrapEntrypoint implements PluginBootstrap {
 		}
 		try (FileWriter writer = new FileWriter(contextFile)) {
 			JsonObject gsonObject = new JsonObject();
-			gsonObject.addProperty("path", Paths.get(ManagementFactory.getRuntimeMXBean().getClassPath()).toAbsolutePath().normalize().toString());
+			gsonObject.addProperty("path", Paths.get(ManagementFactory.getRuntimeMXBean().getClassPath())
+												.toAbsolutePath().normalize().toString());
 			gsonObject.addProperty("brand", ServerBuildInfo.buildInfo().brandName());
 			gsonObject.addProperty("is_provider_context", PROVIDER_CONTEXT);
 
@@ -109,7 +110,7 @@ public class BootstrapEntrypoint implements PluginBootstrap {
 				jsonArray.add(b);
 			}
 			gsonObject.add("optionset", jsonArray);
-			writer.write(new GsonBuilder().setPrettyPrinting().create().toJson(gsonObject));
+			writer.write(IgniteConstants.GSON.toJson(gsonObject));
 		} catch (IOException e) {
 			logger.error("Failed to create context file: {}", e.getMessage());
 			throw e;
@@ -266,7 +267,7 @@ public class BootstrapEntrypoint implements PluginBootstrap {
 	 */
 	@Override
 	public void bootstrap(@NotNull BootstrapContext bootstrapContext) {
-		if (!EclipseLoaderBootstrap.BOOTED.get()) {
+		if (!Main.BOOTED.get()) {
 			CONTEXT = bootstrapContext;
 			MixBukkit bukkit = new MixBukkit((PaperPluginClassLoader) BootstrapEntrypoint.class.getClassLoader());
 			bukkit.onEnable(logger, bootstrapContext.getPluginSource().toFile());
@@ -276,8 +277,10 @@ public class BootstrapEntrypoint implements PluginBootstrap {
 					"eclipseInitWrap", new MActionInsertShellCode(
 						new ShellCodeReflectionMixinPluginMethodCall(Injectors.class.getDeclaredMethod("eclipseLoadWrapper", Path.class, OptionSet.class, CallbackInfo.class)),
 						new HLocatorHead()
-					), DedicatedServerProperties.class, "fromFile", DedicatedServerProperties.class.getDeclaredMethod("fromFile", Path.class, OptionSet.class).getReturnType(),
-					DedicatedServerProperties.class.getDeclaredMethod("fromFile", Path.class, OptionSet.class).getParameterTypes()
+					), DedicatedServerProperties.class, "fromFile", DedicatedServerProperties.class.getDeclaredMethod("fromFile", Path.class, OptionSet.class)
+																								   .getReturnType(),
+					DedicatedServerProperties.class.getDeclaredMethod("fromFile", Path.class, OptionSet.class)
+												   .getParameterTypes()
 				);
 			} catch (Throwable e) {
 				throw new RuntimeException(e);

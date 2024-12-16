@@ -6,8 +6,10 @@ import com.dragoncommissions.mixbukkit.api.shellcode.ShellCodeInfo;
 import javassist.bytecode.Opcode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.tree.*;
+import org.objectweb.asm.tree.InsnList;
+import org.objectweb.asm.tree.InsnNode;
+import org.objectweb.asm.tree.IntInsnNode;
+import org.objectweb.asm.tree.MethodNode;
 
 @ShellCodeInfo(
 	name = "Push Int",

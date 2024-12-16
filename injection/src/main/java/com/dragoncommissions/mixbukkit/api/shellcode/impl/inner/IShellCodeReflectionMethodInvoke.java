@@ -36,9 +36,10 @@ public class IShellCodeReflectionMethodInvoke extends ShellCode {
 	@SneakyThrows
 	private static void action() {
 		try {
-			Class.forName("CLASS_NAME_HERE", true, Bukkit.getPluginManager().getPlugins()[0].getClass().getClassLoader())
-				.getDeclaredMethod("methodNameHere", int.class, float.class, double.class, char.class, boolean.class, byte.class, short.class, String.class, String[].class, int[].class)
-				.invoke(null);
+			Class.forName("CLASS_NAME_HERE", true, Bukkit.getPluginManager().getPlugins()[0].getClass()
+																							.getClassLoader())
+				 .getDeclaredMethod("methodNameHere", int.class, float.class, double.class, char.class, boolean.class, byte.class, short.class, String.class, String[].class, int[].class)
+				 .invoke(null);
 		} catch (IllegalAccessException e) {
 			throw new RuntimeException(e);
 		} catch (InvocationTargetException e) {

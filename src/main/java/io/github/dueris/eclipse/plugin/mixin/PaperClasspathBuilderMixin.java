@@ -1,6 +1,6 @@
 package io.github.dueris.eclipse.plugin.mixin;
 
-import io.github.dueris.eclipse.loader.agent.IgniteAgent;
+import io.github.dueris.eclipse.loader.MixinJavaAgent;
 import io.github.dueris.eclipse.plugin.access.MixinPluginMeta;
 import io.papermc.paper.plugin.PluginInitializerManager;
 import io.papermc.paper.plugin.bootstrap.PluginProviderContext;
@@ -20,6 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.nio.file.Path;
 import java.util.List;
 
+@SuppressWarnings("UnstableApiUsage")
 @Mixin(PaperClasspathBuilder.class)
 public class PaperClasspathBuilderMixin {
 
@@ -28,11 +29,11 @@ public class PaperClasspathBuilderMixin {
 	private PluginProviderContext context;
 
 	@Inject(method = "addLibrary", at = @At("HEAD"))
-	public void loadToIgniteAgent(ClassPathLibrary classPathLibrary, CallbackInfoReturnable<PluginClasspathBuilder> cir) {
+	public void loadToMixinAgent(ClassPathLibrary classPathLibrary, CallbackInfoReturnable<PluginClasspathBuilder> cir) {
 		if (context.getConfiguration() instanceof MixinPluginMeta mixinPluginMeta && mixinPluginMeta.eclipse$isMixinPlugin()) {
 			eclipse$buildLibraryPaths(true, classPathLibrary).forEach((path) -> {
 				try {
-					IgniteAgent.addJar(path);
+					MixinJavaAgent.appendToClassPath(path);
 				} catch (Throwable throwable) {
 					throw new RuntimeException("Unable to append classpath library to ignite classpath!", throwable);
 				}

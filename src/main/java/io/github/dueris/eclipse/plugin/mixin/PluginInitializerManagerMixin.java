@@ -24,6 +24,9 @@ public class PluginInitializerManagerMixin {
 	@Inject(method = "load", at = @At(value = "INVOKE", target = "Lio/papermc/paper/plugin/util/EntrypointUtil;registerProvidersFromSource(Lio/papermc/paper/plugin/provider/source/ProviderSource;Ljava/lang/Object;)V", ordinal = 0, shift = At.Shift.AFTER))
 	private static void eclipse$loadProcessedPlugins(OptionSet optionSet, CallbackInfo ci) {
 		LOGGER.info("Loading processed mods into plugin entrypoints...");
-		EntrypointUtil.registerProvidersFromSource(DirectoryProviderSource.INSTANCE, Paths.get(".").toAbsolutePath().resolve("cache").resolve(".eclipse").resolve("processedMods"));
+		EntrypointUtil.registerProvidersFromSource(DirectoryProviderSource.INSTANCE, Paths.get(".").toAbsolutePath()
+																						  .resolve("cache")
+																						  .resolve(".eclipse")
+																						  .resolve("processedMods"));
 	}
 }

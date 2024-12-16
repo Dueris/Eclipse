@@ -1,8 +1,8 @@
 package io.github.dueris.eclipse.loader.minecraft;
 
-import io.github.dueris.eclipse.loader.api.GameLibrary;
-import io.github.dueris.eclipse.loader.api.McVersion;
-import io.github.dueris.eclipse.loader.launch.EmberLauncher;
+import io.github.dueris.eclipse.api.GameLibrary;
+import io.github.dueris.eclipse.api.Launcher;
+import io.github.dueris.eclipse.api.McVersion;
 import io.github.dueris.eclipse.loader.util.Util;
 import org.jetbrains.annotations.NotNull;
 
@@ -59,7 +59,7 @@ public class PaperclipJar extends JarFile {
 		Util.unloadNested(libraries);
 		this.gameRecord = new GameRecord(game.get(), libraries.stream(), version.get());
 		mcVer = McVersionUtil.fromVersionJson(getInputStream(getJarEntry("version.json")));
-		EmberLauncher.getProperties().put("gamejar", this.gameRecord.gamePath());
+		Launcher.getInstance().getProperties().put("gamejar", this.gameRecord.gamePath());
 	}
 
 	public String getMainClass() {
