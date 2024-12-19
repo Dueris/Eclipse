@@ -3,6 +3,7 @@ package io.github.dueris.eclipse.loader.minecraft;
 import io.github.dueris.eclipse.api.GameLibrary;
 import io.github.dueris.eclipse.api.Launcher;
 import io.github.dueris.eclipse.api.McVersion;
+import io.github.dueris.eclipse.api.Transformer;
 import io.github.dueris.eclipse.api.game.GameProvider;
 import io.github.dueris.eclipse.api.util.BootstrapEntryContext;
 import io.github.dueris.eclipse.loader.MixinJavaAgent;
@@ -108,7 +109,7 @@ public class MinecraftGameProvider implements GameProvider {
 	}
 
 	@Override
-	public EmberTransformer getTransformer() {
+	public Transformer getTransformer() {
 		return this.transformer;
 	}
 

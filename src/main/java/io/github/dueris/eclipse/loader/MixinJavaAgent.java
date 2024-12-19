@@ -57,7 +57,7 @@ public final class MixinJavaAgent implements Agent {
 	}
 
 	@Override
-	public void registerTransformer(ClassFileTransformer fileTransformer) {
+	public void registerClassFileTransformer(ClassFileTransformer fileTransformer) {
 		INSTRUMENTATION.addTransformer(fileTransformer);
 	}
 }

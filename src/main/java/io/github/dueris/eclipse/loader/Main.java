@@ -73,7 +73,7 @@ public final class Main {
 																								 .id(), IgniteConstants.IMPLEMENTATION_VERSION);
 
 			// Launch the game.
-			ember.burn(Launcher.getInstance().modEngine());
+			ember.launchEmber(Launcher.getInstance().modEngine());
 		} catch (Throwable throwable) {
 			throwable.printStackTrace();
 			throw new RuntimeException("An unexpected error occurred when starting mixin server!", throwable);

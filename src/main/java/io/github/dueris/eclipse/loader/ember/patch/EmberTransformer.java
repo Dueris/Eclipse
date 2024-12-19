@@ -1,5 +1,6 @@
 package io.github.dueris.eclipse.loader.ember.patch;
 
+import io.github.dueris.eclipse.api.Transformer;
 import io.github.dueris.eclipse.api.util.IgniteConstants;
 import io.github.dueris.eclipse.loader.ember.Ember;
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +17,7 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public final class EmberTransformer {
+public final class EmberTransformer implements Transformer {
 	private final Map<Class<? extends TransformerService>, TransformerService> transformers = new IdentityHashMap<>();
 	private final Map<Class<? extends GamePatch>, GamePatch> patches = new IdentityHashMap<>();
 
@@ -30,29 +31,37 @@ public final class EmberTransformer {
 	private void loadPatches() {
 		this.patches.clear();
 		final ServiceLoader<GamePatch> patchLoader = ServiceLoader.load(GamePatch.class, Ember.class.getClassLoader());
-		for (final GamePatch patch : patchLoader) {
-			this.patches.put(patch.getClass(), patch);
-		}
+		patchLoader.forEach(this::patch);
 	}
 
 	private void loadTransformers() {
 		this.transformers.clear();
 		final ServiceLoader<TransformerService> serviceLoader = ServiceLoader.load(TransformerService.class, Ember.class.getClassLoader());
-		for (final TransformerService service : serviceLoader) {
-			this.transformers.put(service.getClass(), service);
-		}
+		serviceLoader.forEach(this::transformer);
 	}
 
-	public void registerPatch(GamePatch patch) {
+	@Override
+	public void patch(GamePatch patch) {
 		this.patches.put(patch.getClass(), patch);
+	}
+
+	@Override
+	public void transformer(TransformerService service) {
+		this.transformers.put(service.getClass(), service);
+	}
+
+	@Override
+	public <T extends TransformerService> @Nullable T getTransformer(final @NotNull Class<T> transformer) {
+		return transformer.cast(this.transformers.get(transformer));
+	}
+
+	@Override
+	public <T extends GamePatch> @Nullable T getPatch(final @NotNull Class<T> patch) {
+		return patch.cast(this.patches.get(patch));
 	}
 
 	public void addResourceExclusion(final @NotNull Predicate<String> predicate) {
 		this.resourceExclusionFilter = predicate;
-	}
-
-	public <T extends TransformerService> @Nullable T transformer(final @NotNull Class<T> transformer) {
-		return transformer.cast(this.transformers.get(transformer));
 	}
 
 	public @NotNull @UnmodifiableView Collection<TransformerService> transformers() {

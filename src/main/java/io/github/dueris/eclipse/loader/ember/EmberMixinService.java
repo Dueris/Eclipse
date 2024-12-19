@@ -54,7 +54,7 @@ public final class EmberMixinService implements IMixinService, IClassProvider, I
 	@Override
 	public void offer(final IMixinInternal internal) {
 		if (internal instanceof IMixinTransformerFactory) {
-			final MixinTransformer transformer = Ember.instance().transformer().transformer(MixinTransformer.class);
+			final MixinTransformer transformer = Ember.instance().transformer().getTransformer(MixinTransformer.class);
 			if (transformer == null) return;
 
 			transformer.offer((IMixinTransformerFactory) internal);
@@ -182,7 +182,7 @@ public final class EmberMixinService implements IMixinService, IClassProvider, I
 		final EmberClassLoader loader = ember.loader();
 		final EmberTransformer transformer = ember.transformer();
 
-		final MixinTransformer mixinTransformer = transformer.transformer(MixinTransformer.class);
+		final MixinTransformer mixinTransformer = transformer.getTransformer(MixinTransformer.class);
 		if (mixinTransformer == null) throw new ClassNotFoundException("Mixin transformer is not available!");
 
 		final String canonicalName = name.replace('/', '.');

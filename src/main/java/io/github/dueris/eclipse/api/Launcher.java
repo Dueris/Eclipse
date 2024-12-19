@@ -21,4 +21,5 @@ public interface Launcher {
 	Agent agent();
 	BootstrapEntryContext entryContext();
 	Map<String, Object> getProperties();
+	Transformer emberTransformer();
 }

@@ -2,6 +2,7 @@ package io.github.dueris.eclipse.api.game;
 
 import io.github.dueris.eclipse.api.GameLibrary;
 import io.github.dueris.eclipse.api.McVersion;
+import io.github.dueris.eclipse.api.Transformer;
 import io.github.dueris.eclipse.loader.ember.patch.EmberTransformer;
 import joptsimple.OptionSet;
 
@@ -30,7 +31,7 @@ public interface GameProvider {
 	void prepareTransformer();
 
 	// Transformers and Arguments
-	EmberTransformer getTransformer();
+	Transformer getTransformer();
 
 	OptionSet getArguments();
 }

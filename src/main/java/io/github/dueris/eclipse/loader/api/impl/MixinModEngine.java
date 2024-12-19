@@ -143,7 +143,7 @@ public class MixinModEngine implements ModEngine {
 	}
 
 	public void resolveWideners(final @NotNull EmberTransformer transformer) {
-		final AccessWidenerTransformer accessTransformer = transformer.transformer(AccessWidenerTransformer.class);
+		final AccessWidenerTransformer accessTransformer = transformer.getTransformer(AccessWidenerTransformer.class);
 		if (accessTransformer == null) return;
 
 		for (final ModContainer container : this.containers()) {

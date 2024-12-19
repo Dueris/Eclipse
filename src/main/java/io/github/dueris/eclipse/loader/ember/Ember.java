@@ -51,13 +51,13 @@ public final class Ember {
 		return this.loader;
 	}
 
-	public void burn(final @NotNull ModEngine mixinModEngine) {
+	public void launchEmber(final @NotNull ModEngine mixinModEngine) {
 		// Initialize the launch.
 		this.service.initialize();
 
 		// Prepare and create the transformer.
 		mixinModEngine.gameProvider().prepareTransformer();
-		this.transformer = mixinModEngine.gameProvider().getTransformer();
+		this.transformer = (EmberTransformer) mixinModEngine.gameProvider().getTransformer();
 
 		// Create the class loader.
 		this.loader = new EmberClassLoader(this.transformer, (classPathUrls.toArray(new URL[0])));

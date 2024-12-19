@@ -3,6 +3,7 @@ package io.github.dueris.eclipse.loader;
 import com.llamalad7.mixinextras.service.MixinExtrasVersion;
 import io.github.dueris.eclipse.api.Agent;
 import io.github.dueris.eclipse.api.Launcher;
+import io.github.dueris.eclipse.api.Transformer;
 import io.github.dueris.eclipse.api.entrypoint.BootstrapInitializer;
 import io.github.dueris.eclipse.api.entrypoint.EntrypointContainer;
 import io.github.dueris.eclipse.api.entrypoint.ModInitializer;
@@ -260,5 +261,10 @@ public final class EclipseLauncher implements Launcher {
 	@Override
 	public BootstrapEntryContext entryContext() {
 		return this.context;
+	}
+
+	@Override
+	public Transformer emberTransformer() {
+		return modEngine().gameProvider().getTransformer();
 	}
 }
