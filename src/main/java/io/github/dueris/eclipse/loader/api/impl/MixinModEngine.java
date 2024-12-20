@@ -43,11 +43,11 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 public class MixinModEngine implements ModEngine {
-	private static final AtomicReference<ModResource> CACHED_GAME_RESOURCE = new AtomicReference<>(null);
-	private static final AtomicReference<ModResource> CACHED_LAUNCHER_RESOURCE = new AtomicReference<>(null);
 	public static final String JAVA_LOCATOR = "java_locator";
 	public static final String LAUNCHER_LOCATOR = "launcher_locator";
 	public static final String GAME_LOCATOR = "game_locator";
+	private static final AtomicReference<ModResource> CACHED_GAME_RESOURCE = new AtomicReference<>(null);
+	private static final AtomicReference<ModResource> CACHED_LAUNCHER_RESOURCE = new AtomicReference<>(null);
 	private static final Map<Path, List<ModResource>> parentToChildren = new HashMap<>();
 	private final Map<String, ModContainer> containersByConfig = new LinkedHashMap<>();
 	private final Map<String, ModContainer> containers = new LinkedHashMap<>();

@@ -27,12 +27,12 @@ public class EntrypointInstance<T> {
 	}
 
 	/**
-     * Verifies that the provided class is valid.
-     *
-     * @param toVerify The class to verify.
-     * @return The verified class.
-     * @throws RuntimeException If the class is invalid.
-     */
+	 * Verifies that the provided class is valid.
+	 *
+	 * @param toVerify The class to verify.
+	 * @return The verified class.
+	 * @throws RuntimeException If the class is invalid.
+	 */
 	@Contract("_ -> param1")
 	private @NotNull Class<T> verify(@NotNull Class<T> toVerify) {
 		if (!toVerify.isInterface()) {
@@ -42,12 +42,12 @@ public class EntrypointInstance<T> {
 	}
 
 	/**
-     * Enters the entrypoint for each registered mod resource by invoking the method
-     * with the provided arguments.
-     *
-     * @param arguments The arguments to pass to the entrypoint method.
-     * @throws RuntimeException If any error occurs during method invocation.
-     */
+	 * Enters the entrypoint for each registered mod resource by invoking the method
+	 * with the provided arguments.
+	 *
+	 * @param arguments The arguments to pass to the entrypoint method.
+	 * @throws RuntimeException If any error occurs during method invocation.
+	 */
 	public void enter(Object... arguments) {
 		registeredEntrypoints.forEach((modResource, entrypointClass) -> {
 			try {
@@ -63,22 +63,22 @@ public class EntrypointInstance<T> {
 	}
 
 	/**
-     * Retrieves the unique identifier for this entrypoint.
-     *
-     * @return The unique ID of this entrypoint.
-     */
+	 * Retrieves the unique identifier for this entrypoint.
+	 *
+	 * @return The unique ID of this entrypoint.
+	 */
 	public String getId() {
 		return id;
 	}
 
 	/**
-     * Builds the entrypoints from the provided configuration section and mod resource.
-     * It associates the entrypoints with their corresponding mod resources.
-     *
-     * @param entrypointContainer The configuration section containing the entrypoint definitions.
-     * @param resource            The mod resource associated with the entrypoint.
-     * @throws RuntimeException If any error occurs while resolving or validating entrypoints.
-     */
+	 * Builds the entrypoints from the provided configuration section and mod resource.
+	 * It associates the entrypoints with their corresponding mod resources.
+	 *
+	 * @param entrypointContainer The configuration section containing the entrypoint definitions.
+	 * @param resource            The mod resource associated with the entrypoint.
+	 * @throws RuntimeException If any error occurs while resolving or validating entrypoints.
+	 */
 	@SuppressWarnings("unchecked")
 	void buildEntrypoints(@Nullable ConfigurationSection entrypointContainer, @NotNull ModResource resource) {
 		if (entrypointContainer != null) {
