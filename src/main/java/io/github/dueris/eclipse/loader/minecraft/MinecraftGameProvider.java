@@ -50,14 +50,6 @@ public class MinecraftGameProvider implements GameProvider {
 		}
 	}
 
-	public MinecraftGameProvider(String gameBrand, McVersion version, String mainClass, OptionSet optionSet, PaperclipJar paperclipJar) {
-		this.gameBrand = gameBrand;
-		this.version = version;
-		this.mainClass = mainClass;
-		this.optionSet = optionSet;
-		this.paperclipJar = paperclipJar;
-	}
-
 	@Override
 	public Stream<GameLibrary> getLibraries() {
 		return paperclipJar.gameRecord.libraries();
