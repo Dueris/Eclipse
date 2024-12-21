@@ -9,7 +9,7 @@ import java.util.List;
 public interface TestInstance {
 	Logger LOGGER = LogManager.getLogger("EclipseTests");
 	static void runTests() {
-		for (Class<? extends TestInstance> testClass : List.of(StaticGetPluginTest.class, PluginManagerGetPlugin.class, ColoredLoggingOutputTest.class)) {
+		for (Class<? extends TestInstance> testClass : List.of(StaticGetPluginTest.class, PluginManagerGetPlugin.class, ColoredLoggingOutputTest.class, JavaPluginJarFileTest.class)) {
 			try {
 				TestInstance testInstance = testClass.newInstance();
 				try {

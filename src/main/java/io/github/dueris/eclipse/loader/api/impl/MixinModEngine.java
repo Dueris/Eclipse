@@ -61,6 +61,14 @@ public class MixinModEngine implements ModEngine {
 	private static @Nullable ModResourceImpl validateAndCreateResource(JarEntry entry, Path childFile, @NotNull JarFile jarFile, @NotNull AtomicBoolean childLoading, @NotNull List<ModResourceImpl> resources) throws IOException {
 		YamlConfiguration preloadedConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(jarFile.getInputStream(entry)));
 		if (preloadedConfig.contains("mixins") || preloadedConfig.contains("wideners") || preloadedConfig.contains("datapack-entry")) {
+			Manifest manifest = jarFile.getManifest();
+			if (manifest != null && (manifest.getMainAttributes()
+											 .getValue("paperweight-mappings-namespace") != null && !manifest.getMainAttributes()
+																											 .getValue("paperweight-mappings-namespace")
+																											 .equals("mojang+yarn"))) {
+				Logger.warn("JarFile, {}, doesn't have a safe mappings namespace(recommended: {}, but found {})! If this is a mixin plugin, it might not work. Proceed with caution", jarFile.getName(), "mojang+yarn", manifest.getMainAttributes()
+																																																								.getValue("paperweight-mappings-namespace"));
+			}
 			ModResourceImpl resource = new ModResourceImpl(JAVA_LOCATOR, childFile, jarFile.getManifest(), childLoading.get(), parentToChildren.getOrDefault(childFile, List.of()));
 			resources.add(resource);
 			return resource;
@@ -267,14 +275,6 @@ public class MixinModEngine implements ModEngine {
 				}
 
 				try (final JarFile jarFile = new JarFile(childFile.toFile())) {
-					Manifest manifest = jarFile.getManifest();
-					if (manifest != null && (manifest.getMainAttributes()
-													 .getValue("paperweight-mappings-namespace") != null && !manifest.getMainAttributes()
-																													 .getValue("paperweight-mappings-namespace")
-																													 .equals("mojang+yarn"))) {
-						Logger.warn("JarFile, {}, doesn't have a safe mappings namespace(recommended: {}, but found {})! If this is a mixin plugin, it might not work. Proceed with caution", jarFile.getName(), "mojang+yarn", manifest.getMainAttributes()
-																																																										.getValue("paperweight-mappings-namespace"));
-					}
 					JarEntry jarEntry = jarFile.getJarEntry(IgniteConstants.MOD_CONFIG_YML);
 					if (jarEntry == null) {
 						return null;
