@@ -58,6 +58,16 @@ public class MixinModEngine implements ModEngine {
 		this.provider = new MinecraftGameProvider();
 	}
 
+	private static @Nullable ModResourceImpl validateAndCreateResource(JarEntry entry, Path childFile, @NotNull JarFile jarFile, @NotNull AtomicBoolean childLoading, @NotNull List<ModResourceImpl> resources) throws IOException {
+		YamlConfiguration preloadedConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(jarFile.getInputStream(entry)));
+		if (preloadedConfig.contains("mixins") || preloadedConfig.contains("wideners") || preloadedConfig.contains("datapack-entry")) {
+			ModResourceImpl resource = new ModResourceImpl(JAVA_LOCATOR, childFile, jarFile.getManifest(), childLoading.get(), parentToChildren.getOrDefault(childFile, List.of()));
+			resources.add(resource);
+			return resource;
+		}
+		return null; // Invalid
+	}
+
 	@Override
 	public boolean loaded(final @NotNull String id) {
 		return this.containers.containsKey(id);
@@ -270,9 +280,7 @@ public class MixinModEngine implements ModEngine {
 						return null;
 					}
 
-					ModResourceImpl resource = new ModResourceImpl(JAVA_LOCATOR, childFile, jarFile.getManifest(), childLoading.get(), parentToChildren.getOrDefault(childFile, List.of()));
-					resources.add(resource);
-					return resource;
+					return validateAndCreateResource(jarEntry, childFile, jarFile, childLoading, resources);
 				} catch (Throwable e) {
 					e.printStackTrace();
 					return null;
