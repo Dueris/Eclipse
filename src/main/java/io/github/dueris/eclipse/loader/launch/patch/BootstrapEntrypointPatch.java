@@ -8,6 +8,7 @@ import org.objectweb.asm.tree.*;
 
 import java.util.ListIterator;
 
+// TODO - remove - Dueris
 public class BootstrapEntrypointPatch extends GamePatch {
 	public BootstrapEntrypointPatch() {
 		this.appendTargets("net/minecraft/server/Bootstrap");

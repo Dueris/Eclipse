@@ -33,6 +33,7 @@ public final class EmberClassLoader extends DynamicClassLoader {
 		"java.", "javax.", "com.sun.", "org.objectweb.asm."
 	);
 
+	public static EmberClassLoader INSTANCE;
 	static {
 		ClassLoader.registerAsParallelCapable();
 	}
@@ -53,6 +54,7 @@ public final class EmberClassLoader extends DynamicClassLoader {
 		this.manifestLocator = connection -> this.locateManifest(connection).orElse(null);
 		this.sourceLocator = connection -> this.locateSource(connection).orElse(null);
 		this.transformationFilter = name -> EmberClassLoader.EXCLUDE_PACKAGES.stream().noneMatch(name::startsWith);
+		INSTANCE = this;
 	}
 
 	public void addTransformationPath(final @NotNull Path path) {

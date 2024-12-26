@@ -2,6 +2,7 @@ package io.github.dueris.eclipse.api.entrypoint;
 
 import io.github.dueris.eclipse.api.Launcher;
 import io.github.dueris.eclipse.api.mod.ModResource;
+import io.github.dueris.eclipse.loader.ember.EmberClassLoader;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -85,7 +86,7 @@ public class EntrypointInstance<T> {
 			if (entrypointContainer.contains(id)) {
 				String entryName = entrypointContainer.getString(id);
 				try {
-					Class<?> clazz = Class.forName(entryName);
+					Class<?> clazz = Class.forName(entryName, true, EmberClassLoader.INSTANCE);
 					if (instanceClass.isAssignableFrom(clazz)) {
 						registeredEntrypoints.put(resource, (Class<? extends T>) clazz);
 					} else {
