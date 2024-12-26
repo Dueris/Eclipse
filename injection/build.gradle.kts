@@ -14,3 +14,5 @@ dependencies {
     compileOnly("io.github.karlatemp:unsafe-accessor:1.7.0")
     compileOnly("org.eclipse.jgit:org.eclipse.jgit:6.10.0.202406032230-r")
 }
+
+tasks.getByName("compileJava").dependsOn(":paperweightUserdevSetup")

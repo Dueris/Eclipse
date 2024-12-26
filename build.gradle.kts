@@ -6,7 +6,7 @@ import kotlin.io.path.Path
 plugins {
     `java-library`
     `maven-publish`
-    id("io.papermc.paperweight.userdev") version "1.7.7" apply true
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.8" apply true
     id("xyz.jpenilla.run-paper") version "2.2.3"
     id("ignite.parent-conventions")
     id("ignite.launcher-conventions")
@@ -80,6 +80,7 @@ allprojects {
         }
     }
 
+    tasks.getByName("compileJava").dependsOn(":paperweightUserdevSetup")
 }
 
 dependencies {
@@ -119,7 +120,7 @@ tasks {
 }
 
 tasks.register("eclipseJar") {
-    dependsOn(":console:build", "shadowJar", "example:build")
+    dependsOn(":console:build", "shadowJar")
 
     doLast {
         val consoleJar = rootDir.resolve("console/build/libs/console-v1.0.0.jar").absoluteFile

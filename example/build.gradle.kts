@@ -3,7 +3,7 @@ import io.github.dueris.kotlin.eclipse.gradle.MinecraftVersion
 plugins {
     `java-library`
     `maven-publish`
-    id("io.papermc.paperweight.userdev") version "1.7.7" apply true
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.8" apply true
     id("io.github.dueris.eclipse.gradle") version "1.2.2" apply true
 }
 
