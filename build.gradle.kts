@@ -17,7 +17,7 @@ val paperweightVersion: String = "1.21.4-R0.1-SNAPSHOT"
 
 extra["mcMajorVer"] = "21"
 extra["mcMinorVer"] = "3"
-extra["pluginVer"] = "v2.0.2"
+extra["pluginVer"] = "v2.0.3"
 
 val mcMajorVer = extra["mcMajorVer"] as String
 val mcMinorVer = extra["mcMinorVer"] as String
