@@ -4,7 +4,7 @@ plugins {
     `java-library`
     `maven-publish`
     id("io.papermc.paperweight.userdev") version "2.0.0-beta.8" apply true
-    id("io.github.dueris.eclipse.gradle") version "1.2.2" apply true
+    id("io.github.dueris.eclipse.gradle") version "1.2.3" apply true
 }
 
 val paperweightVersion: String = "1.21.4-R0.1-SNAPSHOT"
@@ -30,7 +30,7 @@ dependencies {
 
 eclipse {
     minecraft = MinecraftVersion.MC1_21_4.version
-    wideners = files("example.accesswidener")
+    wideners.set(files("example.accesswidener"))
 }
 
 repositories {
@@ -46,3 +46,5 @@ repositories {
     maven("https://libraries.minecraft.net/")
     maven("https://jitpack.io")
 }
+
+tasks.getByName("compileJava").dependsOn(":console:paperweightUserdevSetup")

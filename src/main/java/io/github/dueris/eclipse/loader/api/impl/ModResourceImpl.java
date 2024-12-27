@@ -71,8 +71,8 @@ public final class ModResourceImpl implements ModResource {
 		if (this == other) return true;
 		if (!(other instanceof ModResourceImpl that)) return false;
 		Logger.trace("Checking for qualification for P1: " + path.toAbsolutePath()
-																 .normalize() + " and P2: " + that.path.toAbsolutePath()
-																									   .normalize());
+			.normalize() + " and P2: " + that.path.toAbsolutePath()
+			.normalize());
 		return Objects.equals(path.toAbsolutePath().normalize(), that.path.toAbsolutePath().normalize());
 	}
 

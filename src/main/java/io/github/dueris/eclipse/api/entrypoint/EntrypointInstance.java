@@ -3,15 +3,15 @@ package io.github.dueris.eclipse.api.entrypoint;
 import io.github.dueris.eclipse.api.Launcher;
 import io.github.dueris.eclipse.api.mod.ModResource;
 import io.github.dueris.eclipse.loader.ember.EmberClassLoader;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.*;
 import org.simpleyaml.configuration.ConfigurationSection;
 
 import java.lang.instrument.IllegalClassFormatException;
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class EntrypointInstance<T> {
 	protected final Class<T> instanceClass;
@@ -50,17 +50,23 @@ public class EntrypointInstance<T> {
 	 * @throws RuntimeException If any error occurs during method invocation.
 	 */
 	public void enter(Object... arguments) {
-		registeredEntrypoints.forEach((modResource, entrypointClass) -> {
-			try {
-				Method method = entrypointClass.getDeclaredMethod(methodName, argumentTypes);
-				method.setAccessible(true);
-				T entrypointInstance = entrypointClass.getConstructor().newInstance();
-				method.invoke(entrypointInstance, arguments);
-			} catch (Throwable throwable) {
-				throw new RuntimeException("Unable to enter mod, " + Launcher.getInstance().modEngine()
-																			 .getContainerFromResource(modResource) + " !", throwable);
-			}
-		});
+		for (ModResource mod : this.registeredEntrypoints.keySet()) {
+			enterSpecific(mod, arguments);
+		}
+	}
+
+	@ApiStatus.Internal
+	void enterSpecific(@NotNull final ModResource mod, Object... arguments) {
+		Class<? extends T> entrypointClass = this.registeredEntrypoints.get(mod);
+		try {
+			Method method = entrypointClass.getDeclaredMethod(methodName, argumentTypes);
+			method.setAccessible(true);
+			T entrypointInstance = entrypointClass.getConstructor().newInstance();
+			method.invoke(entrypointInstance, arguments);
+		} catch (Throwable throwable) {
+			throw new RuntimeException("Unable to enter mod, " + Launcher.getInstance().modEngine()
+				.getContainerFromResource(mod) + " !", throwable);
+		}
 	}
 
 	/**
@@ -104,5 +110,12 @@ public class EntrypointInstance<T> {
 	 */
 	void prepare() {
 		registeredEntrypoints.clear();
+	}
+
+	/**
+	 * Returns the registered entrypoints of the entrypoint. Unmodifiable
+	 */
+	public @Unmodifiable Set<ModResource> getRegisteredEntrypoints() {
+		return Collections.unmodifiableSet(this.registeredEntrypoints.keySet());
 	}
 }

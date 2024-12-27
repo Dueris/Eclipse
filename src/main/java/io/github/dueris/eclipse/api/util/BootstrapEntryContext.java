@@ -15,7 +15,7 @@ public record BootstrapEntryContext(String brand, boolean isProviderContext, Pat
 	public static @NotNull BootstrapEntryContext read() {
 		JsonObject jsonObject = IgniteConstants.GSON.fromJson(((Getter<String>) () -> {
 			File contextFile = new File(Paths.get(".").resolve("cache").resolve(".eclipse")
-											 .toFile(), "bootstrap.context");
+				.toFile(), "bootstrap.context");
 			if (!contextFile.exists()) {
 				throw new IllegalStateException("Unable to find bootstrap json! Did Eclipse start correctly?");
 			}

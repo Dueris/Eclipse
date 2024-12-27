@@ -13,6 +13,8 @@
     "PaperPluginsCommandMixin",
     "PaperServerPluginProviderMixin",
     "PluginInitializerManagerMixin",
+    "PluginRemapperMixin",
+    "RemappedPluginIndexMixin",
     "SysoutCatcherMixin"
   ],
   "package": "io.github.dueris.eclipse.plugin.mixin",

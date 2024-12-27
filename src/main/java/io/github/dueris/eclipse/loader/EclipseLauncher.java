@@ -77,7 +77,7 @@ public final class EclipseLauncher implements Launcher {
 
 			StringBuilder builder = new StringBuilder();
 			builder.append("Found {} mod(s):\n".replace("{}", String.valueOf(engine.containers()
-																				   .size() + 3)));
+				.size() + 3)));
 			for (ModResource container : engine.resources()) {
 				ModResourceImpl realResource = (ModResourceImpl) container;
 				ModContainerImpl modContainer = engine.getContainerFromResource(realResource);
@@ -85,12 +85,12 @@ public final class EclipseLauncher implements Launcher {
 					String locator = realResource.locator();
 					if (locator.equalsIgnoreCase(MixinModEngine.LAUNCHER_LOCATOR)) {
 						builder.append("\t- ").append("eclipseloader ").append(IgniteConstants.IMPLEMENTATION_VERSION)
-							   .append("\n");
+							.append("\n");
 						builder.append("\t   \\-- mixinextras ").append(MixinExtrasVersion.LATEST.toString())
-							   .append("\n");
+							.append("\n");
 					} else if (locator.equalsIgnoreCase(MixinModEngine.GAME_LOCATOR)) {
 						builder.append("\t- ").append(engine.gameProvider().getGameName().toLowerCase()).append(" ")
-							   .append(engine.gameProvider().getVersion().id()).append("\n");
+							.append(engine.gameProvider().getVersion().id()).append("\n");
 					} else {
 						throw new NullPointerException("Unable to find container impl for resource of mod! : " + realResource);
 					}
@@ -111,7 +111,7 @@ public final class EclipseLauncher implements Launcher {
 						}
 
 						builder.append(((i + 1) == children.size()) ? "\t   \\-- " : "\t   |-- ")
-							   .append(childContainer.id()).append(" ").append(childContainer.version()).append("\n");
+							.append(childContainer.id()).append(" ").append(childContainer.version()).append("\n");
 						i++;
 					}
 				}
@@ -153,7 +153,7 @@ public final class EclipseLauncher implements Launcher {
 		// Load builtin entrypoints
 		{
 			EntrypointContainer.register("server", "onInitialize", ModInitializer.class);
-			EntrypointContainer.register("bootstrap", "onInitializeBootstrap", BootstrapInitializer.class);
+			EntrypointContainer.register("bootstrap", "onInitializeBootstrap", BootstrapInitializer.class, BootstrapInitializer.BootstrapContext.class);
 		}
 		// Launch the game
 		((MinecraftGameProvider) engine.gameProvider()).launch(loader);
@@ -195,7 +195,7 @@ public final class EclipseLauncher implements Launcher {
 
 						try {
 							if (resource.path().toAbsolutePath().normalize()
-										.equals(Paths.get(url.toURI()).toAbsolutePath().normalize())) {
+								.equals(Paths.get(url.toURI()).toAbsolutePath().normalize())) {
 								return Optional.ofNullable(resource.manifest());
 							}
 						} catch (final URISyntaxException exception) {

@@ -40,6 +40,6 @@ public class DependencyLoader implements PluginLoader {
 
 	private void maven(@NotNull MavenLibraryResolver resolver, String url) {
 		resolver.addRepository(new RemoteRepository.Builder(url.replace("https://", "")
-															   .split("/")[0], "default", url).build());
+			.split("/")[0], "default", url).build());
 	}
 }

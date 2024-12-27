@@ -120,7 +120,7 @@ tasks {
 }
 
 tasks.register<Jar>("eclipseJar") {
-    dependsOn(":console:build", "shadowJar")
+    dependsOn(":console:build", "example:build", "shadowJar")
 
     from(sourceSets.main.get().java)
     from(project(":injection").tasks.named("jar").map { zipTree(it.outputs.files.singleFile) })

@@ -34,6 +34,7 @@ public final class EmberClassLoader extends DynamicClassLoader {
 	);
 
 	public static EmberClassLoader INSTANCE;
+
 	static {
 		ClassLoader.registerAsParallelCapable();
 	}

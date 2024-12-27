@@ -101,7 +101,7 @@ public class BootstrapEntrypoint implements PluginBootstrap {
 		try (FileWriter writer = new FileWriter(contextFile)) {
 			JsonObject gsonObject = new JsonObject();
 			gsonObject.addProperty("path", Paths.get(ManagementFactory.getRuntimeMXBean().getClassPath())
-												.toAbsolutePath().normalize().toString());
+				.toAbsolutePath().normalize().toString());
 			gsonObject.addProperty("brand", ServerBuildInfo.buildInfo().brandName());
 			gsonObject.addProperty("is_provider_context", PROVIDER_CONTEXT);
 
@@ -278,9 +278,9 @@ public class BootstrapEntrypoint implements PluginBootstrap {
 						new ShellCodeReflectionMixinPluginMethodCall(Injectors.class.getDeclaredMethod("eclipseLoadWrapper", Path.class, OptionSet.class, CallbackInfo.class)),
 						new HLocatorHead()
 					), DedicatedServerProperties.class, "fromFile", DedicatedServerProperties.class.getDeclaredMethod("fromFile", Path.class, OptionSet.class)
-																								   .getReturnType(),
+						.getReturnType(),
 					DedicatedServerProperties.class.getDeclaredMethod("fromFile", Path.class, OptionSet.class)
-												   .getParameterTypes()
+						.getParameterTypes()
 				);
 			} catch (Throwable e) {
 				throw new RuntimeException(e);

@@ -30,7 +30,7 @@ public class EntrypointContainer {
 			ModResource resource = modContainer.resource();
 			instance.prepare();
 			instance.buildEntrypoints(metadata.backend().contains("entrypoints") ? metadata.backend()
-																						   .getConfigurationSection("entrypoints") : null, resource);
+				.getConfigurationSection("entrypoints") : null, resource);
 		}
 		return instance;
 	}
@@ -44,7 +44,7 @@ public class EntrypointContainer {
 	 */
 	public static EntrypointInstance getEntrypoint(String id) {
 		return entrypoints.stream().filter(i -> i.getId().equalsIgnoreCase(id)).findFirst()
-						  .orElseThrow(() -> new RuntimeException("No entrypoint with that id was found!", new InstanceNotFoundException()));
+			.orElseThrow(() -> new RuntimeException("No entrypoint with that id was found!", new InstanceNotFoundException()));
 	}
 
 	/**
@@ -56,6 +56,6 @@ public class EntrypointContainer {
 	 */
 	public static EntrypointInstance getEntrypoint(Class<?> classType) {
 		return entrypoints.stream().filter(i -> i.instanceClass.equals(classType)).findFirst()
-						  .orElseThrow(() -> new RuntimeException("No entrypoint with that class type was found!", new InstanceNotFoundException()));
+			.orElseThrow(() -> new RuntimeException("No entrypoint with that class type was found!", new InstanceNotFoundException()));
 	}
 }

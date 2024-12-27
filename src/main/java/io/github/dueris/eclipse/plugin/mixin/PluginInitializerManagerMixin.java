@@ -25,8 +25,8 @@ public class PluginInitializerManagerMixin {
 	private static void eclipse$loadProcessedPlugins(OptionSet optionSet, CallbackInfo ci) {
 		LOGGER.info("Loading processed mods into plugin entrypoints...");
 		EntrypointUtil.registerProvidersFromSource(DirectoryProviderSource.INSTANCE, Paths.get(".").toAbsolutePath()
-																						  .resolve("cache")
-																						  .resolve(".eclipse")
-																						  .resolve("processedMods"));
+			.resolve("cache")
+			.resolve(".eclipse")
+			.resolve("processedMods"));
 	}
 }

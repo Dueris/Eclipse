@@ -18,7 +18,7 @@ public final class Main {
 	public static void main(final String @NotNull [] arguments) {
 		try {
 			ROOT_ABSOLUTE = Path.of(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI())
-								.toAbsolutePath();
+				.toAbsolutePath();
 		} catch (URISyntaxException e) {
 			throw new RuntimeException("Invalid URI in CodeSource of Main", e);
 		}
@@ -35,7 +35,7 @@ public final class Main {
 			final Path gameJar = launcher.modEngine().gameProvider().getLaunchJar();
 			try {
 				System.out.println("Unpacking and linking version:" + launcher.modEngine().gameProvider().getVersion()
-																			  .id() + " to " + gameJar);
+					.id() + " to " + gameJar);
 				MixinJavaAgent.appendToClassPath(gameJar);
 
 				Logger.trace("Added game jar: {}", gameJar);
@@ -67,10 +67,10 @@ public final class Main {
 			});
 
 			Logger.info("Loading {} {} with Eclipse version {}", launcher.modEngine().gameProvider()
-																		 .getGameName(), launcher.modEngine()
-																								 .gameProvider()
-																								 .getVersion()
-																								 .id(), IgniteConstants.IMPLEMENTATION_VERSION);
+				.getGameName(), launcher.modEngine()
+				.gameProvider()
+				.getVersion()
+				.id(), IgniteConstants.IMPLEMENTATION_VERSION);
 
 			// Launch the game.
 			ember.launchEmber(Launcher.getInstance().modEngine());

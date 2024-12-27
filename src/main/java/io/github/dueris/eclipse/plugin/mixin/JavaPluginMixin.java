@@ -57,7 +57,7 @@ public abstract class JavaPluginMixin implements MixinPlugin {
 			} else {
 				try {
 					Path path = Path.of(clazz.getProtectionDomain().getCodeSource().getLocation().toURI())
-									.toAbsolutePath().normalize();
+						.toAbsolutePath().normalize();
 					for (ModContainer container : Launcher.getInstance().modEngine().containers()) {
 						if (container.resource().path().toAbsolutePath().normalize().equals(path)) {
 							fetchingPlugin.set(container.config().backend().getString("main"));
@@ -93,7 +93,7 @@ public abstract class JavaPluginMixin implements MixinPlugin {
 			}
 
 			throw new RuntimeException("Unable to locate correct class loader for plugin! Found: " + original.getClass()
-																											 .getName());
+				.getName());
 		}
 	}
 

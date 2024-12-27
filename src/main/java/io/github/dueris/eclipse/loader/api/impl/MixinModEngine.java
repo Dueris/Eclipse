@@ -63,11 +63,11 @@ public class MixinModEngine implements ModEngine {
 		if (preloadedConfig.contains("mixins") || preloadedConfig.contains("wideners") || preloadedConfig.contains("datapack-entry")) {
 			Manifest manifest = jarFile.getManifest();
 			if (manifest != null && (manifest.getMainAttributes()
-											 .getValue("paperweight-mappings-namespace") != null && !manifest.getMainAttributes()
-																											 .getValue("paperweight-mappings-namespace")
-																											 .equals("mojang+yarn"))) {
+				.getValue("paperweight-mappings-namespace") != null && !manifest.getMainAttributes()
+				.getValue("paperweight-mappings-namespace")
+				.equals("mojang+yarn"))) {
 				Logger.warn("JarFile, {}, doesn't have a safe mappings namespace(recommended: {}, but found {})! If this is a mixin plugin, it might not work. Proceed with caution", jarFile.getName(), "mojang+yarn", manifest.getMainAttributes()
-																																																								.getValue("paperweight-mappings-namespace"));
+					.getValue("paperweight-mappings-namespace"));
 			}
 			ModResourceImpl resource = new ModResourceImpl(JAVA_LOCATOR, childFile, jarFile.getManifest(), childLoading.get(), parentToChildren.getOrDefault(childFile, List.of()));
 			resources.add(resource);
@@ -106,7 +106,7 @@ public class MixinModEngine implements ModEngine {
 		if (resource.locator().equalsIgnoreCase(GAME_LOCATOR) || resource.locator().equalsIgnoreCase(LAUNCHER_LOCATOR))
 			return null;
 		return (ModContainerImpl) containers.values().stream().filter(c -> c.resource().equals(resource)).findFirst()
-											.orElse(null);
+			.orElse(null);
 	}
 
 	public boolean locateResources() {
@@ -232,7 +232,7 @@ public class MixinModEngine implements ModEngine {
 		// Retrieve the mods from the mods directory.
 		final Path modDirectory = (Path) EclipseLauncher.INSTANCE.getProperties().get("modspath");
 		final Path cachedModsDirectory = Paths.get(".").toAbsolutePath().resolve("cache").resolve(".eclipse")
-											  .resolve("processedMods");
+			.resolve("processedMods");
 		try {
 			if (modDirectory == null) {
 				throw new RuntimeException("Failed to get mods directory!");
@@ -251,18 +251,18 @@ public class MixinModEngine implements ModEngine {
 			}
 
 			Files.walk(cachedModsDirectory)
-				 .sorted(Comparator.reverseOrder())
-				 .forEach(p -> {
-					 try {
-						 Files.delete(p);
-					 } catch (IOException e) {
-						 throw new RuntimeException("Failed to delete: " + p, e);
-					 }
-				 });
+				.sorted(Comparator.reverseOrder())
+				.forEach(p -> {
+					try {
+						Files.delete(p);
+					} catch (IOException e) {
+						throw new RuntimeException("Failed to delete: " + p, e);
+					}
+				});
 
 			List<Path> toInspect = new ArrayList<>(Files.list(modDirectory)
-														.filter(Files::isRegularFile)
-														.toList()
+				.filter(Files::isRegularFile)
+				.toList()
 			);
 			if (EclipseLauncher.INSTANCE.entryContext().isProviderContext()) {
 				toInspect.add(Main.ROOT_ABSOLUTE);
@@ -300,8 +300,8 @@ public class MixinModEngine implements ModEngine {
 	private void prepareCached(Path modDirectory, Path cacheDir, Function<Path, ModResource> resourceBuilder) throws Throwable {
 		//noinspection resource
 		List<Path> toInspect = new ArrayList<>(Files.list(modDirectory)
-													.filter(Files::isRegularFile)
-													.toList()
+			.filter(Files::isRegularFile)
+			.toList()
 		);
 		for (final Path childDirectory : toInspect) {
 			if (!Files.isRegularFile(childDirectory) || !childDirectory.getFileName().toString().endsWith(".jar")) {
@@ -312,36 +312,36 @@ public class MixinModEngine implements ModEngine {
 				JarEntry modsDir = jarFile.getJarEntry("META-INF/mods/");
 				if (modsDir != null && modsDir.isDirectory()) {
 					jarFile.stream().filter(e -> e.getName().startsWith("META-INF/mods/") && !e.isDirectory())
-						   .forEach(entry -> {
-							   if (!parentToChildren.containsKey(childDirectory)) {
-								   parentToChildren.put(childDirectory, new ArrayList<>());
-							   }
-							   String fileName = entry.getName().substring(entry.getName().lastIndexOf('/') + 1);
-							   Path outputFile = cacheDir.resolve(fileName);
+						.forEach(entry -> {
+							if (!parentToChildren.containsKey(childDirectory)) {
+								parentToChildren.put(childDirectory, new ArrayList<>());
+							}
+							String fileName = entry.getName().substring(entry.getName().lastIndexOf('/') + 1);
+							Path outputFile = cacheDir.resolve(fileName);
 
-							   try {
-								   Logger.trace("Building processed mod : " + entry.getName());
-								   Files.createDirectories(cacheDir);
+							try {
+								Logger.trace("Building processed mod : " + entry.getName());
+								Files.createDirectories(cacheDir);
 
-								   if (!entry.isDirectory()) {
-									   try (InputStream inputStream = jarFile.getInputStream(entry)) {
-										   Files.copy(inputStream, outputFile, StandardCopyOption.REPLACE_EXISTING);
-									   }
-								   }
+								if (!entry.isDirectory()) {
+									try (InputStream inputStream = jarFile.getInputStream(entry)) {
+										Files.copy(inputStream, outputFile, StandardCopyOption.REPLACE_EXISTING);
+									}
+								}
 
-								   if (!entry.isDirectory()) {
-									   Logger.trace("Validating...");
-									   validateExtractedFile(outputFile);
-									   ModResourceImpl i = (ModResourceImpl) resourceBuilder.apply(outputFile);
-									   if (i != null) {
-										   parentToChildren.get(childDirectory).add(i);
-									   }
-								   }
+								if (!entry.isDirectory()) {
+									Logger.trace("Validating...");
+									validateExtractedFile(outputFile);
+									ModResourceImpl i = (ModResourceImpl) resourceBuilder.apply(outputFile);
+									if (i != null) {
+										parentToChildren.get(childDirectory).add(i);
+									}
+								}
 
-							   } catch (IOException e) {
-								   throw new RuntimeException("Failed to process jar entry: " + entry.getName(), e);
-							   }
-						   });
+							} catch (IOException e) {
+								throw new RuntimeException("Failed to process jar entry: " + entry.getName(), e);
+							}
+						});
 				}
 			}
 		}

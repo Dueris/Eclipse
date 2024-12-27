@@ -101,7 +101,7 @@ public final class EmberTransformer implements Transformer {
 					}
 				} catch (final Throwable throwable) {
 					Logger.error(throwable, "Failed to patch {} with {}", type.getClassName(), patch.getClass()
-																									.getName());
+						.getName());
 				}
 			}
 			// Now we apply transformer services, like mixins and access wideners
@@ -117,7 +117,7 @@ public final class EmberTransformer implements Transformer {
 					}
 				} catch (final Throwable throwable) {
 					Logger.error(throwable, "Failed to transform {} with {}", type.getClassName(), service.getClass()
-																										  .getName());
+						.getName());
 				}
 			}
 		}
@@ -133,12 +133,12 @@ public final class EmberTransformer implements Transformer {
 
 	private List<TransformerService> order(final @NotNull TransformPhase phase) {
 		return this.transformers.values().stream()
-								.filter(value -> value.priority(phase) != -1) // Filter out transformers that do not apply to the given phase.
-								.sorted((first, second) -> {
-									final int firstPriority = first.priority(phase);
-									final int secondPriority = second.priority(phase);
-									return Integer.compare(firstPriority, secondPriority);
-								})
-								.collect(Collectors.toList());
+			.filter(value -> value.priority(phase) != -1) // Filter out transformers that do not apply to the given phase.
+			.sorted((first, second) -> {
+				final int firstPriority = first.priority(phase);
+				final int secondPriority = second.priority(phase);
+				return Integer.compare(firstPriority, secondPriority);
+			})
+			.collect(Collectors.toList());
 	}
 }

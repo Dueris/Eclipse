@@ -100,16 +100,16 @@ public class Util {
 			// Download required libraries and add them
 			libraries.add(new GameLibrary(
 				outputFilePath.toAbsolutePath()
-							  .normalize(), "patched//net.minecrell:terminalconsoleappender:1.3.0", existsAlready
+					.normalize(), "patched//net.minecrell:terminalconsoleappender:1.3.0", existsAlready
 			));
 			libraries.add(downloadLibrary("net.fabricmc:access-widener:2.1.0", "https://maven.fabricmc.net/", root.resolve("libraries")
-																												  .toAbsolutePath()
-																												  .normalize()
-																												  .toString()));
+				.toAbsolutePath()
+				.normalize()
+				.toString()));
 			libraries.add(downloadLibrary("io.github.llamalad7:mixinextras-common:0.4.1", "https://repo.maven.apache.org/maven2/", root.resolve("libraries")
-																																	   .toAbsolutePath()
-																																	   .normalize()
-																																	   .toString()));
+				.toAbsolutePath()
+				.normalize()
+				.toString()));
 		} catch (IOException e) {
 			throw new RuntimeException("Unable to unload nested jars!", e);
 		}

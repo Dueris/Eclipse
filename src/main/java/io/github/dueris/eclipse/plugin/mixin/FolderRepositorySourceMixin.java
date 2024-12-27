@@ -95,14 +95,14 @@ public abstract class FolderRepositorySourceMixin {
 		ModEngine modEngine = Launcher.getInstance().modEngine();
 		AtomicBoolean isValid = new AtomicBoolean(false);
 		modEngine.containers().stream()
-				 .filter(p -> p.resource().path().toAbsolutePath().normalize().toString()
-							   .equals(path.toAbsolutePath().normalize().toString()))
-				 .findFirst().ifPresentOrElse(resource -> {
-					 ModMetadata config = resource.config();
-					 if (config.datapackEntry()) {
-						 isValid.set(true);
-					 }
-				 }, () -> LOGGER.trace("Unable to locate mod in Ignite containers! : {}", path.getFileName()));
+			.filter(p -> p.resource().path().toAbsolutePath().normalize().toString()
+				.equals(path.toAbsolutePath().normalize().toString()))
+			.findFirst().ifPresentOrElse(resource -> {
+				ModMetadata config = resource.config();
+				if (config.datapackEntry()) {
+					isValid.set(true);
+				}
+			}, () -> LOGGER.trace("Unable to locate mod in Ignite containers! : {}", path.getFileName()));
 		return isValid.get();
 	}
 
@@ -113,7 +113,7 @@ public abstract class FolderRepositorySourceMixin {
 			EclipsePlugin.eclipse$allowsJars = true;
 			eclipse$loadDirectory(profileAdder, Paths.get("plugins"));
 			eclipse$loadDirectory(profileAdder, Paths.get(".").toAbsolutePath().resolve("cache").resolve(".eclipse")
-													 .resolve("processedMods"));
+				.resolve("processedMods"));
 			EclipsePlugin.eclipse$allowsJars = false;
 		} catch (IOException e) {
 			throw new RuntimeException("Unable to load plugins repository from Folder repo", e);

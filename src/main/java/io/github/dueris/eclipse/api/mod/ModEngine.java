@@ -20,6 +20,7 @@ public interface ModEngine {
 	@NotNull Collection<ModContainer> containers();
 
 	@NotNull GameProvider gameProvider();
+
 	/**
 	 * Only returns null if the ModResource isn't registered to a ModContainer, or it's the Launcher or Game resource.
 	 */
