@@ -117,14 +117,13 @@ tasks {
     shadowJar {
         mergeServiceFiles()
     }
-    shadowJar {
-        archiveFileName.set("${project.name}-${project.version}.jar")
-    }
 }
 
 tasks.register<Jar>("eclipseJar") {
     dependsOn(":console:build", "shadowJar")
 
+    from(sourceSets.main.get().java)
+    from(project(":injection").tasks.named("jar").map { zipTree(it.outputs.files.singleFile) })
     doLast {
         val consoleJar = rootDir.resolve("console/build/libs/console-v1.0.0.jar").absoluteFile
 
