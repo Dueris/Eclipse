@@ -117,9 +117,12 @@ tasks {
     shadowJar {
         mergeServiceFiles()
     }
+    shadowJar {
+        archiveFileName.set("${project.name}-${project.version}.jar")
+    }
 }
 
-tasks.register("eclipseJar") {
+tasks.register<Jar>("eclipseJar") {
     dependsOn(":console:build", "shadowJar")
 
     doLast {
@@ -177,5 +180,28 @@ tasks.register("eclipseJar") {
         tempJar.renameTo(shadowJar)
 
         println("Added ${consoleJar.name} as a nested entry in ${shadowJar.name}")
+    }
+}
+
+publishing {
+    publications.create<MavenPublication>("eclipseJar") {
+        artifact(tasks.getByName("eclipseJar")) {
+            groupId = "io.github.dueris"
+            artifactId = "eclipse"
+        }
+    }
+    repositories {
+        maven {
+            name = "sonatype"
+            if (version.toString().endsWith("SNAPSHOT")) {
+                url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+            } else {
+                url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+            }
+            credentials {
+                username=System.getenv("OSSRH_USERNAME")
+                password=System.getenv("OSSRH_PASSWORD")
+            }
+        }
     }
 }
