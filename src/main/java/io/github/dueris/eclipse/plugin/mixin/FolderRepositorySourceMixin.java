@@ -138,6 +138,6 @@ public abstract class FolderRepositorySourceMixin {
 	@Unique
 	private @NotNull PackLocationInfo eclipse$createDiscoveredFilePackInfo(Path path) {
 		String string = nameFromPath(path);
-		return new PackLocationInfo("io/github/dueris/eclipse/plugin/" + string, Component.literal(Objects.requireNonNull(string, "Name from path is null!")), this.packSource, Optional.empty());
+		return new PackLocationInfo("plugin/" + string, Component.literal(Objects.requireNonNull(string, "Name from path is null!")), this.packSource, Optional.empty());
 	}
 }

@@ -1,5 +1,5 @@
 name: Eclipse
-version: '2.0.0-SNAPSHOT'
+version: '2.0.2-SNAPSHOT'
 main: io.github.dueris.eclipse.plugin.EclipsePlugin
 api-version: '1.21'
 prefix: EclipseMixin
