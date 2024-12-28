@@ -23,10 +23,12 @@ public class PluginRemapperMixin {
 	public Path eclipse$changeRemappedDirectory(Path instance, String other, @NotNull Operation<Path> original) {
 		PAPER_REMAPPED = ".eclipse-remapped";
 		Path remappedPath = original.call(instance, PAPER_REMAPPED).toAbsolutePath().normalize();
-		try {
-			Files.walkFileTree(remappedPath, new FileDeleterVisitor());
-		} catch (IOException e) {
-			throw new RuntimeException("Unable to clear remapped cache!", e);
+		if (remappedPath.toFile().exists()) {
+			try {
+				Files.walkFileTree(remappedPath, new FileDeleterVisitor());
+			} catch (IOException e) {
+				throw new RuntimeException("Unable to clear remapped cache!", e);
+			}
 		}
 		return remappedPath;
 	}
