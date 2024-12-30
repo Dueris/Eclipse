@@ -9,11 +9,11 @@ public class StaticGetPluginTest implements TestInstance {
 	public void test() throws TestFailedException {
 		try {
 			TestInstance.LOGGER.trace("{} - JavaPlugin#getPlugin(){static} test passed", JavaPlugin.getPlugin(EclipseExample.class)
-																								   .getName());
+				.getName());
 			TestInstance.LOGGER.trace("{} - JavaPlugin#getProvidingPlugin(){static} (plugin main) test passed", JavaPlugin.getProvidingPlugin(EclipseExample.class)
-																														  .getName());
+				.getName());
 			TestInstance.LOGGER.trace("{} - JavaPlugin#getProvidingPlugin(){static} test passed", JavaPlugin.getProvidingPlugin(TestInstance.class)
-																											.getName());
+				.getName());
 			// throw new IllegalArgumentException("TESTING"); - only uncomment when testing stacktrace logging
 		} catch (Throwable throwable) {
 			throw new TestFailedException("static getPlugin", throwable);

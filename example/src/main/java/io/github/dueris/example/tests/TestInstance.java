@@ -8,8 +8,9 @@ import java.util.List;
 
 public interface TestInstance {
 	Logger LOGGER = LogManager.getLogger("EclipseTests");
+
 	static void runTests() {
-		for (Class<? extends TestInstance> testClass : List.of(StaticGetPluginTest.class, PluginManagerGetPlugin.class, ColoredLoggingOutputTest.class, JavaPluginJarFileTest.class)) {
+		for (Class<? extends TestInstance> testClass : List.of(StaticGetPluginTest.class, PluginManagerGetPlugin.class, ColoredLoggingOutputTest.class, JavaPluginJarFileTest.class, ForgeAccessTest.class)) {
 			try {
 				TestInstance testInstance = testClass.newInstance();
 				try {
@@ -23,5 +24,6 @@ public interface TestInstance {
 		}
 		EclipseExample.getPlugin(EclipseExample.class).getLog4JLogger().info("All tests passed!");
 	}
+
 	void test() throws TestFailedException;
 }

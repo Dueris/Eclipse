@@ -14,6 +14,8 @@ wideners: [
   "example.accesswidener"
 ]
 
+transformer: "example_at.cfg"
+
 entrypoints:
   bootstrap: "io.github.dueris.example.EclipseBootstrapEntrypoint"
   server: "io.github.dueris.example.EclipseModEntrypoint"

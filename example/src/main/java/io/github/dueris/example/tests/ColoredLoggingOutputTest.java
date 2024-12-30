@@ -15,7 +15,7 @@ public class ColoredLoggingOutputTest implements TestInstance {
 		printLine("TEST", System.out);
 		// We don't test chat colors bc its paper... this has been deprecated for years... (i also don't think they work normally...)
 		plugin.getServer().getConsoleSender()
-			  .sendMessage(Component.text("TEST_(Component)").color(TextColor.color(0xA852F)));
+			.sendMessage(Component.text("TEST_(Component)").color(TextColor.color(0xA852F)));
 	}
 
 	private void printLine(String line, @NotNull PrintStream stream) {

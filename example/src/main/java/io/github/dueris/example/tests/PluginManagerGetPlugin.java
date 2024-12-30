@@ -8,8 +8,8 @@ public class PluginManagerGetPlugin implements TestInstance {
 	public void test() throws TestFailedException {
 		try {
 			TestInstance.LOGGER.trace("{} - Bukkit.getPluginManager()#getPlugin() test passed", Bukkit.getPluginManager()
-																									  .getPlugin("EclipseTest")
-																									  .getName());
+				.getPlugin("EclipseTest")
+				.getName());
 		} catch (Throwable throwable) {
 			throw new TestFailedException("static getPlugin", throwable);
 		}

@@ -27,7 +27,7 @@ public final class ModResourceImpl implements ModResource {
 						   final @NotNull Path path,
 						   final @UnknownNullability Manifest manifest, boolean child, List<ModResource> children) {
 		this.locator = locator;
-		this.path = path;
+		this.path = path.toAbsolutePath().normalize();
 		this.manifest = manifest;
 		this.child = child;
 		this.children = children;
