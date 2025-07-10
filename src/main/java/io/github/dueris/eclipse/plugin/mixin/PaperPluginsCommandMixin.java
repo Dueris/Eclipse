@@ -5,13 +5,13 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
+import com.mojang.brigadier.context.CommandContext;
 import io.github.dueris.eclipse.plugin.access.MixinPluginMeta;
 import io.papermc.paper.command.PaperPluginsCommand;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.plugin.provider.PluginProvider;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,14 +25,10 @@ import java.util.List;
 import java.util.TreeMap;
 
 @Mixin(PaperPluginsCommand.class)
-public abstract class PaperPluginsCommandMixin<T> extends BukkitCommand {
+public abstract class PaperPluginsCommandMixin<T>  {
 
 	@Unique
 	private static final Component ECLIPSE_HEADER = Component.text("Eclipse Plugins:", TextColor.color(235, 186, 16));
-
-	protected PaperPluginsCommandMixin(@NotNull String name) {
-		super(name);
-	}
 
 	@Shadow
 	private static <T> List<Component> formatProviders(TreeMap<String, PluginProvider<T>> plugins) {
@@ -40,7 +36,7 @@ public abstract class PaperPluginsCommandMixin<T> extends BukkitCommand {
 	}
 
 	@Inject(method = "execute", at = @At("HEAD"))
-	public void eclipse$newTreeMap(CommandSender sender, String currentAlias, String[] args, CallbackInfoReturnable<Boolean> cir, @Share("eclipsePlugins") @NotNull LocalRef<TreeMap<String, PluginProvider<JavaPlugin>>> eclipsePlugins) {
+	public void eclipse$newTreeMap(CommandContext<CommandSourceStack> context, CallbackInfoReturnable<Integer> cir, @Share("eclipsePlugins") @NotNull LocalRef<TreeMap<String, PluginProvider<JavaPlugin>>> eclipsePlugins) {
 		eclipsePlugins.set(new TreeMap<>(String.CASE_INSENSITIVE_ORDER));
 	}
 
@@ -66,15 +62,15 @@ public abstract class PaperPluginsCommandMixin<T> extends BukkitCommand {
 	}
 
 	@Inject(method = "execute", at = @At(value = "INVOKE", target = "Lorg/bukkit/command/CommandSender;sendMessage(Lnet/kyori/adventure/text/Component;)V", ordinal = 0, shift = At.Shift.AFTER))
-	public void eclipse$sendEclipseMessage(CommandSender sender, String currentAlias, String[] args, CallbackInfoReturnable<Boolean> cir, @Share("eclipsePlugins") @NotNull LocalRef<TreeMap<String, PluginProvider<JavaPlugin>>> eclipsePlugins) {
+	public void eclipse$sendEclipseMessage(CommandContext<CommandSourceStack> context, CallbackInfoReturnable<Integer> cir, @Share("eclipsePlugins") @NotNull LocalRef<TreeMap<String, PluginProvider<JavaPlugin>>> eclipsePlugins) {
 		TreeMap<String, PluginProvider<JavaPlugin>> eclipseTreeMap = eclipsePlugins.get();
 
 		if (!eclipseTreeMap.isEmpty()) {
-			sender.sendMessage(ECLIPSE_HEADER);
+			context.getSource().getSender().sendMessage(ECLIPSE_HEADER);
 		}
 
 		for (Component component : formatProviders(eclipseTreeMap)) {
-			sender.sendMessage(component);
+			context.getSource().getSender().sendMessage(component);
 		}
 	}
 
