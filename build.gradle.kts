@@ -6,18 +6,18 @@ import kotlin.io.path.Path
 plugins {
     `java-library`
     `maven-publish`
-    id("io.papermc.paperweight.userdev") version "2.0.0-beta.8" apply true
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.17" apply true
     id("xyz.jpenilla.run-paper") version "2.2.3"
     id("ignite.parent-conventions")
     id("ignite.launcher-conventions")
     id("ignite.publish-conventions")
 }
 
-val paperweightVersion: String = "1.21.4-R0.1-SNAPSHOT"
+val paperweightVersion: String = "1.21.7-R0.1-SNAPSHOT"
 
 extra["mcMajorVer"] = "21"
-extra["mcMinorVer"] = "3"
-extra["pluginVer"] = "v2.0.4"
+extra["mcMinorVer"] = "7"
+extra["pluginVer"] = "v2.0.5"
 
 val mcMajorVer = extra["mcMajorVer"] as String
 val mcMinorVer = extra["mcMinorVer"] as String
@@ -69,7 +69,7 @@ allprojects {
                 "pluginVer" to pluginVer,
                 "fullVer" to "mc$mcVer-$pluginVer",
                 "apiVer" to "1.$mcMajorVer",
-                "supported" to listOf("1.21", "1.21.1", "1.21.3")
+                "supported" to listOf("1.21.7")
             )
             inputs.properties(props)
             filesMatching("paper-plugin.yml") {
@@ -120,8 +120,7 @@ tasks {
 }
 
 tasks.register<Jar>("eclipseJar") {
-    dependsOn(":console:build", "example:build", "shadowJar")
-
+    dependsOn(":console:build", ":example:build", ":shadowJar")
     from(sourceSets.main.get().java)
     from(project(":injection").tasks.named("jar").map { zipTree(it.outputs.files.singleFile) })
     doLast {
