@@ -7,6 +7,9 @@ Eclipse includes a large array of features:
 - **Fabric Mixins**
 - **Mixin Extras**
 
+## Notice
+Eclipse has been archived and superseded by the Horizon project in CanvasMC. https://github.com/CraftCanvasMC/Horizon
+
 ## Getting Started
 
 To use Eclipse, include the following options in your `paper-plugin.yaml` (or `.yml`):
